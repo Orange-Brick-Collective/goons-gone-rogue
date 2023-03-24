@@ -1,0 +1,9 @@
+# ignore auto-generated files
+code/obj/
+code/Properties/
+.vscode
+.vs
+*.csproj
+
+# ignore ignore folder for holding files or backups
+ignore
