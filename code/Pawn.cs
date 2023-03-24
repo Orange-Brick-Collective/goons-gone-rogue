@@ -2,98 +2,144 @@
 using System;
 using System.Linq;
 
-namespace Sandbox;
+namespace GGame;
 
-partial class Pawn : AnimatedEntity
-{
-	/// <summary>
-	/// Called when the entity is first created 
-	/// </summary>
-	public override void Spawn()
-	{
-		base.Spawn();
+public partial class Pawn : AnimatedEntity {
+	[Net, Change] public bool IsActive {get; set;} = false;
 
-		//
-		// Use a watermelon model
-		//
-		SetModel( "models/sbox_props/watermelon/watermelon.vmdl" );
+	[ClientInput] public Vector3 InputDirection {get; protected set;}
+	[ClientInput] public Angles ViewAngles {get; set;}
 
-		EnableDrawing = true;
-		EnableHideInFirstPerson = true;
-		EnableShadowInFirstPerson = true;
-	}
-
-	// An example BuildInput method within a player's Pawn class.
-	[ClientInput] public Vector3 InputDirection { get; protected set; }
-	[ClientInput] public Angles ViewAngles { get; set; }
-
-	public override void BuildInput()
-	{
+	public override void BuildInput() {
 		InputDirection = Input.AnalogMove;
 
-		var look = Input.AnalogLook;
+		Angles look = Input.AnalogLook;
 
-		var viewAngles = ViewAngles;
+		Angles viewAngles = ViewAngles;
 		viewAngles += look;
+        viewAngles.pitch = viewAngles.pitch.Clamp(-86, 86);
 		ViewAngles = viewAngles.Normal;
 	}
 
-	/// <summary>
-	/// Called every tick, clientside and serverside.
-	/// </summary>
-	public override void Simulate( IClient cl )
-	{
-		base.Simulate( cl );
+	public override void Spawn() {
+		base.Spawn();
+		Tags.Add("player");
+		
+		SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 70));
+		SetModel("models/player.vmdl");
 
-		Rotation = ViewAngles.ToRotation();
+		EnableDrawing = true;
+	}
 
-		// build movement from the input values
-		var movement = InputDirection.Normal;
+	public override void OnKilled() {
+		// game over
 
-		// rotate it to the direction we're facing
-		Velocity = Rotation * movement;
+		// back to menu
+	}
 
-		// apply some speed to it
-		Velocity *= Input.Down( InputButton.Run ) ? 1000 : 200;
+	public void OnEnemyKilled() {
+		// check boosts
+	}
 
-		// apply it to our position using MoveHelper, which handles collision
-		// detection and sliding across surfaces for us
-		MoveHelper helper = new MoveHelper( Position, Velocity );
-		helper.Trace = helper.Trace.Size( 16 );
-		if ( helper.TryMove( Time.Delta ) > 0 )
-		{
-			Position = helper.Position;
-		}
-
-		// If we're running serverside and Attack1 was just pressed, spawn a ragdoll
-		if ( Game.IsServer && Input.Pressed( InputButton.PrimaryAttack ) )
-		{
-			var ragdoll = new ModelEntity();
-			ragdoll.SetModel( "models/citizen/citizen.vmdl" );
-			ragdoll.Position = Position + Rotation.Forward * 40;
-			ragdoll.Rotation = Rotation.LookAt( Vector3.Random.Normal );
-			ragdoll.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
-			ragdoll.PhysicsGroup.Velocity = Rotation.Forward * 1000;
+	public void OnIsActiveChanged() {
+		if (IsActive) {
+			EnableDrawing = true;
+			EnableAllCollisions = true;
 		}
 	}
 
-	/// <summary>
-	/// Called every frame on the client
-	/// </summary>
-	public override void FrameSimulate( IClient cl )
-	{
+	// *
+	// * SIMULATES AND GAMEMODE VARS
+	// *
+
+	[Net] public bool IsInCombat {get; set;} = false;
+
+	[Net] public int BaseAttackDamage {get; set;} = 20;
+	[Net] public int AddedAttackDamage {get; set;} = 0;
+
+	[Net] public float BaseAttackRate {get; set;} = 0.5f;
+	[Net] public float AddedAttackRate {get; set;} = 0;
+
+	public int AttackDamage => BaseAttackDamage + AddedAttackDamage;
+	public float AttackRate => BaseAttackRate + AddedAttackRate; // second time
+
+	public override void Simulate(IClient cl) {
+		base.Simulate(cl);
+
+		SimulateMovement();
+
+		if (Input.Pressed(InputButton.PrimaryAttack) && Game.IsServer) {
+			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 400).Ignore(this).Run();
+			Goon g = new();
+			g.Init(0, this);
+			g.Position = tr.EndPosition;
+		}
+
+		if (Input.Pressed(InputButton.SecondaryAttack) && Game.IsServer) {
+			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 400).Ignore(this).Run();
+			Goon g = new();
+			g.Init(1);
+			g.Position = tr.EndPosition;
+		}
+	}
+
+	public override void FrameSimulate(IClient cl) {
 		base.FrameSimulate( cl );
 
-		// Update rotation every frame, to keep things smooth
-		Rotation = ViewAngles.ToRotation();
+		SimulateCamera();
+	}
 
-		Camera.Position = Position;
-		Camera.Rotation = Rotation;
+	[Net, Predicted] public bool IsGrounded {get; set;} = true;
 
-		// Set field of view to whatever the user chose in options
-		Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
+	public void SimulateMovement() {
+		// grounded and stepup/down
+		TraceResult ground;
+		if (IsGrounded) {
+			Vector3 offset = new(0, 0, 18);
+			ground = BoxTraceSweep(new Vector3(32, 32, 4), Position + offset, Position - offset);
+			if (ground.Hit) Position = Position.WithZ(ground.HitPosition.z);
+		} else {
+			ground = BoxTrace(new Vector3(32, 32, 16), Position + new Vector3(0, 0, 7.9f));
+		}
+		IsGrounded = ground.Hit;
 
-		// Set the first person viewer to this, so it won't render our model
-		Camera.FirstPersonViewer = this;
+		// movement input
+		Rotation = ViewAngles.WithPitch(0).ToRotation();
+		Vector3 input = InputDirection.Normal * Rotation;
+
+		Vector3 newVel = input * 200 + Velocity;
+
+		if (!IsGrounded) {
+			newVel.z -= 800;
+		}
+
+		MoveHelper helper = new(Position, newVel) {
+			Trace = Trace.Box(new Vector3(32, 32, 0), Position, Position).WithoutTags("player", "goon"),
+		};
+		helper.ApplyFriction(20, Time.Delta);
+
+		Velocity = helper.Velocity;
+		if (helper.TryMove(Time.Delta) > 0) {
+			Position = helper.Position;
+		}
+	}
+	public TraceResult BoxTrace(Vector3 extents, Vector3 pos) {
+		return Trace.Box(extents, pos, pos).WithoutTags("player", "goon").Run();
+	}
+	public TraceResult BoxTraceSweep(Vector3 extents, Vector3 from, Vector3 to) {
+		return Trace.Box(extents, from, to).WithoutTags("player", "goon").Run();
+	}
+
+	public void SimulateCamera() {
+		Vector3 pos = Position;
+		pos += Rotation.Right * 20;
+		pos.z += 58;
+		// back
+		pos = Trace.Ray(pos, pos - (ViewAngles.Forward * 60)).WithoutTags("player", "goon").Run().EndPosition;
+		
+		Camera.Position = pos;
+		Camera.Rotation = ViewAngles.ToRotation();
+
+		Camera.FieldOfView = Screen.CreateVerticalFieldOfView(Game.Preferences.FieldOfView);
 	}
 }
