@@ -13,27 +13,12 @@
 						_class = "RenderPrimitiveBox"
 						name = "box"
 						parent_bone = ""
-						material_name = "dev/helper/testgrid.vmat"
+						material_name = "materials/hotspots/concrete_a_hs.vmat"
 						origin = [ 0.0, 0.0, 34.0 ]
 						angles = [ 0.0, 0.0, 0.0 ]
 						max_u = 1.0
 						max_v = 1.0
 						dimensions = [ 26.0, 26.0, 68.0 ]
-						segments_x = 1
-						segments_y = 1
-						segments_z = 1
-						invert = false
-					},
-					{
-						_class = "RenderPrimitiveBox"
-						name = "box1"
-						parent_bone = ""
-						material_name = "dev/helper/testgrid.vmat"
-						origin = [ 16.0, 0.0, 68.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						max_u = 1.0
-						max_v = 1.0
-						dimensions = [ 20.0, 5.0, 5.0 ]
 						segments_x = 1
 						segments_y = 1
 						segments_z = 1

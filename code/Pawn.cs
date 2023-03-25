@@ -69,17 +69,17 @@ public partial class Pawn : AnimatedEntity {
 		SimulateMovement();
 
 		if (Input.Pressed(InputButton.PrimaryAttack) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 400).Ignore(this).Run();
+			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 4000).Ignore(this).Run();
 			Goon g = new();
 			g.Init(0, this);
-			g.Position = tr.EndPosition;
+			g.Position = tr.EndPosition + Vector3.Up * 5;
 		}
 
 		if (Input.Pressed(InputButton.SecondaryAttack) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 400).Ignore(this).Run();
+			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 4000).Ignore(this).Run();
 			Goon g = new();
 			g.Init(1);
-			g.Position = tr.EndPosition;
+			g.Position = tr.EndPosition + Vector3.Up * 5;
 		}
 	}
 
@@ -109,25 +109,28 @@ public partial class Pawn : AnimatedEntity {
 
 		Vector3 newVel = input * 200 + Velocity;
 
-		if (!IsGrounded) {
-			newVel.z -= 800;
-		}
-
 		MoveHelper helper = new(Position, newVel) {
-			Trace = Trace.Box(new Vector3(32, 32, 0), Position, Position).WithoutTags("player", "goon"),
+			Trace = Trace.Box(new Vector3(32, 32, 0), Position, Position).WithoutTags("player", "goon", "trigger"),
 		};
-		helper.ApplyFriction(20, Time.Delta);
 
-		Velocity = helper.Velocity;
+		if (IsGrounded) {
+			helper.ApplyFriction(20, Time.Delta);
+			Velocity = helper.Velocity;
+		}
+		else {
+			helper.ApplyFriction(1, Time.Delta);
+			Velocity -= new Vector3(0, 0, 15);
+		}
+		
 		if (helper.TryMove(Time.Delta) > 0) {
 			Position = helper.Position;
 		}
 	}
-	public TraceResult BoxTrace(Vector3 extents, Vector3 pos) {
-		return Trace.Box(extents, pos, pos).WithoutTags("player", "goon").Run();
+	public static TraceResult BoxTrace(Vector3 extents, Vector3 pos) {
+		return Trace.Box(extents, pos, pos).WithoutTags("player", "goon", "trigger").Run();
 	}
-	public TraceResult BoxTraceSweep(Vector3 extents, Vector3 from, Vector3 to) {
-		return Trace.Box(extents, from, to).WithoutTags("player", "goon").Run();
+	public static TraceResult BoxTraceSweep(Vector3 extents, Vector3 from, Vector3 to) {
+		return Trace.Box(extents, from, to).WithoutTags("player", "goon", "trigger").Run();
 	}
 
 	public void SimulateCamera() {
@@ -135,7 +138,7 @@ public partial class Pawn : AnimatedEntity {
 		pos += Rotation.Right * 20;
 		pos.z += 58;
 		// back
-		pos = Trace.Ray(pos, pos - (ViewAngles.Forward * 60)).WithoutTags("player", "goon").Run().EndPosition;
+		pos = Trace.Ray(pos, pos - (ViewAngles.Forward * 60)).WithoutTags("player", "goon", "trigger").Run().EndPosition;
 		
 		Camera.Position = pos;
 		Camera.Rotation = ViewAngles.ToRotation();

@@ -8,12 +8,11 @@ namespace GGame;
 public partial class GGame : GameManager {
 	public static GGame Cur => (GGame)GameManager.Current;
 
-	public WorldManager worldManager;
 	public List<Goon> goons = new();
 
 	public GGame() {
 		if (Game.IsServer) {
-			worldManager = new();
+			_ = new WorldManager();
 		}
 
 		if (Game.IsClient) {
@@ -23,9 +22,8 @@ public partial class GGame : GameManager {
 
 	public override void Simulate(IClient cl) {
 		base.Simulate(cl);
-
-		foreach (Goon goon in goons) {
-			goon.SimulateAI();
+		for (int i = 0; i < goons.Count; i++) {
+			goons[i]?.SimulateAI();
 		}
 	}
 
