@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,21 +17,24 @@ public partial class GGame : GameManager {
 		}
 
 		if (Game.IsClient) {
-
+			_ = new PawnHealth();
 		}
 	}
 
 	public override void Simulate(IClient cl) {
 		base.Simulate(cl);
+		if (Game.IsClient) return;
+
 		for (int i = 0; i < goons.Count; i++) {
 			goons[i]?.SimulateAI();
 		}
 	}
 
-	public override void ClientJoined(IClient client) {
-		base.ClientJoined( client );
+	public override void ClientJoined(IClient cl) {
+		base.ClientJoined(cl);
 
-		var pawn = new Pawn();
-		client.Pawn = pawn;
+		var pawn = new Player();
+		cl.Pawn = pawn;
+		pawn.Position += new Vector3(-30, 0, 0);
 	}
 }

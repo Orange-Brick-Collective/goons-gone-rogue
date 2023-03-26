@@ -1,4 +1,5 @@
 using Sandbox;
+using Sandbox.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,29 +14,21 @@ public enum GoonState {
     Firing,
 }
 
-public class Goon : AnimatedEntity {
+public partial class Goon : Pawn {
     public GoonState State {get; set;}
-    public bool isInCombat = true;
-    public int team = 0;
-    
-    public Pawn leader;
-    public Entity target;
+
+    public WorldPanel health;
+
+    public Player leader;
+    public Pawn target;
     public Vector3 posInGroup = Vector3.Zero;
 
-    public float maxHealth = 100;
-    public new float Health = 100;
-
-    public int moveSpeed = 200;
-    public float fireRate = 0.2f;
-    public int weaponDamage = 10;
-
-    public Gun weapon;
-    public TimeSince lastFire;
-
+    public bool renderPath = false;
     private Vector3[] path;
     private int currentPath;
+    private TimeSince timeSinceHitPath;
     
-    // for updating occasional things like target
+    // for offsetting occasional ai loop to improve performance
     private int tickCycle = 0;
 
 	public override void Spawn() {
@@ -50,11 +43,16 @@ public class Goon : AnimatedEntity {
 
         weapon = new();
         weapon.Init("models/testgun.vmdl");
-        weapon.Position = Position + new Vector3(0, 16 * Scale, 35 * Scale);
+        weapon.Position = Position + new Vector3(0, -12 * Scale, 35 * Scale);
         weapon.Rotation = Rotation;
         weapon.Owner = this;
         weapon.Parent = this;
 	}
+	public override void ClientSpawn() {
+		base.ClientSpawn();
+        RegisterSelf();
+	}
+
 
 	public override void TakeDamage( DamageInfo info ) {
         if (Health <= 0) OnKilled();
@@ -63,11 +61,17 @@ public class Goon : AnimatedEntity {
 
 	public override void OnKilled() {
 		base.OnKilled();
+        ClientOnKilled();
         UnregisterSelf();
         Delete();
 	}
+    [ClientRpc]
+    public void ClientOnKilled() {
+        UnregisterSelf();
+        health?.Delete();
+    }
 
-    public void Init(int team, Pawn leader = null) {
+    public void Init(int team, Player leader = null) {
         this.team = team;
         this.leader = leader;
         Tags.Add($"team{team}");
@@ -92,6 +96,8 @@ public class Goon : AnimatedEntity {
     }
 
     public void SimulateAI() {
+        AiMoveGravity();
+
         if (isInCombat) {
             if (target is null || !target.IsValid()) {
                 AIFindTarget();
@@ -108,60 +114,58 @@ public class Goon : AnimatedEntity {
     private void AIFindTarget() {
         State = GoonState.FindingTarget;
 
-        IEnumerable<Entity> e;
-        if (team == 0) {
-            e = Entity.FindInSphere(Position, 5000)
-                .OfType<Goon>()
-                .Where(g => g.team != team)
-                .OrderBy(g => Vector3.DistanceBetween(Position, g.Position));
-        } else {
-            e = Entity.FindInSphere(Position, 5000)
-                .Where(g => /*g is Pawn ||*/ g is Goon a && a.team != team)
-                .OrderBy(g => Vector3.DistanceBetween(Position, g.Position));
-        }
-        if (e.Any()) target = e.First();
+        IEnumerable<Entity> e = Entity.FindInSphere(Position, 5000)
+            .OfType<Pawn>()
+            .Where(g => g.team != team)
+            .OrderBy(g => Vector3.DistanceBetween(Position, g.Position));
+
+        if (e.Any()) {
+            target = (Pawn)e.First();
+            AIGeneratePath();
+        };
     }
 
     private void AIEngage() {
         if (target is null || !target.IsValid()) return;
         
-        TraceResult tr = Trace.Ray(Position + Vector3.Up * 30, target.Position)
+        TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
             .Ignore(this)
             .WithoutTags($"team{team}")
             .Run();
 
-        if (Vector3.DistanceBetween(Position, target.Position) > 400 && tr.Entity is not Goon) {
+        if (Vector3.DistanceBetween(Position, target.Position) > 400 || tr.Entity is not Pawn) {
             State = GoonState.Engaging;
 
-            TraceResult tre = Trace.Ray(Position + Vector3.Up * 30, target.Position)
+            TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
                 .EntitiesOnly()
                 .WithoutTags($"team{team}")
                 .Run();
             AILookat(tre.Direction.WithZ(0));
 
-            if (path is null || currentPath == path.Length) AIGeneratePath();
-            AIMovePath();
-
             if (Time.Tick % 25 == tickCycle) {
                 AIFindTarget();
             }
+
+            if (Time.Tick % 500 == tickCycle * 20) {
+                AIGeneratePath(); // regen a bit early sometimes for safety
+            }
+
+            if (path is null || currentPath >= path.Length) {
+                return;
+            }
+            AIMovePath();
         } else {
             State = GoonState.Firing;
 
-            AIAttack();
+            TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+                .EntitiesOnly()
+                .WithoutTags($"team{team}")
+                .Run();
+            AILookat(tre.Direction.WithZ(0));
+
+            FireGun(target);
+            timeSinceHitPath = 0;
         }
-    }
-
-    private void AIAttack() {
-        TraceResult tr = Trace.Ray(Position, target.Position)
-            .WithoutTags($"team{team}")
-            .Run();
-        AILookat(tr.Direction);
-
-        if (lastFire > fireRate) {
-            lastFire = 0;
-            weapon.Fire(this, weaponDamage, () => {});
-        } 
     }
 
     private void AIFollow() {
@@ -194,8 +198,8 @@ public class Goon : AnimatedEntity {
 
     private void AIMoveDirection(Vector3 forward) {
         MoveHelper help = new(Position, forward * moveSpeed) {
-            Trace = Trace.Box(new Vector3(16, 16, 0) * Scale, Position, Position)
-                .WithoutTags("player", "goon"),
+            Trace = Trace.Body(PhysicsBody, Position)
+                .WithoutTags("player", "goon", "trigger"),
         };
         
         help.TryMove(Time.Delta);
@@ -203,11 +207,11 @@ public class Goon : AnimatedEntity {
     }
 
     private void AiMoveGravity() {
-        MoveHelper help = new(Position, Vector3.Down * 400) {
-            Trace = Trace.Box(new Vector3(16, 16, 0) * Scale, Position, Position)
-                .WithoutTags("player", "goon"),
+        MoveHelper help = new(Position, Vector3.Down * 30) {
+            Trace = Trace.Body(PhysicsBody, Position)
+                .WithoutTags("player", "goon", "trigger"),
         };
-        
+
         help.TryMove(Time.Delta);
         Position = help.Position;
     }
@@ -217,24 +221,46 @@ public class Goon : AnimatedEntity {
     // *
 
     private void AIGeneratePath() {
-        path = NavMesh.BuildPath(Position, target.Position);
-        currentPath = 0;
+        try {
+            path = NavPathBuilder.Create(Position)
+                .WithMaxClimbDistance(2)
+                .WithMaxDropDistance(2)
+                .WithPartialPaths()
+                .Build(target.Position + Vector3.Random.WithZ(0) * 100)
+                .Segments
+                .Select(x => x.Position)
+                .ToArray();
+            currentPath = 0;
+
+            if (!renderPath) return;
+            for(int i = 0; i < path.Length - 1; i++) {
+                Color color = team == 0 ? Color.Green : Color.Red;
+                color = color.WithAlpha(0.4f);
+                if (i % 2 == 0) color = color.Darken(0.3f);
+
+                DebugOverlay.Line(path[i], path[i + 1], color, 2, true);
+            }
+        } catch {
+            path = null;
+            Log.Warning($"Path could not build for {Name}");
+        }
     }
     private void AIMovePath() {
-        if (path is null || currentPath == path.Length) {
-            AIGeneratePath();
-            return;
-        }
-
         MoveHelper help = new(Position, (path[currentPath] - Position).Normal * moveSpeed) {
-            Trace = Trace.Box(new Vector3(16, 16, 0) * Scale, Position, Position)
-                .WithoutTags("player", "goon"),
+            Trace = Trace.Body(PhysicsBody, Position)
+                .WithoutTags("player", "goon", "trigger"),
         };
             
         help.TryMoveWithStep(Time.Delta, 16);
         Position = help.Position;
 
+        if (timeSinceHitPath > 3) {
+            Position = path[currentPath];
+            timeSinceHitPath = 0;
+        }
+
         if (Vector3.DistanceBetween(Position, path[currentPath]) < 20) {
+            timeSinceHitPath = 0;
             currentPath++;
         }
     }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GGame;
 
-public partial class Pawn : AnimatedEntity {
+public partial class Player : Pawn {
 	[Net, Change] public bool IsActive {get; set;} = false;
 
 	[ClientInput] public Vector3 InputDirection {get; protected set;}
@@ -37,9 +37,7 @@ public partial class Pawn : AnimatedEntity {
 		// back to menu
 	}
 
-	public void OnEnemyKilled() {
-		// check boosts
-	}
+
 
 	public void OnIsActiveChanged() {
 		if (IsActive) {
@@ -80,27 +78,25 @@ public partial class Pawn : AnimatedEntity {
 			Goon g = new();
 			g.Init(1);
 			g.Position = tr.EndPosition + Vector3.Up * 5;
+
+			float rHP = Random.Shared.Float(50, 1000);
+			g.MaxHealth = rHP;
+			g.Health = rHP;
+
+			float rScale = Random.Shared.Float(0.4f, 2f);
+			g.Scale = rScale;
 		}
 	}
 
 	public override void FrameSimulate(IClient cl) {
 		base.FrameSimulate( cl );
-
 		SimulateCamera();
 	}
 
 	[Net, Predicted] public bool IsGrounded {get; set;} = true;
 
 	public void SimulateMovement() {
-		// grounded and stepup/down
-		TraceResult ground;
-		if (IsGrounded) {
-			Vector3 offset = new(0, 0, 18);
-			ground = BoxTraceSweep(new Vector3(32, 32, 4), Position + offset, Position - offset);
-			if (ground.Hit) Position = Position.WithZ(ground.HitPosition.z);
-		} else {
-			ground = BoxTrace(new Vector3(32, 32, 16), Position + new Vector3(0, 0, 7.9f));
-		}
+		TraceResult ground = BoxTrace(new Vector3(32, 32, 16), Position + new Vector3(0, 0, 7.9f)); 
 		IsGrounded = ground.Hit;
 
 		// movement input
@@ -110,7 +106,7 @@ public partial class Pawn : AnimatedEntity {
 		Vector3 newVel = input * 200 + Velocity;
 
 		MoveHelper helper = new(Position, newVel) {
-			Trace = Trace.Box(new Vector3(32, 32, 0), Position, Position).WithoutTags("player", "goon", "trigger"),
+			Trace = Trace.Body(PhysicsBody, Position).WithoutTags("player", "goon", "trigger"),
 		};
 
 		if (IsGrounded) {
@@ -118,11 +114,11 @@ public partial class Pawn : AnimatedEntity {
 			Velocity = helper.Velocity;
 		}
 		else {
-			helper.ApplyFriction(1, Time.Delta);
-			Velocity -= new Vector3(0, 0, 15);
+			helper.ApplyFriction(4, Time.Delta);
+			Velocity = helper.Velocity - new Vector3(0, 0, 50);
 		}
 		
-		if (helper.TryMove(Time.Delta) > 0) {
+		if (helper.TryMoveWithStep(Time.Delta, 50) > 0) {
 			Position = helper.Position;
 		}
 	}
@@ -137,8 +133,10 @@ public partial class Pawn : AnimatedEntity {
 		Vector3 pos = Position;
 		pos += Rotation.Right * 20;
 		pos.z += 58;
+
 		// back
-		pos = Trace.Ray(pos, pos - (ViewAngles.Forward * 60)).WithoutTags("player", "goon", "trigger").Run().EndPosition;
+		TraceResult tr = Trace.Ray(pos, pos - (ViewAngles.Forward * 75)).WithoutTags("player", "goon", "trigger").Run();
+		pos = tr.EndPosition - tr.Direction * 15;
 		
 		Camera.Position = pos;
 		Camera.Rotation = ViewAngles.ToRotation();
