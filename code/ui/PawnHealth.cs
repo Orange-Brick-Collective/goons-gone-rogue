@@ -16,7 +16,7 @@ public class PawnHealth {
     public void Tick() {
         var goo = GGame.Cur.goons;
         for (int i = 0; i < GGame.Cur.goons.Count; i++) {
-            if (goo[i] is null) return;
+            if (goo[i] is null || !goo[i].IsValid()) return;
 
 			if (goo[i].health is null) {
 				WorldPanel e = new();
