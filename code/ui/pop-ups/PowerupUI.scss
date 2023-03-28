@@ -1,0 +1,70 @@
+PowerupUI {
+    pointer-events: all;
+    background-color: rgb(228, 228, 228);
+    width: 700px;
+    height: 400px;
+    top: 390px;
+    left: 200px;
+
+    .left {
+        border-right: 1px;
+        border-color: black;
+        width: 50%;
+        flex-direction: column;
+        padding: 6px;
+
+        .title {
+            padding-top: 4px;
+            padding-bottom: 4px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .description {
+            font-size: 18px;
+        }
+    }
+
+    .right {
+        border-left: 1px;
+        border-color: black;
+        width: 50%;
+        flex-direction: column;
+        padding: 6px;
+
+        .buttonlist {
+            flex-direction: column;
+            background-color: rgb(148, 148, 148);
+            overflow: scroll;
+            margin: 0px 0px 10px 0px;
+            flex-shrink: 0;
+            height: 91%;
+        }
+
+        .confirmbutton {
+            flex-shrink: 0;
+            margin-bottom: 2px;
+            border: 1px black;
+            background-color: rgb(195, 202, 207);
+            font-size: 15px;
+            margin: 0px 50px 0px 50px;
+        }
+    }
+
+    .button {
+        flex-shrink: 0;
+        height: 24px;
+        margin-bottom: 2px;
+        border: 1px black;
+        background-color: rgb(195, 202, 207);
+        font-size: 15px;
+
+        &.selected {
+            border-color: rgb(240, 66, 66);
+        }
+
+        &:hover {
+            border-color: aquamarine;
+        }
+    }
+}

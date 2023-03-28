@@ -17,7 +17,7 @@ public enum GoonState {
 public partial class Goon : Pawn {
     public GoonState State {get; set;}
 
-    public WorldPanel health;
+    public WorldPanel healthPanel;
 
     public Player leader;
     public Pawn target;
@@ -47,6 +47,8 @@ public partial class Goon : Pawn {
         weapon.Rotation = Rotation;
         weapon.Owner = this;
         weapon.Parent = this;
+
+        RegisterSelf();
 	}
 	public override void ClientSpawn() {
 		base.ClientSpawn();
@@ -54,25 +56,21 @@ public partial class Goon : Pawn {
 	}
 
 
-	public override void TakeDamage( DamageInfo info ) {
-        if (Health <= 0) OnKilled();
-        else Health -= info.Damage;
-	}
-
 	public override void OnKilled() {
 		base.OnKilled();
         ClientOnKilled();
         UnregisterSelf();
         Delete();
 	}
+
     [ClientRpc]
     public void ClientOnKilled() {
         UnregisterSelf();
-        health?.Delete();
+        healthPanel?.Delete();
     }
 
     public void Init(int team, Player leader = null) {
-        this.team = team;
+        Team = team;
         this.leader = leader;
         Tags.Add($"team{team}");
 
@@ -82,13 +80,11 @@ public partial class Goon : Pawn {
                 posInGroup = new Vector3(Random.Shared.Float(-1f, 1f), Random.Shared.Float(-1f, 1f), 0) * 80;
             }
         }
-
-        RegisterSelf();
     }
 
     public void RegisterSelf() {
         GGame.Cur.goons.Add(this);
-        tickCycle = GGame.Cur.goons.Count % 25;
+        tickCycle = GGame.Cur.goons.Count % 50;
     }
     
     public void UnregisterSelf() {
@@ -98,12 +94,21 @@ public partial class Goon : Pawn {
     public void SimulateAI() {
         AiMoveGravity();
 
-        if (isInCombat) {
+        if (IsInCombat) {
             if (target is null || !target.IsValid()) {
                 AIFindTarget();
-                return;
             } else {
-                AIEngage();
+                TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+                    .Ignore(this)
+                    .WithoutTags($"team{Team}")
+                    .Run();
+
+                if (Vector3.DistanceBetween(Position, target.Position) > Range || tr.Entity is not Pawn) {
+                    AIEngage();
+                } else {
+                    AIFire();
+                }
+                
             }
         } else {
             if (leader is null) return;
@@ -116,7 +121,7 @@ public partial class Goon : Pawn {
 
         IEnumerable<Entity> e = Entity.FindInSphere(Position, 5000)
             .OfType<Pawn>()
-            .Where(g => g.team != team)
+            .Where(g => g.Team != Team)
             .OrderBy(g => Vector3.DistanceBetween(Position, g.Position));
 
         if (e.Any()) {
@@ -127,45 +132,40 @@ public partial class Goon : Pawn {
 
     private void AIEngage() {
         if (target is null || !target.IsValid()) return;
-        
-        TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
-            .Ignore(this)
-            .WithoutTags($"team{team}")
+
+        State = GoonState.Engaging;
+
+        TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+            .EntitiesOnly()
+            .WithoutTags($"team{Team}")
             .Run();
+        AILookat(tre.Direction.WithZ(0));
 
-        if (Vector3.DistanceBetween(Position, target.Position) > 400 || tr.Entity is not Pawn) {
-            State = GoonState.Engaging;
-
-            TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
-                .EntitiesOnly()
-                .WithoutTags($"team{team}")
-                .Run();
-            AILookat(tre.Direction.WithZ(0));
-
-            if (Time.Tick % 25 == tickCycle) {
-                AIFindTarget();
-            }
-
-            if (Time.Tick % 500 == tickCycle * 20) {
-                AIGeneratePath(); // regen a bit early sometimes for safety
-            }
-
-            if (path is null || currentPath >= path.Length) {
-                return;
-            }
-            AIMovePath();
-        } else {
-            State = GoonState.Firing;
-
-            TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
-                .EntitiesOnly()
-                .WithoutTags($"team{team}")
-                .Run();
-            AILookat(tre.Direction.WithZ(0));
-
-            FireGun(target);
-            timeSinceHitPath = 0;
+        if (Time.Tick % 50 == tickCycle) {
+            AIFindTarget();
         }
+
+        if (Time.Tick % 500 == tickCycle * 10) {
+            AIGeneratePath(); // regen a bit early sometimes for safety
+        }
+
+        if (path is null || currentPath >= path.Length) {
+            return;
+        }
+        AIMovePath();
+    }
+
+    private void AIFire() {
+        State = GoonState.Firing;
+
+        TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+            .EntitiesOnly()
+            .WithoutTags($"team{Team}")
+            .Run();
+        AILookat(tre.Direction.WithZ(0));
+
+        FireGun(target);
+        timeSinceHitPath = 0;
     }
 
     private void AIFollow() {
@@ -197,7 +197,7 @@ public partial class Goon : Pawn {
     // *
 
     private void AIMoveDirection(Vector3 forward) {
-        MoveHelper help = new(Position, forward * moveSpeed) {
+        MoveHelper help = new(Position, forward * MoveSpeed) {
             Trace = Trace.Body(PhysicsBody, Position)
                 .WithoutTags("player", "goon", "trigger"),
         };
@@ -223,8 +223,8 @@ public partial class Goon : Pawn {
     private void AIGeneratePath() {
         try {
             path = NavPathBuilder.Create(Position)
-                .WithMaxClimbDistance(2)
-                .WithMaxDropDistance(2)
+                .WithMaxClimbDistance(4)
+                .WithMaxDropDistance(4)
                 .WithPartialPaths()
                 .Build(target.Position + Vector3.Random.WithZ(0) * 100)
                 .Segments
@@ -234,7 +234,7 @@ public partial class Goon : Pawn {
 
             if (!renderPath) return;
             for(int i = 0; i < path.Length - 1; i++) {
-                Color color = team == 0 ? Color.Green : Color.Red;
+                Color color = Team == 0 ? Color.Green : Color.Red;
                 color = color.WithAlpha(0.4f);
                 if (i % 2 == 0) color = color.Darken(0.3f);
 
@@ -242,11 +242,11 @@ public partial class Goon : Pawn {
             }
         } catch {
             path = null;
-            Log.Warning($"Path could not build for {Name}");
+            Log.Warning($"Goon {Name} is stuck");
         }
     }
     private void AIMovePath() {
-        MoveHelper help = new(Position, (path[currentPath] - Position).Normal * moveSpeed) {
+        MoveHelper help = new(Position, (path[currentPath] - Position).Normal * MoveSpeed) {
             Trace = Trace.Body(PhysicsBody, Position)
                 .WithoutTags("player", "goon", "trigger"),
         };

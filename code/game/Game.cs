@@ -18,6 +18,7 @@ public partial class GGame : GameManager {
 
 		if (Game.IsClient) {
 			_ = new PawnHealth();
+			_ = new Hud();
 		}
 	}
 

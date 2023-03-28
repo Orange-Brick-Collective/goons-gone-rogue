@@ -1,0 +1,83 @@
+{
+  "Model": null,
+  "Description": "",
+  "BlendMode": "Translucent",
+  "nodes": [
+    {
+      "_class": "Result",
+      "Albedo": {},
+      "Emission": {
+        "Identifier": "3",
+        "Output": "Result"
+      },
+      "Opacity": {
+        "Identifier": "5",
+        "Output": "Result"
+      },
+      "Normal": {},
+      "Roughness": {},
+      "Metalness": {},
+      "AmbientOcclusion": {},
+      "DefaultOpacity": 1,
+      "DefaultRoughness": 1,
+      "DefaultMetalness": 0,
+      "DefaultAmbientOcclusion": 1,
+      "Identifier": "0",
+      "Position": "96,-112"
+    },
+    {
+      "_class": "SimplexNoise",
+      "Coords": {},
+      "Identifier": "1",
+      "Position": "-672,64"
+    },
+    {
+      "_class": "VoronoiNoise",
+      "Coords": {},
+      "A": {
+        "Identifier": "4",
+        "Output": "Result"
+      },
+      "B": {},
+      "AngleOffset": 0.75,
+      "CellDensity": 2.32,
+      "Worley": false,
+      "Identifier": "2",
+      "Position": "-672,-224"
+    },
+    {
+      "_class": "Blend",
+      "A": {
+        "Identifier": "2",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "1",
+        "Output": "Result"
+      },
+      "C": {},
+      "Fraction": 0.47805363,
+      "BlendMode": "Mix",
+      "Clamp": true,
+      "Identifier": "3",
+      "Position": "-352,-32"
+    },
+    {
+      "_class": "Time",
+      "Identifier": "4",
+      "Position": "-896,-208"
+    },
+    {
+      "_class": "Min",
+      "InputA": {
+        "Identifier": "3",
+        "Output": "Result"
+      },
+      "InputB": {},
+      "DefaultA": 0,
+      "DefaultB": 0.2,
+      "Identifier": "5",
+      "Position": "-128,32"
+    }
+  ]
+}

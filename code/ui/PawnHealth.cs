@@ -15,20 +15,21 @@ public class PawnHealth {
     [Event.Tick.Client]
     public void Tick() {
         var goo = GGame.Cur.goons;
-        for (int i = 0; i < GGame.Cur.goons.Count; i++) {
+        
+        for (int i = 0; i < goo.Count; i++) {
             if (goo[i] is null || !goo[i].IsValid()) return;
-
-			if (goo[i].health is null) {
+            
+			if (goo[i].healthPanel is null) {
 				WorldPanel e = new();
                 e.Style.JustifyContent = Justify.Center;
                 e.PanelBounds = new Rect(-10000, -400, 20000, 400);
                 e.WorldScale = 1.5f;
 				e.AddChild(new GoonStats(goo[i]));
-				goo[i].health = e;
+				goo[i].healthPanel = e;
 			}
             
-            goo[i].health.Rotation = Rotation.FromYaw(Camera.Rotation.Yaw()+180);
-            goo[i].health.Position = goo[i].Position + goo[i].HeightOffset * 2 + Vector3.Up * 4;
+            goo[i].healthPanel.Rotation = Rotation.FromYaw(Camera.Rotation.Yaw()+180);
+            goo[i].healthPanel.Position = goo[i].Position + goo[i].HeightOffset * 2 + Vector3.Up * 4;
 		}
     }
 }
