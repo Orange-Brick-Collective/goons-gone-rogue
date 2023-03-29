@@ -82,6 +82,11 @@ public partial class Player : Pawn {
 			p.Init(Powerups.GetRandomIndex);
 			p.Position = tr.EndPosition + Vector3.Up * 50;
 		}
+
+		if (Input.Pressed(InputButton.View) && Game.IsServer) {
+			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 8000).Ignore(this).Run();
+			Position = tr.EndPosition + tr.Normal * 50;
+		}
 	}
 
 	public override void FrameSimulate(IClient cl) {

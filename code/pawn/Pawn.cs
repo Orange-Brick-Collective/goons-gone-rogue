@@ -75,12 +75,16 @@ public partial class Pawn : AnimatedEntity {
 	}
 
     public float GetArmorReduction() {
+        // ignore math if we have no armor or are hardcapped
         if (Armor == 0) return 1;
         if (Armor > 149) return 0.1f;
 
-        float logArmor = (float)Math.Log(Armor + 12) - 2.484f; // log, remove starting offset
-        logArmor *= 34.2f; // map to max at 90
-        return 1 - (logArmor * 0.01f);  // divide by 100 and invert  
+        // log, offset horizontally for a smoother increase, and reset vertical back to 0
+        float logArmor = (float)Math.Log(Armor + 12) - 2.484f;
+        // map so 150 armor reaches 0.9
+        logArmor *= .343f;
+        // invert, so 0 armor = 1, 150 armor = 0.1
+        return 1 - logArmor;  
 	}
 
     public void PowerupLeech() {
