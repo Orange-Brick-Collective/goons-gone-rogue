@@ -11,11 +11,11 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						name = "player"
-						filename = "models/src/player.fbx"
-						import_translation = [ 0.0, 0.0, 0.0 ]
-						import_rotation = [ 0.0, 0.0, 0.0 ]
-						import_scale = 1.0
+						name = "testgun"
+						filename = "models/src/testgun.fbx"
+						import_translation = [ 0.0, 0.0, 300.0 ]
+						import_rotation = [ 0.0, -90.0, 0.0 ]
+						import_scale = 0.02
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
 						align_origin_z_type = "None"
@@ -34,9 +34,30 @@
 				[
 					{
 						_class = "DefaultMaterialGroup"
-						remaps = [  ]
+						remaps = 
+						[
+							{
+								from = "material.vmat"
+								to = "materials/dev/primary_white.vmat"
+							},
+						]
 						use_global_default = false
 						global_default_material = ""
+					},
+				]
+			},
+			{
+				_class = "AttachmentList"
+				children = 
+				[
+					{
+						_class = "Attachment"
+						name = "muzzle"
+						parent_bone = ""
+						relative_origin = [ 16.0, 0.0, 6.0 ]
+						relative_angles = [ 0.0, 0.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
 					},
 				]
 			},

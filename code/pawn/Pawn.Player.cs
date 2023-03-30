@@ -4,8 +4,6 @@ using System;
 namespace GGame;
 
 public partial class Player : Pawn {
-	public static Pawn Cur {get; set;}
-
 	[Net, Change] public bool IsActive {get; set;} = false;
 
 	[ClientInput] public Vector3 InputDirection {get; protected set;}
@@ -24,28 +22,15 @@ public partial class Player : Pawn {
 
 	public override void Spawn() {
 		base.Spawn();
-		Cur = this;
-
 		Tags.Add("player");
-		Tags.Add("team0");
-		Name = "Player";
-		
-		EnableTouch = true;
-		EnableDrawing = true;
+		Name = "Me";
 
-		SetModel("models/player2.vmdl");
+		EnableTouch = true;
+
+		SetModel("models/player.vmdl");
 		SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 70));
-        
-		weapon = new();
-        weapon.Init("models/gun.vmdl");
-        weapon.Position = Position + new Vector3(0, -12 * Scale, 35 * Scale);
-        weapon.Rotation = Rotation;
-        weapon.Owner = this;
-        weapon.Parent = this;
-	}
-	public override void ClientSpawn() {
-		Cur = this;
-		base.ClientSpawn();
+
+		EnableDrawing = true;
 	}
 
 	public override void StartTouch(Entity ent) {
@@ -83,10 +68,6 @@ public partial class Player : Pawn {
 
 		SimulateMovement();
 		SimulateUse();
-
-		if (Input.Down(InputButton.PrimaryAttack) && Game.IsServer) {
-			FireGun();
-		}
 
 		if (Input.Pressed(InputButton.Slot1) && Game.IsServer) {
 			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 4000).Ignore(this).Run();

@@ -4,28 +4,33 @@ using System.Collections.Generic;
 
 namespace GGame;
 
-public class WorldGen {
-    public static WorldGen Cur {get; set;}
-    
-    public WorldGen() {
+public class WorldManager {
+    public static WorldManager Cur {get; set;}
+    public Level currentLevel; 
+
+    private readonly string[] level0 = {
+        "models/map/walls/town0-wall0.vmdl",
+    };
+
+    public WorldManager() {
         if (Cur is not null) return;
         Cur = this;
     }
 
-    [ConCmd.Server("gen_world")]
+    [ConCmd.Server("gen")]
     public static void GenerateLevelCMD() {
         Cur.GenerateLevel(12, 10, 0, false);
     }
 
     public async void GenerateLevel(int len, int wid, int depth, bool debug) {
         Game.AssertServer();
-        Log.Info("Generating World");
+        Log.Info("Generating");
 
         foreach (Entity ent in Entity.All) {
-            if (ent.Tags.Has("generated")) ent.Delete();
+            if (ent.Tags.Has("tile")) ent.Delete();
         }
 
-        World lvl = new() {
+        Level lvl = new() {
             length = len,
             width = wid,
             depth = depth,
@@ -102,7 +107,7 @@ public class WorldGen {
         // * walls stage
         // *
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            lvl.tiles[l][w].MakeWalls(lvl.wallType);
+            lvl.tiles[l][w].MakeWalls(level0);
         }
 
         await GameTask.DelayRealtime(100);
@@ -114,11 +119,16 @@ public class WorldGen {
         new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
 
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            if (lvl.tiles[l][w] is TileEmpty) continue;
             Vector2 e = new(l, w);
             if (e == startP || e == endP) continue;
+            if (lvl.tiles[l][w] is TileEmpty) continue;
 
-            if (lvl.tiles[l][w] is TileEnd || Random.Shared.Float(0, 1) > 0.99f) {
+            if (lvl.tiles[l][w] is TileEnd) {
+                new TileEventPowerups().Init(lvl.tiles[l][w]);
+                continue;
+            }
+
+            if (Random.Shared.Float(0, 1) > 0.99f) {
                 new TileEventPowerups().Init(lvl.tiles[l][w]);
                 continue;
             }
@@ -138,7 +148,7 @@ public class WorldGen {
         // }
         
 
-        GGame.Cur.currentWorld = lvl;
+        currentLevel = lvl;
     }
 
     private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool debug = false) {
@@ -188,7 +198,7 @@ public class WorldGen {
         }
     }
 
-    private static void GenerateRoads(World lvl, List<List<bool>> gridRoads, int len, int wid) {
+    private static void GenerateRoads(Level lvl, List<List<bool>> gridRoads, int len, int wid) {
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
             if (gridRoads[l][w]) {
                 bool[] dir = {false, false, false, false};
@@ -247,7 +257,7 @@ public class WorldGen {
         return new Vector2((int)vec.x, (int)vec.y);
     }
 
-    private static void Tile(World lvl, TileType type, Vector2 pos, int rot = 0, Color? color = null) {
+    private static void Tile(Level lvl, TileType type, Vector2 pos, int rot = 0, Color? color = null) {
         var (x, y) = ((int)pos.x, (int)pos.y);
         if (lvl.tiles[x][y] is not TileEmpty) return;
 

@@ -17,6 +17,8 @@ public enum GoonState {
 public partial class Goon : Pawn {
     public GoonState State {get; set;}
 
+    public WorldPanel healthPanel;
+
     public Player leader;
     public Pawn target;
     public Vector3 posInGroup = Vector3.Zero;
@@ -33,19 +35,20 @@ public partial class Goon : Pawn {
 		base.Spawn();
         Tags.Add("goon");
 
+        Scale = 0.6f;
         EnableDrawing = true;
 
 		SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 70));
-		SetModel("models/player2.vmdl");
+		SetModel("models/player.vmdl");
 
         weapon = new();
-        weapon.Init("models/gun.vmdl");
+        weapon.Init("models/testgun.vmdl");
         weapon.Position = Position + new Vector3(0, -12 * Scale, 35 * Scale);
         weapon.Rotation = Rotation;
         weapon.Owner = this;
         weapon.Parent = this;
 
-        Generate(1);
+        Generate();
 
         RegisterSelf();
 	}
@@ -118,7 +121,7 @@ public partial class Goon : Pawn {
     private void AIFindTarget() {
         State = GoonState.FindingTarget;
 
-        IEnumerable<Entity> e = Entity.FindInSphere(Position, 1500)
+        IEnumerable<Entity> e = Entity.FindInSphere(Position, 5000)
             .OfType<Pawn>()
             .Where(g => g.Team != Team)
             .OrderBy(g => Vector3.DistanceBetween(Position, g.Position));
@@ -156,10 +159,6 @@ public partial class Goon : Pawn {
 
     private void AIFire() {
         State = GoonState.Firing;
-
-        if (Time.Tick % 50 == tickCycle) {
-            AIFindTarget();
-        }
 
         TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
             .EntitiesOnly()

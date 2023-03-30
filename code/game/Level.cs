@@ -3,17 +3,6 @@ using System.Collections.Generic;
 
 namespace GGame;
 
-public class Arena {
-    public int wallType = 0;
-}
-
-public class World {
-    public int length = 12, width = 6;
-    public int depth = 0;
-    public int wallType = 0;
-    public List<List<Tile>> tiles;
-}
-
 public enum TileType {
     Endcap,
     Straight,
@@ -22,30 +11,11 @@ public enum TileType {
     X
 }
 
-public static class WallModels {
-    public static string[] GetModels(int i) {
-        return (i % 2) switch {
-            1 => level1,
-            2 => level2,
-            _ => level0,
-        };
-    }
-
-    public static readonly string[] level0 = {
-        "models/map/walls/wall0-full.vmdl",
-        "models/map/walls/wall0-half.vmdl",
-        "models/map/walls/wall0-half.vmdl",
-        "models/map/walls/wall0-flat.vmdl",
-        "models/map/walls/wall0-flat.vmdl",
-    };
-
-    public static readonly string[] level1 = {
-        "models/map/walls/town0-wall0.vmdl",
-    };
-
-    public static readonly string[] level2 = {
-        "models/map/walls/town0-wall0.vmdl",
-    };
+public class Level {
+    public int length = 12, width = 6;
+    public int depth = 0;
+    public int wallType = 0;
+    public List<List<Tile>> tiles;
 }
 
 public class Tile : ModelEntity {
@@ -61,7 +31,7 @@ public class Tile : ModelEntity {
 
     public Tile() {}
     public Tile(Vector2 position, int rot) {
-        Tags.Add("generated");
+        Tags.Add("tile");
         if (this is TileEmpty) return;
 
         Position = position;
@@ -72,10 +42,8 @@ public class Tile : ModelEntity {
         Rotation = Rotation.FromYaw(rot * 90);
     }
 
-    public void MakeWalls(int wallType) {
+    public void MakeWalls(string[] walls) {
         if (this is TileEmpty) return;
-
-        string[] walls = WallModels.GetModels(wallType);
 
         for (int i = 0; i < 4; i++) {
             if (!directions[(i + rot) % 4]) {
@@ -85,7 +53,7 @@ public class Tile : ModelEntity {
                     Rotation = p.Rotation,
                     Parent = this,
                 };
-                wall.Tags.Add("generated");
+                wall.Tags.Add("tile");
             }
         }
     }
@@ -162,7 +130,7 @@ public class TileEvent : ModelEntity {
     public virtual void Init(Tile tile) {
         parentTile = tile;
         Tags.Add("trigger");
-        Tags.Add("generated");
+        Tags.Add("tile");
         
         SetModel(ModelStr);
         SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-224, -224, 0), new Vector3(224, 224, 260));
@@ -186,7 +154,7 @@ public class TileEventPowerups : TileEvent {
 
     public override void Init(Tile tile) {
         parentTile = tile;
-        Tags.Add("generated");
+        Tags.Add("tile");
 
         SetModel(ModelStr);
         SetupPhysicsFromModel(PhysicsMotionType.Static);

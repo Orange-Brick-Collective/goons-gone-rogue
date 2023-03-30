@@ -16,7 +16,7 @@ public class GoonStats : Panel {
         StyleSheet.Load("ui/GoonStats.scss");
         this.parent = parent;
 
-        numbers = new(this) {Classes = "stats"};
+        numbers = new(this) {Classes = "numbers"};
 
         stats = new() {Classes = "number"};
         numbers.AddChild(stats);
@@ -32,12 +32,10 @@ public class GoonStats : Panel {
         bar.Style.Width = parent.MaxHealth;
         fill.Style.Right = Length.Percent(100 - (parent.Health / parent.MaxHealth * 100));
 
-        numbers.SetClass("combat", !parent.IsInCombat);
-
-        if (!parent.IsInCombat) {
-            stats.SetText(parent.Name + $"\n {parent.AmmoString()}");
+        if (parent.IsInCombat) {
+            stats.SetText(parent.PlayerString());
         } else {
-            stats.SetText(parent.PawnString());
+            stats.SetText(parent.Name);
         }
 
         if (parent.MaxHealth < 200) {

@@ -17,8 +17,8 @@ public partial class Player : Pawn {
 
 		Vector3 newVel = input * 200 + Velocity;
 
-		MoveHelper helper = new(Position + Vector3.Up * 35, newVel) {
-			Trace = Trace.Box(new Vector3(32, 32, 70), Position, Position).WithoutTags("player", "goon", "trigger"),
+		MoveHelper helper = new(Position, newVel) {
+			Trace = Trace.Box(new Vector3(32, 32, 35), Position + Vector3.Up * 35, Position + Vector3.Up * 35).WithoutTags("player", "goon", "trigger"),
 		};
 
 		if (IsGrounded) {
@@ -29,9 +29,9 @@ public partial class Player : Pawn {
 			helper.ApplyFriction(0.2f, Time.Delta);
 			Velocity = helper.Velocity * 0.5f - new Vector3(0, 0, 80);
 		}
-
+		
 		if (helper.TryMoveWithStep(Time.Delta, 30) > 0) {
-			Position = helper.Position + Vector3.Down * 35;
+			Position = helper.Position;
 		}
 	}
 	public static TraceResult BoxTrace(Vector3 extents, Vector3 pos) {

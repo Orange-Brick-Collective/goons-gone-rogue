@@ -38,7 +38,7 @@ public class PowerupUI : Panel {
     private async void Init() {
         await GameTask.Delay(100);
 
-        Button plrButton = new(player.PawnString(), "") {Classes = "button selected"};
+        Button plrButton = new(player.PlayerString(), "") {Classes = "button selected"};
         plrButton.AddEventListener("onclick", () => {Select(plrButton, player);});
         buttons.AddChild(plrButton);
         chosen = player;
@@ -62,7 +62,7 @@ public class PowerupUI : Panel {
         this.chosen = chosen;
 
         this.chosenButton.AddClass("selected");
-        this.chosenButton.SetText(chosen.PawnString());
+        this.chosenButton.SetText(chosen.PlayerString());
     }
 
     private void Confirm() {

@@ -1,4 +1,6 @@
 ﻿using Sandbox;
+using Sandbox.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,30 +9,18 @@ namespace GGame;
 public partial class GGame : GameManager {
 	public static GGame Cur => (GGame)Current;
 
-	public Transform ArenaMarker {get; set;}
-	public World currentWorld;
-	public Arena currentArena;
-
 	public List<Goon> goons = new();
-	public int points = 0;
+	public int Points = 0;
 
 	public GGame() {
 		if (Game.IsServer) {
-			_ = new WorldGen();
-			_ = new ArenaGen();
-
-			GetArenaPos();
+			_ = new WorldManager();
 		}
 
 		if (Game.IsClient) {
 			_ = new PawnHealth();
 			_ = new Hud();
 		}
-	}
-
-	public async void GetArenaPos() {
-		await GameTask.DelayRealtime(1500);
-		ArenaMarker = Entity.All.OfType<ArenaMarker>().First().Transform;
 	}
 
 	public override void Simulate(IClient cl) {
@@ -47,23 +37,14 @@ public partial class GGame : GameManager {
 
 		var pawn = new Player();
 		cl.Pawn = pawn;
-		pawn.Transform = ArenaMarker;
+		pawn.Position += new Vector3(-30, 0, 0);
 	}
 
-	public async void TransitionLoad() {
-
-	}
-
-	public async void TransitionFight() {
-		ArenaGen.Cur.GenerateLevel();
+	public void StartFight() {
 
 	}
 
-	public async void TransitionLevel() {
+	public void NewLevel() {
 		
-	}
-
-	public async void TransitionUI() {
-
 	}
 }
