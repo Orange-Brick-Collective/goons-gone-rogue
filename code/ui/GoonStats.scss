@@ -35,7 +35,7 @@ GoonStats {
         }
     }
 
-    .numbers {
+    .stats {
         bottom: 80px;
         height: 200px;
         line-height: 18px;
@@ -47,5 +47,9 @@ GoonStats {
             font-size: 26px;
             color: white;
         }
+    }
+
+    .combat {
+        height: 50px;
     }
 }
