@@ -1,4 +1,5 @@
 using Sandbox;
+using Sandbox.UI;
 using System;
 using System.Collections.Generic;
 
@@ -6,6 +7,8 @@ namespace GGame;
 
 public partial class Pawn : AnimatedEntity {
     public Vector3 HeightOffset => new(0, 0,  35 * Scale);
+
+    public WorldPanel healthPanel;
 
     public Gun weapon;
     public TimeSince lastFire;
@@ -48,7 +51,6 @@ public partial class Pawn : AnimatedEntity {
     [Net] public int AddMagazineSize {get; set;} = 0;
     public int MagazineSize => Math.Max(BaseMagazineSize + AddMagazineSize, 2);
 
-    // ! make work
     [Net] public float BaseDegreeSpread {get; set;} = 2;
     [Net] public float AddDegreeSpread {get; set;} = 0;
     public float DegreeSpread => Math.Max(BaseDegreeSpread + AddDegreeSpread, 0);
@@ -69,8 +71,12 @@ public partial class Pawn : AnimatedEntity {
 
         if (lastFire > FireRate) {
             lastFire = 0;
-     
-            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+
+            float spreadVert = Random.Shared.Float(-DegreeSpread, DegreeSpread);
+            float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
+            Vector3 spreadOffset = new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 5;
+
+            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset + spreadOffset)
                 .WithoutTags($"team{Team}")
                 .Run();
 
@@ -98,8 +104,12 @@ public partial class Pawn : AnimatedEntity {
 
         if (lastFire > FireRate) {
             lastFire = 0;
-     
-            TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 2000)
+
+            float spreadVert = Random.Shared.Float(-DegreeSpread, DegreeSpread);
+            float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
+
+            Vector3 dir = Camera.Rotation.Forward + new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 0.015f;
+            TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + dir * 2000)
                 .WithoutTags($"team{Team}")
                 .Run();
 
@@ -156,7 +166,7 @@ public partial class Pawn : AnimatedEntity {
         };
     }
 
-    public string PlayerString() {
+    public string PawnString() {
         return $@"{Name}
         Speed: {BaseMoveSpeed} + {AddMoveSpeed}
         Damage: {BaseWeaponDamage} + {AddWeaponDamage}
@@ -167,6 +177,10 @@ public partial class Pawn : AnimatedEntity {
         Range: {BaseRange} + {AddRange}
         Armor: {Armor}
         ";
+    }
+
+    public string AmmoString() {
+        return $"{CurrentMag} / {MagazineSize}";
     }
 
     public void PowerupGlassCannon() {

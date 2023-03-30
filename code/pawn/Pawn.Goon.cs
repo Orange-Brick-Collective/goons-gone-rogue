@@ -17,8 +17,6 @@ public enum GoonState {
 public partial class Goon : Pawn {
     public GoonState State {get; set;}
 
-    public WorldPanel healthPanel;
-
     public Player leader;
     public Pawn target;
     public Vector3 posInGroup = Vector3.Zero;

@@ -29,7 +29,7 @@ public partial class GGame : GameManager {
 	}
 
 	public async void GetArenaPos() {
-		await GameTask.DelayRealtime(1000);
+		await GameTask.DelayRealtime(1500);
 		ArenaMarker = Entity.All.OfType<ArenaMarker>().First().Transform;
 	}
 

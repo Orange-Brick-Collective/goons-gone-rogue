@@ -4,6 +4,8 @@ using System;
 namespace GGame;
 
 public partial class Player : Pawn {
+	public static Pawn Cur {get; set;}
+
 	[Net, Change] public bool IsActive {get; set;} = false;
 
 	[ClientInput] public Vector3 InputDirection {get; protected set;}
@@ -22,10 +24,12 @@ public partial class Player : Pawn {
 
 	public override void Spawn() {
 		base.Spawn();
+		Cur = this;
+
 		Tags.Add("player");
 		Tags.Add("team0");
-		Name = "Me";
-
+		Name = "Player";
+		
 		EnableTouch = true;
 		EnableDrawing = true;
 
@@ -38,6 +42,10 @@ public partial class Player : Pawn {
         weapon.Rotation = Rotation;
         weapon.Owner = this;
         weapon.Parent = this;
+	}
+	public override void ClientSpawn() {
+		Cur = this;
+		base.ClientSpawn();
 	}
 
 	public override void StartTouch(Entity ent) {
