@@ -10,11 +10,16 @@ public class PowerupUI : Panel {
     public Pawn chosen;
     public Button chosenButton;
 
+    public Panel left, right, buttons;
+
     public PowerupUI(PowerupEntity ent, Pawn player) {
         StyleSheet.Load("ui/pop-ups/PowerupUI.scss");
         this.ent = ent;
+        this.player = player;
 
-        Panel left = new(this) {Classes = "left"};
+        Panel ui = new(this) {Classes = "ui"};
+
+        left = new(ui) {Classes = "left"};
         left.AddChild(new Button("Close", "", () => {Delete();}) {Classes = "button"});
         left.AddChild(new Image() {Classes = ""});
         left.AddChild(new Label() {Classes = "title", Text = ent.powerup.Title});
@@ -23,16 +28,23 @@ public class PowerupUI : Panel {
         ////////
         ////////
 
-        Panel right = new(this) {Classes = "right"};
+        right = new(ui) {Classes = "right"};
+        buttons = new(right) {Classes = "buttonlist"};
+        right.AddChild(new Button("Confirm", "", Confirm) {Classes = "button confirmbutton"});
 
-        Panel buttons = new(right) {Classes = "buttonlist"};
+        Init();
+    }
 
-        Button plrButton = new("Me", "") {Classes = "button selected"};
+    private async void Init() {
+        await GameTask.Delay(100);
+
+        Button plrButton = new(player.PlayerString(), "") {Classes = "button selected"};
         plrButton.AddEventListener("onclick", () => {Select(plrButton, player);});
         buttons.AddChild(plrButton);
         chosen = player;
         chosenButton = plrButton;
 
+        // add button for each teammate goon
         foreach (Pawn pawn in GGame.Cur.goons) {
             if (pawn.Team != player.Team) return;
 
@@ -40,28 +52,28 @@ public class PowerupUI : Panel {
             b.AddEventListener("onclick", () => {Select(b, pawn);});
             buttons.AddChild(b);
         }
-
-        //add button for each teammate goon
-
-        right.AddChild(new Button("Confirm", "", Confirm) {Classes = "button confirmbutton"});
     }
 
     private void Select(Button chosenButton, Pawn chosen) {
         this.chosenButton.RemoveClass("selected");
+        this.chosenButton.SetText(this.chosen.Name);
 
         this.chosenButton = chosenButton;
         this.chosen = chosen;
+
         this.chosenButton.AddClass("selected");
+        this.chosenButton.SetText(chosen.PlayerString());
     }
 
     private void Confirm() {
-        ServerConfirm("v8jsod", ent.NetworkIdent, chosen.NetworkIdent);
+        ServerConfirm("124", ent.NetworkIdent, chosen.NetworkIdent);
         Delete();
     }
     
     [ConCmd.Server]
     private static void ServerConfirm(string password, int netIdent, int pawnNetIdent) {
-        if (password != "v8jsod") return;
+        if (password != "124") return;
+
         PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);
         ent.powerup.Action.Invoke(Entity.FindByIndex<Pawn>(pawnNetIdent));
         ent.Delete();

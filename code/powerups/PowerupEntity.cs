@@ -4,21 +4,25 @@ namespace GGame;
 
 public partial class PowerupEntity : ModelEntity {
     public Powerup powerup;
+    public float rotationSpeed;
 
-    public void Init(int e) {
-        this.powerup = Powerups.GetByIndex(e);
+    public PowerupEntity Init(int e) {
         ClientInit(e);
+        powerup = new Powerup(Powerups.GetByIndex(e));
+        rotationSpeed = System.Random.Shared.Float(-0.3f, 0.3f);
+
         SetModel("models/powerup.vmdl");
-        SetupPhysicsFromSphere(PhysicsMotionType.Static, Position, 12);
+        SetupPhysicsFromModel(PhysicsMotionType.Static);
+        return this;
     }
 
     [ClientRpc] // required
     public void ClientInit(int e) {
-        this.powerup = Powerups.GetByIndex(e);
+        powerup = Powerups.GetByIndex(e);
     }
 
     [Event.Tick.Server]
-    public void Tick() {
-        Rotation = Rotation.FromYaw(Time.Tick * 0.2f);
+    private void Tick() {
+        Rotation = Rotation.FromYaw(Time.Tick * rotationSpeed);
     }
 }

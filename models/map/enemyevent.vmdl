@@ -6,20 +6,71 @@
 		children = 
 		[
 			{
-				_class = "PrefabList"
+				_class = "PhysicsShapeList"
 				children = 
 				[
 					{
-						_class = "Prefab"
-						target_file = "models/player.vmdl"
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_tags = "trigger"
+						origin = [ 0.0, 0.0, 100.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 256.0, 512.0, 200.0 ]
+					},
+				]
+			},
+			{
+				_class = "AttachmentList"
+				children = 
+				[
+					{
+						_class = "Attachment"
+						name = "point1"
+						parent_bone = ""
+						relative_origin = [ 0.0, 96.0, 0.0 ]
+						relative_angles = [ 0.0, 0.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
 					},
 					{
-						_class = "Prefab"
-						target_file = "models/player.vmdl"
+						_class = "Attachment"
+						name = "point2"
+						parent_bone = ""
+						relative_origin = [ 0.0, 0.0, 0.0 ]
+						relative_angles = [ 0.0, 0.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
 					},
 					{
-						_class = "Prefab"
-						target_file = "models/player.vmdl"
+						_class = "Attachment"
+						name = "point3"
+						parent_bone = ""
+						relative_origin = [ 0.0, -96.0, 0.0 ]
+						relative_angles = [ 0.0, 0.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
+					},
+				]
+			},
+			{
+				_class = "RenderMeshList"
+				children = 
+				[
+					{
+						_class = "RenderPrimitiveBox"
+						name = "a"
+						parent_bone = ""
+						material_name = "materials/models/editor/axis_helper.vmat"
+						origin = [ 0.0, 0.0, 64.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						max_u = 1.0
+						max_v = 1.0
+						dimensions = [ 20.0, 40.0, 10.0 ]
+						segments_x = 1
+						segments_y = 1
+						segments_z = 1
+						invert = false
 					},
 				]
 			},

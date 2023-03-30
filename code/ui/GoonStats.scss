@@ -1,10 +1,10 @@
 GoonStats {
     justify-content: center;
+    align-items: flex-end;
     width: 10000px;
-    height: 200px;
 
     .bar {
-        bottom: 0px;
+        bottom: 26px;
         position: absolute;
         overflow: hidden;
         justify-content: center;
@@ -36,8 +36,10 @@ GoonStats {
     }
 
     .numbers {
+        bottom: 80px;
+        height: 200px;
+        line-height: 18px;
         background-color: rgba(black, 0.4);
-        justify-content: center;
         flex-direction: column;
 
         .number {

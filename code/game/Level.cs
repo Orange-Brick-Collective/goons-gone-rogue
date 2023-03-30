@@ -21,15 +21,16 @@ public class Level {
 public class Tile : ModelEntity {
     public int rot = 0;
     public bool[] directions = {false, false, false, false}; // NESW
+    public string[] attachmentNames = {"northwall", "eastwall", "southwall", "westwall"};
     public Transform northPoint, eastPoint, southPoint, westPoint; // NESW
     public ModelEntity northWall, eastWall, southWall, westWall; // NESW
-    public AnimatedEntity tileEvent;
+    public ModelEntity tileEvent;
 
     public virtual string StreetModel {get; set;}
     public virtual string WallModel {get; set;}
 
     public Tile() {}
-    public Tile(Vector2 position, string wallModel, int rot) {
+    public Tile(Vector2 position, int rot) {
         Tags.Add("tile");
         if (this is TileEmpty) return;
 
@@ -39,31 +40,22 @@ public class Tile : ModelEntity {
         SetModel(StreetModel);
         SetupPhysicsFromModel(PhysicsMotionType.Static);
         Rotation = Rotation.FromYaw(rot * 90);
+    }
 
-        // if (directions[0 + rot % 4]) {
-        //     northPoint = Model.GetAttachment("northpoint").Value;
-        //     northWall = new();
-        //     northWall.SetModel(wallModel);
-        //     northWall.Transform = northPoint;
-        // }
-        // if (directions[1 + rot % 4]) {
-        //     eastPoint = Model.GetAttachment("eastpoint").Value;
-        //     eastWall = new();
-        //     eastWall.SetModel(wallModel);
-        //     eastWall.Transform = eastPoint; 
-        // }
-        // if (directions[2 + rot % 4]) {
-        //     southPoint = Model.GetAttachment("southpoint").Value;
-        //     southWall = new();
-        //     southWall.SetModel(wallModel);
-        //     southWall.Transform = southPoint;
-        // }
-        // if (directions[3 + rot % 4]) {
-        //     westPoint = Model.GetAttachment("westpoint").Value;
-        //     westWall = new();
-        //     westWall.SetModel(wallModel);
-        //     westWall.Transform = westPoint;
-        // }
+    public void MakeWalls(string[] walls) {
+        if (this is TileEmpty) return;
+
+        for (int i = 0; i < 4; i++) {
+            if (!directions[(i + rot) % 4]) {
+                Transform p = Model.GetAttachment(attachmentNames[i]).Value;
+                ModelEntity wall = new(walls[System.Random.Shared.Int(0, walls.Length-1)]) {
+                    Position = p.Position + Position,
+                    Rotation = p.Rotation,
+                    Parent = this,
+                };
+                wall.Tags.Add("tile");
+            }
+        }
     }
 
 	protected override void OnDestroy() {
@@ -76,38 +68,138 @@ public class Tile : ModelEntity {
 	}
 }
 
+public class TileEnd : Tile {
+    public override string StreetModel {get; set;} = "models/map/map-endcap.vmdl";
+
+    public TileEnd() {}
+    public TileEnd(Vector2 position, int rot) : base(position, rot) {
+        directions = new[] {true, false, false, false};
+    }
+}
+
 public class TileStraight : Tile {
-    public new bool[] directions = {true, false, true, false};
     public override string StreetModel {get; set;} = "models/map/map-straight.vmdl";
 
     public TileStraight() {}
-    public TileStraight(Vector2 position, string wallModel, int rot) : base(position, wallModel, rot) {}
+    public TileStraight(Vector2 position, int rot) : base(position, rot) {
+        directions = new[] {true, false, true, false};
+    }
 }
 
 public class TileCorner : Tile {
-    public new bool[] directions = {true, true, false, false};
     public override string StreetModel {get; set;} = "models/map/map-corner.vmdl";
 
     public TileCorner() {}
-    public TileCorner(Vector2 position, string wallModel, int rot) : base(position, wallModel, rot) {}
+    public TileCorner(Vector2 position, int rot) : base(position, rot) {
+        directions = new[] {true, true, false, false};
+    }
 }
 
 public class TileT : Tile {
-    public new bool[] directions = {true, false, true, true};
     public override string StreetModel {get; set;} = "models/map/map-t-junction.vmdl";
 
     public TileT() {}
-    public TileT(Vector2 position, string wallModel, int rot) : base(position, wallModel, rot) {}
+    public TileT(Vector2 position, int rot) : base(position, rot) {
+        directions = new[] {true, true, true, false};
+    }
 }
 
 public class TileX : Tile {
-    public new bool[] directions = {true, true, true, true};
     public override string StreetModel {get; set;} = "models/map/map-x-junction.vmdl";
 
     public TileX() {}
-    public TileX(Vector2 position, string wallModel, int rot) : base(position, wallModel, rot) {}
+    public TileX(Vector2 position, int rot) : base(position, rot) {
+        directions = new[] {true, true, true, true};
+    }
 }
 
 public class TileEmpty : Tile {
-    public TileEmpty() : base(Vector2.Zero, "", 0) {}
+    public TileEmpty() : base(Vector2.Zero, 0) {}
 }
+
+// *
+// * event
+// *
+
+public class TileEvent : ModelEntity {
+    public virtual string ModelStr {get; set;} = "";
+    public Tile parentTile;
+
+    public TileEvent() {}
+
+    public virtual void Init(Tile tile) {
+        parentTile = tile;
+        Tags.Add("trigger");
+        Tags.Add("tile");
+        
+        SetModel(ModelStr);
+        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-224, -224, 0), new Vector3(224, 224, 260));
+
+        Parent = parentTile;
+        Position = parentTile.Position;
+        Rotation = parentTile.Rotation;
+    }
+}
+
+public class TileEventFight : TileEvent {
+    public override string ModelStr {get; set;} = "models/map/enemyevent.vmdl";
+
+    public TileEventFight() {}
+}
+
+public class TileEventPowerups : TileEvent {
+    public override string ModelStr {get; set;} = "models/map/powerupevent.vmdl";
+
+    public TileEventPowerups() {}
+
+    public override void Init(Tile tile) {
+        parentTile = tile;
+        Tags.Add("tile");
+
+        SetModel(ModelStr);
+        SetupPhysicsFromModel(PhysicsMotionType.Static);
+
+        Parent = parentTile;
+        Position = parentTile.Position;
+        Rotation = parentTile.Rotation;
+
+        _ = new PowerupEntity() {
+            Parent = this,
+            Position = Position + new Vector3(-128, 0, 48) * Rotation,
+        }.Init(Powerups.GetRandomIndex);
+
+        _ = new PowerupEntity() {
+            Parent = this,
+            Position = Position + new Vector3(-128, 64, 48) * Rotation,
+        }.Init(Powerups.GetRandomIndex);
+
+        _ = new PowerupEntity() {
+            Parent = this,
+            Position = Position + new Vector3(-128, -64, 48) * Rotation,
+        }.Init(Powerups.GetRandomIndex);
+    }
+}
+
+public class TileEventStart : TileEvent {
+    public override string ModelStr {get; set;} = "models/map/startevent.vmdl";
+
+    public TileEventStart() {}
+
+    public override void Init(Tile tile) {
+        base.Init(tile);
+        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-128, -128, 0), new Vector3(128, 128, 260));
+    }
+}
+
+public class TileEventEnd : TileEvent {
+    public override string ModelStr {get; set;} = "models/map/endevent.vmdl";
+
+    public TileEventEnd() {}
+
+    public override void Init(Tile tile) {
+        base.Init(tile);
+        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-128, -128, 0), new Vector3(128, 128, 260));
+    }
+}
+
+// challenge tile?

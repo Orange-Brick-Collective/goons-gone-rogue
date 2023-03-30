@@ -11,10 +11,10 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						name = "straight"
-						filename = "models/src/straight.dmx"
+						name = "endcap"
+						filename = "models/src/endcap.dmx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
-						import_rotation = [ 0.0, 0.0, 0.0 ]
+						import_rotation = [ 0.0, 180.0, 0.0 ]
 						import_scale = 1.0
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
@@ -23,12 +23,94 @@
 						import_filter = 
 						{
 							exclude_by_default = false
-							exception_list = 
-							[
-								"hammermesh_170",
-								"hammermesh_171",
-							]
+							exception_list = [  ]
 						}
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_tags = "solid"
+						origin = [ 0.0, 0.0, -12.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 512.0, 512.0, 8.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "northwall"
+						disabled = true
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 256.0, 0.0, 100.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 64.0, 512.0, 200.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "eastwall"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 0.0, -256.0, 100.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 512.0, 64.0, 200.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "southwall"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ -256.0, 0.0, 100.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 64.0, 512.0, 200.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "westwall"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 0.0, 256.0, 100.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 512.0, 64.0, 200.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk1"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ -192.0, 0.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 128.0, 512.0, 8.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk2"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 64.0, 192.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 384.0, 128.0, 8.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk3"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 64.0, -192.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 384.0, 128.0, 8.0 ]
 					},
 				]
 			},
@@ -71,83 +153,6 @@
 						relative_angles = [ 0.0, 180.0, 0.0 ]
 						weight = 1.0
 						ignore_rotation = false
-					},
-				]
-			},
-			{
-				_class = "PhysicsShapeList"
-				children = 
-				[
-					{
-						_class = "PhysicsShapeBox"
-						parent_bone = ""
-						surface_prop = "default"
-						collision_tags = "solid"
-						origin = [ 0.0, 0.0, -12.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 512.0, 512.0, 8.0 ]
-					},
-					{
-						_class = "PhysicsShapeBox"
-						name = "northwall"
-						disabled = true
-						parent_bone = ""
-						surface_prop = "concrete"
-						collision_tags = "solid"
-						origin = [ 256.0, 0.0, 100.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 64.0, 512.0, 200.0 ]
-					},
-					{
-						_class = "PhysicsShapeBox"
-						name = "eastwall"
-						parent_bone = ""
-						surface_prop = "concrete"
-						collision_tags = "solid"
-						origin = [ 0.0, -256.0, 100.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 512.0, 64.0, 200.0 ]
-					},
-					{
-						_class = "PhysicsShapeBox"
-						name = "southwall"
-						disabled = true
-						parent_bone = ""
-						surface_prop = "concrete"
-						collision_tags = "solid"
-						origin = [ -256.0, 0.0, 100.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 64.0, 512.0, 200.0 ]
-					},
-					{
-						_class = "PhysicsShapeBox"
-						name = "westwall"
-						parent_bone = ""
-						surface_prop = "concrete"
-						collision_tags = "solid"
-						origin = [ 0.0, 256.0, 100.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 512.0, 64.0, 200.0 ]
-					},
-					{
-						_class = "PhysicsShapeBox"
-						name = "sidewalk2"
-						parent_bone = ""
-						surface_prop = "concrete"
-						collision_tags = "solid"
-						origin = [ 0.0, 192.0, -4.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 512.0, 128.0, 8.0 ]
-					},
-					{
-						_class = "PhysicsShapeBox"
-						name = "sidewalk3"
-						parent_bone = ""
-						surface_prop = "concrete"
-						collision_tags = "solid"
-						origin = [ 0.0, -192.0, -4.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 512.0, 128.0, 8.0 ]
 					},
 				]
 			},

@@ -10,12 +10,7 @@ public class GoonStats : Panel {
     public Panel fill;
 
     public Label health;
-
-    
-    public Label damage;
-    public Label firerate;
-    public Label range;
-    public Label armor;
+    public Label stats;
 
     public GoonStats(Pawn parent) {
         StyleSheet.Load("ui/GoonStats.scss");
@@ -23,14 +18,8 @@ public class GoonStats : Panel {
 
         numbers = new(this) {Classes = "numbers"};
 
-        damage = new() {Classes = "number"};
-        numbers.AddChild(damage);
-        firerate = new() {Classes = "number"};
-        numbers.AddChild(firerate);
-        range = new() {Classes = "number"};
-        numbers.AddChild(range);
-        armor = new() {Classes = "number"};
-        numbers.AddChild(armor);
+        stats = new() {Classes = "number"};
+        numbers.AddChild(stats);
 
         bar = new(this) {Classes = "bar"};
         fill = new(bar) {Classes = "barfill"};
@@ -44,15 +33,9 @@ public class GoonStats : Panel {
         fill.Style.Right = Length.Percent(100 - (parent.Health / parent.MaxHealth * 100));
 
         if (parent.IsInCombat) {
-            damage.SetText($"Damage: {parent.BaseWeaponDamage} + {parent.AddWeaponDamage}");
-            firerate.SetText($"Firerate: {parent.BaseFireRate} + {parent.AddFireRate}");
-            range.SetText($"Range: {parent.BaseRange} + {parent.AddRange}");
-            armor.SetText($"Armor: {parent.Armor}");
+            stats.SetText(parent.PlayerString());
         } else {
-            damage.SetText("");
-            firerate.SetText("");
-            range.SetText("");
-            armor.SetText("");
+            stats.SetText(parent.Name);
         }
 
         if (parent.MaxHealth < 200) {

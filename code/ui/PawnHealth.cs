@@ -22,14 +22,14 @@ public class PawnHealth {
 			if (goo[i].healthPanel is null) {
 				WorldPanel e = new();
                 e.Style.JustifyContent = Justify.Center;
-                e.PanelBounds = new Rect(-10000, -400, 20000, 400);
+                e.PanelBounds = new Rect(-10000, -600, 20000, 600);
                 e.WorldScale = 1.5f;
 				e.AddChild(new GoonStats(goo[i]));
 				goo[i].healthPanel = e;
 			}
             
             goo[i].healthPanel.Rotation = Rotation.FromYaw(Camera.Rotation.Yaw()+180);
-            goo[i].healthPanel.Position = goo[i].Position + goo[i].HeightOffset * 2 + Vector3.Up * 4;
+            goo[i].healthPanel.Position = goo[i].Position + goo[i].HeightOffset * 2.2f + Vector3.Up * 4;
 		}
     }
 }

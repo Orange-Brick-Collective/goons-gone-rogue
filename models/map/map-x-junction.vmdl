@@ -40,6 +40,88 @@
 						angles = [ 0.0, 0.0, 0.0 ]
 						dimensions = [ 512.0, 512.0, 8.0 ]
 					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk1"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 192.0, 192.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 128.0, 128.0, 8.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk2"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ 192.0, -192.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 128.0, 128.0, 8.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk3"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ -192.0, -192.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 128.0, 128.0, 8.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						name = "sidewalk4"
+						parent_bone = ""
+						surface_prop = "concrete"
+						collision_tags = "solid"
+						origin = [ -192.0, 192.0, -4.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 128.0, 128.0, 8.0 ]
+					},
+				]
+			},
+			{
+				_class = "AttachmentList"
+				children = 
+				[
+					{
+						_class = "Attachment"
+						name = "westwall"
+						parent_bone = ""
+						relative_origin = [ 0.0, 224.0, 0.0 ]
+						relative_angles = [ 0.0, 270.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
+					},
+					{
+						_class = "Attachment"
+						name = "eastwall"
+						parent_bone = ""
+						relative_origin = [ 0.0, -224.0, 0.0 ]
+						relative_angles = [ 0.0, 90.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
+					},
+					{
+						_class = "Attachment"
+						name = "southwall"
+						parent_bone = ""
+						relative_origin = [ -224.0, 0.0, 0.0 ]
+						relative_angles = [ 0.0, 0.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
+					},
+					{
+						_class = "Attachment"
+						name = "northwall"
+						parent_bone = ""
+						relative_origin = [ 224.0, 0.0, 0.0 ]
+						relative_angles = [ 0.0, 180.0, 0.0 ]
+						weight = 1.0
+						ignore_rotation = false
+					},
 				]
 			},
 		]

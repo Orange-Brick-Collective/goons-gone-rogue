@@ -7,9 +7,10 @@ using System.Linq;
 namespace GGame;
 
 public partial class GGame : GameManager {
-	public static GGame Cur => (GGame)GameManager.Current;
+	public static GGame Cur => (GGame)Current;
 
 	public List<Goon> goons = new();
+	public int Points = 0;
 
 	public GGame() {
 		if (Game.IsServer) {
@@ -37,5 +38,13 @@ public partial class GGame : GameManager {
 		var pawn = new Player();
 		cl.Pawn = pawn;
 		pawn.Position += new Vector3(-30, 0, 0);
+	}
+
+	public void StartFight() {
+
+	}
+
+	public void NewLevel() {
+		
 	}
 }

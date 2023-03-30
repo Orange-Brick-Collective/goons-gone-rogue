@@ -65,7 +65,7 @@
 					{
 						_class = "PhysicsShapeBox"
 						parent_bone = ""
-						surface_prop = "default"
+						surface_prop = "flesh"
 						collision_tags = "solid"
 						origin = [ 0.0, 0.0, 35.0 ]
 						angles = [ 0.0, 0.0, 0.0 ]

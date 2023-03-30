@@ -13,31 +13,16 @@
 						_class = "RenderPrimitiveBox"
 						name = "box"
 						parent_bone = ""
-						material_name = "materials/generic/floor_gravel_asphalt.vmat"
-						origin = [ -128.0, 0.0, 10.0 ]
+						material_name = "materials/dev/red.vmat"
+						origin = [ 0.0, 0.0, -8.0 ]
 						angles = [ 0.0, 0.0, 0.0 ]
 						max_u = 1.0
 						max_v = 1.0
-						dimensions = [ 24.0, 160.0, 42.0 ]
+						dimensions = [ 208.0, 208.0, 2.0 ]
 						segments_x = 1
 						segments_y = 1
 						segments_z = 1
 						invert = false
-					},
-				]
-			},
-			{
-				_class = "PhysicsShapeList"
-				children = 
-				[
-					{
-						_class = "PhysicsShapeBox"
-						parent_bone = ""
-						surface_prop = "default"
-						collision_tags = "solid"
-						origin = [ -128.0, 0.0, 10.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 24.0, 160.0, 42.0 ]
 					},
 				]
 			},

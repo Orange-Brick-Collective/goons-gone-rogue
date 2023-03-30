@@ -48,6 +48,8 @@ public partial class Goon : Pawn {
         weapon.Owner = this;
         weapon.Parent = this;
 
+        Generate();
+
         RegisterSelf();
 	}
 	public override void ClientSpawn() {
@@ -242,7 +244,7 @@ public partial class Goon : Pawn {
             }
         } catch {
             path = null;
-            Log.Warning($"Goon {Name} is stuck");
+            Log.Warning($"Goon {Name} is stuck or no navmesh");
         }
     }
     private void AIMovePath() {

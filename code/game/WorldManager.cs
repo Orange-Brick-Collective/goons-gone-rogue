@@ -8,6 +8,10 @@ public class WorldManager {
     public static WorldManager Cur {get; set;}
     public Level currentLevel; 
 
+    private readonly string[] level0 = {
+        "models/map/walls/town0-wall0.vmdl",
+    };
+
     public WorldManager() {
         if (Cur is not null) return;
         Cur = this;
@@ -15,10 +19,11 @@ public class WorldManager {
 
     [ConCmd.Server("gen")]
     public static void GenerateLevelCMD() {
-        Cur.GenerateLevel(14, 12, 0, true);
+        Cur.GenerateLevel(12, 10, 0, false);
     }
 
     public async void GenerateLevel(int len, int wid, int depth, bool debug) {
+        Game.AssertServer();
         Log.Info("Generating");
 
         foreach (Entity ent in Entity.All) {
@@ -36,8 +41,7 @@ public class WorldManager {
         len -= 1;
         wid -= 1;
 
-        await GameTask.DelayRealtime(50);
-        if (debug) await GameTask.DelayRealtime(250);
+        await GameTask.DelayRealtime(100);
 
         // *
         // * grid stage
@@ -51,17 +55,36 @@ public class WorldManager {
 
         if (debug) {
             for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-                DebugOverlay.Sphere(new Vector3(l * 512, w * 512, 0), 60, gridRoads[l][w] ? Color.Green : Color.Red, 2, false);
+                DebugOverlay.Sphere(new Vector3(l * 512, w * 512, 0), 60, gridRoads[l][w] ? Color.Green : Color.Red, 16, false);
             }
         }
 
-        // foreach (Vector2 curP in branchP) {
-            // find nearest road
-            // MarkRoad(gridRoads, curP, nearestP, l ,w);
-        // }
+        foreach (Vector2 curP in branchP) {
+            Vector2 nearestP = new(len * 0.5f, wid * 0.5f);
+            for (int i = 0; i < 50; i++) {
+                int curX = (int)curP.x;
+                int curY = (int)curP.y;
+                int dirX = (int)Math.Clamp(curP.x + i * 0.8f, 0, len);
+                int dirY = (int)Math.Clamp(curP.y + i * 0.8f, 0, wid);
+                int negX = (int)Math.Clamp(curP.x - i * 0.8f, 0, len);
+                int negY = (int)Math.Clamp(curP.y - i * 0.8f, 0, wid);
 
-        await GameTask.DelayRealtime(50);
-        if (debug) await GameTask.DelayRealtime(450);
+                if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // up
+                if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // up left
+                if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // left
+                if (gridRoads[negX][dirY]) nearestP = new(negX, dirY); // down left
+                if (gridRoads[negX][curY]) nearestP = new(negX, curY); // down
+                if (gridRoads[negX][negY]) nearestP = new(negX, negY); // down right
+                if (gridRoads[curX][negY]) nearestP = new(curX, negY); // right
+                if (gridRoads[dirX][negY]) nearestP = new(dirX, negY); // up right
+
+                if (nearestP != new Vector2(len * 0.5f, wid * 0.5f)) break;
+            }
+
+            MarkRoad(gridRoads, curP, nearestP, len, wid, debug);
+        }
+
+        await GameTask.DelayRealtime(100);
 
         // *
         // * road stage
@@ -69,37 +92,61 @@ public class WorldManager {
         GenerateRoads(lvl, gridRoads, len, wid);
 
         if (debug) {
-            DebugOverlay.Sphere(startP * 512, 100, Color.White, 2, false);
-            DebugOverlay.Sphere(endP * 512, 100, Color.White, 2, false);
+            DebugOverlay.Sphere(startP * 512, 100, Color.White, 16, false);
+            DebugOverlay.Sphere(endP * 512, 100, Color.White, 16, false);
         }
 
-        await GameTask.DelayRealtime(50);
-        if (debug) await GameTask.DelayRealtime(450);
+        // cleanup empty tiles
+        foreach (Entity ent in Entity.All) {
+            if (ent is TileEmpty) ent.Delete();
+        }
+
+        await GameTask.DelayRealtime(100);
 
         // *
         // * walls stage
         // *
-        // for (int l = 0; l < length; l++) for (int w = 0; w < width; w++) {
-        // }
+        for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
+            lvl.tiles[l][w].MakeWalls(level0);
+        }
 
-        await GameTask.DelayRealtime(50);
-        if (debug) await GameTask.DelayRealtime(450);
+        await GameTask.DelayRealtime(100);
+
+        // *
+        // * events stage
+        // *
+        new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
+        new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
+
+        for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
+            Vector2 e = new(l, w);
+            if (e == startP || e == endP) continue;
+            if (lvl.tiles[l][w] is TileEmpty) continue;
+
+            if (lvl.tiles[l][w] is TileEnd) {
+                new TileEventPowerups().Init(lvl.tiles[l][w]);
+                continue;
+            }
+
+            if (Random.Shared.Float(0, 1) > 0.99f) {
+                new TileEventPowerups().Init(lvl.tiles[l][w]);
+                continue;
+            }
+
+            if (Random.Shared.Float(0, 1) > 0.85f) {
+                new TileEventFight().Init(lvl.tiles[l][w]);
+                continue;
+            }
+        }
+
+        await GameTask.DelayRealtime(100);
 
         // *
         // * props stage
         // *
         // for (int l = 0; l < length; l++) for (int w = 0; w < width; w++) {
         // }
-
-        await GameTask.DelayRealtime(50);
-        if (debug) await GameTask.DelayRealtime(450);
-
-        // *
-        // * cleanup stage
-        // *
-        foreach (Entity ent in Entity.All) {
-            if (ent is TileEmpty) ent.Delete();
-        }
+        
 
         currentLevel = lvl;
     }
@@ -140,12 +187,12 @@ public class WorldManager {
             grid[(int)newP.x][(int)newP.y] = true;
 
             if (debug) {
-                DebugOverlay.Line(curP * 512, newP * 512, Color.White, 2, false);
-                DebugOverlay.Line(FloorVec2(curP) * 512, FloorVec2(newP) * 512, Color.Blue, 2, false);
+                DebugOverlay.Line(curP * 512, newP * 512, Color.White, 16, false);
+                DebugOverlay.Line(FloorVec2(curP) * 512, FloorVec2(newP) * 512, Color.Blue, 16, false);
             }
 
             curP = newP;
-            if (i > 30 || FloorVec2(curP) == endP) {
+            if (i > 100 || FloorVec2(curP) == endP) {
                 making = false;
             }
         }
@@ -166,7 +213,12 @@ public class WorldManager {
                 // ignore rotation numbers, the model vs them doesnt make much sense
                 switch (connected) {
                     case 1: {
-                        // NO ENDCAP PIECE
+                        for (int i = 0; i < 4; i++) {
+                            if (dir[i]) {
+                                Tile(lvl, TileType.Endcap, new Vector2(l, w), i);
+                                break;
+                            }
+                        }
                         break;
                     }
                     case 2: {
@@ -183,9 +235,9 @@ public class WorldManager {
                     } 
                     case 3: {
                         if (dir[0] && dir[2]) {
-                            Tile(lvl, TileType.T, new Vector2(l, w), dir[1] ? 0 : 2);
+                            Tile(lvl, TileType.T, new Vector2(l, w), dir[1] ? 2 : 0);
                         } else {
-                            Tile(lvl, TileType.T, new Vector2(l, w), dir[2] ? 1 : 3);
+                            Tile(lvl, TileType.T, new Vector2(l, w), dir[2] ? 3 : 1);
                         }
                         break;
                     } 
@@ -211,31 +263,31 @@ public class WorldManager {
 
         switch (type) {
             case TileType.Endcap: {
-                // lvl.tiles[x][y] = new TileStraight(new Vector2(x, y) * 512, "", rot) {
-                //     RenderColor = color ?? Color.White,
-                // };
+                lvl.tiles[x][y] = new TileEnd(new Vector2(x, y) * 512, rot) {
+                    RenderColor = color ?? Color.White,
+                };
                 break;
             }
             case TileType.Straight: {
-                lvl.tiles[x][y] = new TileStraight(new Vector2(x, y) * 512, "", rot) {
+                lvl.tiles[x][y] = new TileStraight(new Vector2(x, y) * 512, rot) {
                     RenderColor = color ?? Color.White,
                 };
                 break;
             }
             case TileType.Corner: {
-                lvl.tiles[x][y] = new TileCorner(new Vector2(x, y) * 512, "", rot) {
+                lvl.tiles[x][y] = new TileCorner(new Vector2(x, y) * 512, rot) {
                     RenderColor = color ?? Color.White,
                 };
                 break;
             }
             case TileType.T: {
-                lvl.tiles[x][y] = new TileT(new Vector2(x, y) * 512, "", rot) {
+                lvl.tiles[x][y] = new TileT(new Vector2(x, y) * 512, rot) {
                     RenderColor = color ?? Color.White,
                 };
                 break;
             }
             case TileType.X: {
-                lvl.tiles[x][y] = new TileX(new Vector2(x, y) * 512, "", 0) {
+                lvl.tiles[x][y] = new TileX(new Vector2(x, y) * 512, 0) {
                     RenderColor = color ?? Color.White,
                 };
                 break;
@@ -245,7 +297,7 @@ public class WorldManager {
 
     private static List<Vector2> MakeBranches(int l, int w, Vector2 startP, Vector2 endP) {
         List<Vector2> branches = new();
-        for (int i = 0; i < ((byte)Random.Shared.Int(3, 6)); i++) {
+        for (int i = 0; i < ((byte)Random.Shared.Int(5, 8)); i++) {
             Vector2 pos = new(Random.Shared.Int(0, l), Random.Shared.Int(0, w));
     
             while (pos == startP || pos == endP) {

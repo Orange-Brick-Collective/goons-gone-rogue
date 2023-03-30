@@ -11,7 +11,9 @@ public partial class Pawn : AnimatedEntity {
     public TimeSince lastFire;
 
     public List<Action> AttackActions = new();
+    public List<Action> KillActions = new();
     public List<Action> HurtActions = new();
+    public List<Action> DieActions = new();
 
     [Net] public bool IsInCombat {get; set;} = true;
     [Net] public int Team {get; set;} = 0;
@@ -34,13 +36,21 @@ public partial class Pawn : AnimatedEntity {
     [Net] public int AddWeaponDamage {get; set;} = 0;
     public int WeaponDamage => BaseWeaponDamage + AddWeaponDamage;
 
-    [Net] public float BaseDegreeSpread {get; set;} = 5;
-    [Net] public float AddDegreeSpread {get; set;} = -3;
-    public float DegreeSpread => BaseDegreeSpread + AddDegreeSpread;
+    [Net] public float BaseReloadTime {get; set;} = 0.8f;
+    [Net] public float AddReloadTime {get; set;} = 0;
+    public float ReloadTime => Math.Max(BaseReloadTime + AddReloadTime, 0.1f);   
+
+    [Net] public int BaseMagazineSize {get; set;} = 20;
+    [Net] public int AddMagazineSize {get; set;} = 0;
+    public int MagazineSize => Math.Max(BaseMagazineSize + AddMagazineSize, 2);
+
+    [Net] public float BaseDegreeSpread {get; set;} = 2;
+    [Net] public float AddDegreeSpread {get; set;} = 0;
+    public float DegreeSpread => Math.Max(BaseDegreeSpread + AddDegreeSpread, 0);
 
     [Net] public float BaseRange {get; set;} = 400;
     [Net] public float AddRange {get; set;} = 0;
-    public float Range => BaseRange + AddRange;
+    public float Range => Math.Max(BaseRange + AddRange, 100);
 
     public void OnEnemyKilled() {
 		// check boosts
@@ -87,8 +97,20 @@ public partial class Pawn : AnimatedEntity {
         return 1 - logArmor;  
 	}
 
+    public string PlayerString() {
+        return $@"{Name}
+        MoveSpeed: {BaseMoveSpeed} + {AddMoveSpeed}
+        Damage: {BaseWeaponDamage} + {AddWeaponDamage}
+        Firerate: {BaseFireRate} + {AddFireRate}
+        MagSize: {BaseMagazineSize} + {AddMagazineSize}
+        Spread: {BaseDegreeSpread} + {AddDegreeSpread}
+        ReloadTime: {BaseReloadTime} + {AddReloadTime}
+        Range: {BaseRange} + {AddRange}
+        Armor: {Armor}
+        ";
+    }
+
     public void PowerupLeech() {
-        Log.Info("leech");
         if (Random.Shared.Float(0, 1) > 0.8f) {
             Health = Math.Min(Health + 1, MaxHealth);
         }
