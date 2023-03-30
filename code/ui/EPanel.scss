@@ -1,15 +1,18 @@
 EPanel {
     opacity: 0;
     font-size: 24px;
-    width: 32px;
-    height: 31.5px;
+    width: 36px;
+    height: 36px;
     top: 50%;
     left: 52%;
-    border-radius: 14px;
+    border-radius: 20px;
+    padding: 2px;
+    text-align: center;
+    justify-content: center;
 
     &.show {
         opacity: 1;
-        background-color: rgba(black, 0.8);
+        background-color: rgba(black, 0.6);
         color: white;
     }
 }
