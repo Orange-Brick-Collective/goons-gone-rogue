@@ -22,6 +22,8 @@ public class Gun : ModelEntity {
                 Attacker = owner,
                 Weapon = this,
             });
+            
+            tr.Surface.DoBulletImpact(tr);
             react.Invoke();
         }
     }

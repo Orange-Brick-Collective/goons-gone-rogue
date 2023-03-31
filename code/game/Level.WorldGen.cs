@@ -29,7 +29,7 @@ public class WorldGen {
             length = len,
             width = wid,
             depth = depth,
-            wallType = Random.Shared.Int(0, 3),
+            wallType = 0,
             tiles = FillTilesEmpty(len, wid),
         };
 

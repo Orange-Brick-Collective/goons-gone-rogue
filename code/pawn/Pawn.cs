@@ -77,7 +77,7 @@ public partial class Pawn : AnimatedEntity {
             Vector3 spreadOffset = new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 5;
 
             TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset + spreadOffset)
-                .WithoutTags($"team{Team}")
+                .WithoutTags($"team{Team}", "trigger")
                 .Run();
 
             weapon.Fire(this, tr, WeaponDamage, () => {});
@@ -110,7 +110,7 @@ public partial class Pawn : AnimatedEntity {
 
             Vector3 dir = Camera.Rotation.Forward + new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 0.015f;
             TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + dir * 2000)
-                .WithoutTags($"team{Team}")
+                .WithoutTags($"team{Team}", "trigger")
                 .Run();
 
             weapon.Fire(this, tr, WeaponDamage, () => {});
