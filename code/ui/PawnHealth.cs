@@ -31,6 +31,11 @@ public class PawnHealth {
                 goo[i].healthPanel.Position = goo[i].Position + goo[i].HeightOffset * 2.2f + Vector3.Up * 4;
             }
 		}
+    }
+
+    [Event.Client.Frame]
+    public void Frame() {
+        if (Player.Cur.InMenu) return;
 
         if (Player.Cur.healthPanel is null) {
             WorldPanel e = new();
@@ -40,8 +45,8 @@ public class PawnHealth {
             e.AddChild(new GoonStats(Player.Cur));
             Player.Cur.healthPanel = e;
         } else {
-            Player.Cur.healthPanel.Rotation = Rotation.FromYaw(Camera.Rotation.Yaw() + 180);
-            Player.Cur.healthPanel.Position = Player.Cur.Position + Vector3.Up * 24 + Player.Cur.Rotation.Backward * 3.8f;
+            Player.Cur.healthPanel.Rotation = Rotation.FromYaw(Player.Cur.Rotation.Yaw() + 180);
+            Player.Cur.healthPanel.Position = Player.Cur.Position + Vector3.Up * 26 + Player.Cur.Rotation.Backward * 3.8f;
         }
     }
 }

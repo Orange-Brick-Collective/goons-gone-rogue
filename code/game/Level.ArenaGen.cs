@@ -13,11 +13,11 @@ public class ArenaGen {
     }
 
     [ConCmd.Server("gen_arena")]
-    public static void GenerateLevelCMD() {
-        Cur.GenerateLevel();
+    public static async void GenerateLevelCMD() {
+        await Cur.GenerateLevel();
     }
 
-    public void GenerateLevel() {
+    public async System.Threading.Tasks.Task GenerateLevel(int? wallType = null) {
         Game.AssertServer();
         Log.Info("Generating Arena");
 
@@ -26,9 +26,9 @@ public class ArenaGen {
         }
 
         Arena lvl = new() {
-            wallType = GGame.Cur.currentWorld?.wallType ?? 0,
+            wallType = wallType ?? GGame.Cur.currentWorld?.wallType ?? 0,
         };
-        string[] models = WallModels.GetModels(lvl.wallType);
+        string[] models = WallModels.GetModels(wallType ?? lvl.wallType);
 
         Transform pos = GGame.Cur.ArenaMarker;
 
@@ -59,5 +59,7 @@ public class ArenaGen {
         }
 
         GGame.Cur.currentArena = lvl;
+        await GameTask.DelayRealtime(1);
+        return;
     }
 }

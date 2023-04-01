@@ -1,0 +1,34 @@
+Menu {
+    pointer-events: all;
+    flex-direction: column;
+    color: white;
+
+    .title {
+        margin: 20px;
+        text-align: center;
+        padding: 10px 10px 0px 10px;
+        font-size: 60px;
+        background-color: rgba(black, 0.5);
+        border: 4px black;
+    }
+
+    .buttons {
+        margin: 20px;
+        flex-direction: column;
+        font-size: 40px;
+
+        .buttone {
+            margin-bottom: 20px;
+            border: 2px black;
+            transition: border 0.15s;
+            background-color: rgba(black, 0.5);
+            padding: 10px;
+            width: 300px;
+
+            &:hover {
+                border: 2px red;
+            }
+        }
+
+    }
+}

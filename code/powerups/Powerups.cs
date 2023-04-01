@@ -87,6 +87,12 @@ public class Powerups {
             "Fire 0.08 seconds faster and moves 150 speed faster, but loses 100 range",
             (p) => p.PowerupSpeedyCheesy()
         ),
+        new Powerup(
+            "",
+            "Tank",
+            "Gains 25 armor, but loses 100 range and move speed",
+            (p) => p.PowerupTank()
+        ),
         // new Powerup(
         //     "",
         //     "Glass Cannon",

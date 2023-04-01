@@ -27,14 +27,14 @@ public class GoonStats : Panel {
         health = new() {Classes = "barhealth"};
         bar.AddChild(health);
     }
-
+    
     public override void Tick() {
         bar.Style.Width = parent.MaxHealth;
         fill.Style.Right = Length.Percent(100 - (parent.Health / parent.MaxHealth * 100));
 
-        numbers.SetClass("combat", !parent.IsInCombat);
+        numbers.SetClass("combat", parent.IsInCombat);
 
-        if (!parent.IsInCombat) {
+        if (parent.IsInCombat) {
             stats.SetText(parent.Name + $"\n {parent.AmmoString()}");
         } else {
             stats.SetText(parent.PawnString());

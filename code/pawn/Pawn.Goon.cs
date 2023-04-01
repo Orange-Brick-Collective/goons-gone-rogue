@@ -59,6 +59,11 @@ public partial class Goon : Pawn {
 		base.OnKilled();
         ClientOnKilled();
         UnregisterSelf();
+
+        if (Team != 0) GGame.Cur.points += 50;
+
+        GGame.Cur.FightOverCheck();
+
         Delete();
 	}
 
@@ -74,7 +79,6 @@ public partial class Goon : Pawn {
         Tags.Add($"team{team}");
 
         if (leader is not null) {
-            RenderColor = Color.Green;
             while (Vector3.DistanceBetween(posInGroup, Vector3.Zero) < 50) {
                 posInGroup = new Vector3(Random.Shared.Float(-1f, 1f), Random.Shared.Float(-1f, 1f), 0) * 80;
             }
@@ -89,6 +93,10 @@ public partial class Goon : Pawn {
     public void UnregisterSelf() {
         GGame.Cur.goons.Remove(this);
     }
+
+    // *
+    // * AI
+    // *
 
     public void SimulateAI() {
         AiMoveGravity();
@@ -176,20 +184,16 @@ public partial class Goon : Pawn {
 
         TraceResult tr = Trace.Ray(Position, leader.Position + posInGroup)
             .EntitiesOnly()
-            .WithoutTags("goon")
+            .WithoutTags("goon", "trigger")
             .Run();
 
-        if (tr.Distance > 500) Position = leader.Position + leader.Rotation.Backward * 50;
+        if (tr.Distance > 500) Position = leader.Position + leader.Rotation.Backward * 50 * Vector3.Up * 20;
 
         if (tr.Distance > 20) {
             AILookat(tr.Direction.WithZ(0));
             AIMoveDirection(tr.Direction.WithZ(0));
         }
     }
-
-    // *
-    // * looking
-    // *
 
     private void AILookat(Vector3 pos) {
         Rotation = Rotation.LookAt(pos);
@@ -205,7 +209,7 @@ public partial class Goon : Pawn {
                 .WithoutTags("player", "goon", "trigger"),
         };
         
-        help.TryMove(Time.Delta);
+        help.TryMoveWithStep(Time.Delta, 20);
         Position = help.Position;
     }
 
@@ -248,6 +252,7 @@ public partial class Goon : Pawn {
             Log.Warning($"Goon {Name} is stuck or no navmesh");
         }
     }
+
     private void AIMovePath() {
         MoveHelper help = new(Position, (path[currentPath] - Position).Normal * MoveSpeed) {
             Trace = Trace.Body(PhysicsBody, Position)

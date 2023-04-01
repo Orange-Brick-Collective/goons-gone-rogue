@@ -50,19 +50,89 @@ public partial class Pawn : AnimatedEntity {
         "Zello",
     };
 
-    public void Generate(float difficulty) {
-        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + " " + PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
+    public void Generate(float depth = 0) {
+        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + 
+            " " + 
+            PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
 
-        Scale = Random.Shared.Float(0.6f, 1.2f);
+        Scale = Random.Shared.Float(0.8f, 1.1f);
 
+        if (Team == 0) {
+            RenderColor = Random.Shared.Float(0, 1) > 0.5f ? new Color(0.8f, 1f, 0.8f) : new Color(0.8f, 0.8f, 1f);
+        } else {
+            RenderColor = new Color(1f, 0.8f, 1f);
+        }
+        
         // outift
 
         // hat
 
         // other accessory
 
-        float tickets = 200 * difficulty;
+        // * tickets
+        // 2 ticket per health
+        // 4 ticket per armor
+        // 1 ticket per movespeed
+        // 5 ticket per weapondamage
+        // 5 ticket per -0.02 firerate
+        // 5 ticket per -0.1 reloadtime
+        // 2 ticket per magazinesize
+        // 3 ticket per -0.1 degreespread
+        // 1 ticket per 2 range
+        float maxValue = 25 * (1 + (depth * 0.2f));
 
-        // ticket system for base stats
+        for (int i = 0; i < 9; i++) {
+            float weighted = GenerateWeighted();
+            float change = maxValue * weighted;
+
+            switch (i) {
+                case 0: {
+                    MaxHealth += change * 0.5f;
+                    Health = MaxHealth;
+                    break;
+                }
+                case 1: {
+                    Armor += (int)(change * 0.25f);
+                    break;
+                }
+                case 2: {
+                    AddMoveSpeed += (int)change;
+                    break;
+                }
+                case 3: {
+                    AddWeaponDamage += (int)(change * 0.2f);
+                    break;
+                }
+                case 4: {
+                    AddFireRate -= 0.02f * (int)(change * 0.2f);
+                    break;
+                }
+                case 5: {
+                    AddReloadTime -= 0.1f * (int)(change * 0.2f);
+                    break;
+                }
+                case 6: {
+                    AddMagazineSize += (int)(change * 0.5f);
+                    break;
+                }
+                case 7: {
+                    AddDegreeSpread -= 0.1f * (int)(change * 0.334f);
+                    break;
+                }
+                case 8: {
+                    AddRange += change * 2;
+                    break;
+                }
+            }
+        }
+    }
+
+    public float GenerateWeighted() {
+        float num = 1;
+        for (int i = 0; i < 2; i++) {
+            float newNum = Random.Shared.Float(0, 1);
+            if (newNum < num) num = newNum;
+        }
+        return num;
     }
 }

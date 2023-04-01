@@ -13,11 +13,11 @@ public class WorldGen {
     }
 
     [ConCmd.Server("gen_world")]
-    public static void GenerateLevelCMD() {
-        Cur.GenerateLevel(12, 10, 0, false);
+    public static async void GenerateLevelCMD() {
+        await Cur.GenerateLevel(12, 10, 0, false);
     }
 
-    public async void GenerateLevel(int len, int wid, int depth, bool debug) {
+    public async System.Threading.Tasks.Task GenerateLevel(int len, int wid, int depth, bool debug) {
         Game.AssertServer();
         Log.Info("Generating World");
 
@@ -35,8 +35,6 @@ public class WorldGen {
 
         len -= 1;
         wid -= 1;
-
-        await GameTask.DelayRealtime(100);
 
         // *
         // * grid stage
@@ -79,8 +77,6 @@ public class WorldGen {
             MarkRoad(gridRoads, curP, nearestP, len, wid, debug);
         }
 
-        await GameTask.DelayRealtime(100);
-
         // *
         // * road stage
         // *
@@ -105,13 +101,13 @@ public class WorldGen {
             lvl.tiles[l][w].MakeWalls(lvl.wallType);
         }
 
-        await GameTask.DelayRealtime(100);
-
         // *
         // * events stage
         // *
         new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
+        lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
         new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
+        lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
 
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
             if (lvl.tiles[l][w] is TileEmpty) continue;
@@ -129,8 +125,6 @@ public class WorldGen {
             }
         }
 
-        await GameTask.DelayRealtime(100);
-
         // *
         // * props stage
         // *
@@ -139,6 +133,7 @@ public class WorldGen {
         
 
         GGame.Cur.currentWorld = lvl;
+        return;
     }
 
     private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool debug = false) {

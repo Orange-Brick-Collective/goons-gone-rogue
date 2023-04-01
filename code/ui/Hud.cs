@@ -13,9 +13,18 @@ public partial class Hud : HudEntity<RootPanel> {
         
         RootPanel.StyleSheet.Load("ui/Hud.scss");
 
+        RootPanel.AddChild(new Menu());
         RootPanel.AddChild(new Crosshair());
+        RootPanel.AddChild(new GameHud());
 
         epanel = new EPanel();
         RootPanel.AddChild(epanel);
     }
+
+    public async void Loading() {
+        RootPanel.AddClass("loading");
+        await GameTask.DelayRealtime(1200);
+        RootPanel.RemoveClass("loading");
+    }
+
 }

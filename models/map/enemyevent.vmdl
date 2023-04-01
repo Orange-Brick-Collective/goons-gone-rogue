@@ -6,21 +6,6 @@
 		children = 
 		[
 			{
-				_class = "PhysicsShapeList"
-				children = 
-				[
-					{
-						_class = "PhysicsShapeBox"
-						parent_bone = ""
-						surface_prop = "default"
-						collision_tags = "trigger"
-						origin = [ 0.0, 0.0, 100.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 256.0, 512.0, 200.0 ]
-					},
-				]
-			},
-			{
 				_class = "AttachmentList"
 				children = 
 				[

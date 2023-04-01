@@ -1,0 +1,18 @@
+GameHud {
+    position: absolute;
+    color: white;
+    flex-direction: column;
+    margin: 20px;
+    height: 88px;
+    background-color: rgba(black, 0.5);
+    border: 4px black;
+    padding: 10px;
+
+    .points {
+        font-size: 40px;
+    }
+
+    .depth {
+        font-size: 20px;
+    }
+}

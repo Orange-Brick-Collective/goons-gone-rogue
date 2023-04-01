@@ -22,7 +22,7 @@ public partial class Pawn : AnimatedEntity {
     // gets added and removed actively (not functional)
     public List<Action> TickActions = new();
 
-    [Net] public bool IsInCombat {get; set;} = true;
+    [Net] public bool IsInCombat {get; set;} = false;
     [Net] public int Team {get; set;} = 0;
 
     [Net] public float MaxHealth {get; set;} = 100;
@@ -35,13 +35,13 @@ public partial class Pawn : AnimatedEntity {
     [Net] public int AddMoveSpeed {get; set;} = 0;
     public int MoveSpeed => BaseMoveSpeed + AddMoveSpeed;
 
+    [Net] public int BaseWeaponDamage {get; set;} = 4;
+    [Net] public int AddWeaponDamage {get; set;} = 0;
+    public int WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 1);
+    
     [Net] public float BaseFireRate {get; set;} = 0.33f;
     [Net] public float AddFireRate {get; set;} = 0;
     public float FireRate => Math.Max(BaseFireRate + AddFireRate, 0.05f);
-
-    [Net] public int BaseWeaponDamage {get; set;} = 10;
-    [Net] public int AddWeaponDamage {get; set;} = 0;
-    public int WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 1);
 
     [Net] public float BaseReloadTime {get; set;} = 2;
     [Net] public float AddReloadTime {get; set;} = 0;
@@ -191,6 +191,11 @@ public partial class Pawn : AnimatedEntity {
     public void PowerupSpeedyCheesy() {
         AddFireRate -= 0.08f;
         AddMoveSpeed += 150;
+        AddRange -= 100;
+    }
+    public void PowerupTank() {
+        Armor += 25;
+        AddMoveSpeed -= 100;
         AddRange -= 100;
     }
 

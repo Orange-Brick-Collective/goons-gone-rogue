@@ -12,6 +12,7 @@ public class World {
     public int depth = 0;
     public int wallType = 0;
     public List<List<Tile>> tiles;
+    public Transform startPos, endPos;
 }
 
 public enum TileType {
