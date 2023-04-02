@@ -60,7 +60,7 @@ public partial class Goon : Pawn {
         ClientOnKilled();
         UnregisterSelf();
 
-        if (Team != 0) GGame.Cur.points += 50;
+        if (Team != 0) GGame.Cur.Points += 50;
 
         GGame.Cur.FightOverCheck();
 

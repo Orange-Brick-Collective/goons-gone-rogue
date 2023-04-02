@@ -7,7 +7,10 @@ public partial class Player : Pawn {
     public Entity hitEnt;
     
     public void SimulateUse() {
-        TraceResult useTrace = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 200).Ignore(this).Run();
+        TraceResult useTrace = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 200)
+            .Ignore(this)
+            .WithoutTags("team0", "trigger")
+            .Run();
 
         // for ui shit
         if (useTrace.Hit) {

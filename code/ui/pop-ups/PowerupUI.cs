@@ -74,6 +74,8 @@ public class PowerupUI : Panel {
     private static void ServerConfirm(string password, int netIdent, int pawnNetIdent) {
         if (password != "124") return;
 
+        GGame.Cur.Points += 10;
+
         PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);
         ent.powerup.Action.Invoke(Entity.FindByIndex<Pawn>(pawnNetIdent));
         ent.Delete();

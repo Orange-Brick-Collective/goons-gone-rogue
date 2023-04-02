@@ -33,7 +33,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public int BaseMoveSpeed {get; set;} = 200;
     [Net] public int AddMoveSpeed {get; set;} = 0;
-    public int MoveSpeed => BaseMoveSpeed + AddMoveSpeed;
+    public int MoveSpeed => Math.Max(BaseMoveSpeed + AddMoveSpeed, 50);
 
     [Net] public int BaseWeaponDamage {get; set;} = 4;
     [Net] public int AddWeaponDamage {get; set;} = 0;
@@ -192,6 +192,7 @@ public partial class Pawn : AnimatedEntity {
         AddFireRate -= 0.08f;
         AddMoveSpeed += 150;
         AddRange -= 100;
+        AddDegreeSpread += 0.4f;
     }
     public void PowerupTank() {
         Armor += 25;

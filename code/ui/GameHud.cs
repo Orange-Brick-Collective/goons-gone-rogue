@@ -22,7 +22,7 @@ public class GameHud : Panel {
             Style.Opacity = 1;
         }
 
-        points.SetText($"Points: {GGame.Cur.points}");
+        points.SetText($"Points: {GGame.Cur.Points}");
         depth.SetText($"Depth: {GGame.Cur.CurrentDepth}");
     }
 }

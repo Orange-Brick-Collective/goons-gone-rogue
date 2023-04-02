@@ -14,9 +14,10 @@ public partial class GGame : GameManager {
 	[Net] public int CurrentDepth {get; set;}
 	public Transform currentPosition;
 
-	public List<Goon> goons = new();
-	public int points = 0;
+	[Net] public int Points {get; set;} = 0;
 
+	public List<Goon> goons = new();
+	
 	public GGame() {
 		if (Game.IsServer) {
 			_ = new WorldGen();
@@ -54,7 +55,7 @@ public partial class GGame : GameManager {
 		}
 
 		await GameTask.DelayRealtime(500);
-		points += 250;
+		Points += 250;
 
 		ClientFightOverCheck();
 	}
@@ -75,7 +76,7 @@ public partial class GGame : GameManager {
 
 		await GGame.Cur.TransitionUI();
 
-		await WorldGen.Cur.GenerateLevel(12, 10, 0, false);
+		await WorldGen.Cur.GenerateLevel(7, 5, 0, false);
 		Player.Cur.InMenu = false;
 		Player.Cur.Transform = GGame.Cur.currentWorld.startPos;
 		Goon g = new();
@@ -109,13 +110,14 @@ public partial class GGame : GameManager {
 		// tp player and players goons to place on one side of arena
 		Player.Cur.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
 		Player.Cur.IsInCombat = true;
-
+		Player.Cur.CurrentMag = Player.Cur.MagazineSize;
 		foreach (Goon goon in goons) {
 			if (goon.Team == 0) {
 				int x = Random.Shared.Int(-650, -500);
 				int y = Random.Shared.Int(-600, 600);
 				goon.Position = ArenaMarker.Position + new Vector3(x, y, 10);
 				goon.IsInCombat = true;
+				goon.CurrentMag = goon.MagazineSize;
 			}
 		}
 
@@ -135,8 +137,13 @@ public partial class GGame : GameManager {
 		await TransitionUI();
 
 		Player.Cur.IsInCombat = false;
+		Player.Cur.CurrentMag = Player.Cur.MagazineSize;
+
 		foreach (Goon goon in goons) {
-			if (goon.Team == 0) goon.IsInCombat = false;
+			if (goon.Team == 0) {
+				goon.IsInCombat = false;
+				goon.CurrentMag = goon.MagazineSize;
+			}
 		}
 
 		Player.Cur.Transform = currentPosition;
@@ -145,7 +152,9 @@ public partial class GGame : GameManager {
 	public async void TransitionLevel() {
 		await TransitionUI();
 
-		await WorldGen.Cur.GenerateLevel(currentWorld.length + 2, currentWorld.width + 2, currentWorld.depth + 1, false);
+		Points += 500;
+
+		await WorldGen.Cur.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
 		CurrentDepth = currentWorld.depth;
 		Player.Cur.Transform = GGame.Cur.currentWorld.startPos;
 		Player.Cur.InMenu = false;

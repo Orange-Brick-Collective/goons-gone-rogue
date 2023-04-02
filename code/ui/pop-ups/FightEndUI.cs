@@ -13,7 +13,6 @@ public class FightEndUI : Panel {
         Panel ui = new(this) {Classes = "ui"};
 
         left = new(ui) {Classes = "left"};
-        left.AddChild(new Button("Close", "", () => {Delete();}) {Classes = "button"});
         left.AddChild(new Image() {Classes = ""});
         left.AddChild(new Label() {Classes = "title", Text = "Battle complete!"});
         left.AddChild(new Label() {Classes = "description", Text = "Choose your reward"});

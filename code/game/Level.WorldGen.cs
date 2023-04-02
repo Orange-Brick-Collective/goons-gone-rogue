@@ -41,7 +41,7 @@ public class WorldGen {
         // *
         Vector2 startP = new(0, Random.Shared.Int(0, wid));
         Vector2 endP = new(len, Random.Shared.Int(0, wid));
-        List<Vector2> branchP = MakeBranches(len, wid, startP, endP);
+        List<Vector2> branchP = MakeBranches(lvl, len, wid, startP, endP);
         List<List<bool>> gridRoads = FillGridEmpty(len + 1, wid + 1);
 
         MarkRoad(gridRoads, startP, endP, len, wid, debug);
@@ -128,8 +128,11 @@ public class WorldGen {
         // *
         // * props stage
         // *
-        // for (int l = 0; l < length; l++) for (int w = 0; w < width; w++) {
-        // }
+        for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
+            if (Random.Shared.Float(0, 1) > 0.87f) {
+                lvl.tiles[l][w].MakeLamp();
+            }
+        }
         
 
         GGame.Cur.currentWorld = lvl;
@@ -280,9 +283,9 @@ public class WorldGen {
         }
     }
 
-    private static List<Vector2> MakeBranches(int l, int w, Vector2 startP, Vector2 endP) {
+    private static List<Vector2> MakeBranches(World lvl, int l, int w, Vector2 startP, Vector2 endP) {
         List<Vector2> branches = new();
-        for (int i = 0; i < ((byte)Random.Shared.Int(5, 8)); i++) {
+        for (int i = 0; i < ((byte)Random.Shared.Int(3 + lvl.depth, 5 + lvl.depth)); i++) {
             Vector2 pos = new(Random.Shared.Int(0, l), Random.Shared.Int(0, w));
     
             while (pos == startP || pos == endP) {

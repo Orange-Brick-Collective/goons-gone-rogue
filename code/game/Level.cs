@@ -80,15 +80,38 @@ public class Tile : ModelEntity {
 
         for (int i = 0; i < 4; i++) {
             if (!directions[(i + rot) % 4]) {
-                Transform p = Model.GetAttachment(attachmentNames[i]).Value;
-                ModelEntity wall = new(walls[System.Random.Shared.Int(0, walls.Length-1)]) {
-                    Position = p.Position + Position,
-                    Rotation = p.Rotation,
-                    Parent = this,
+                Transform? p = Model.GetAttachment(attachmentNames[i]);
+                if (p is null) return;
+
+                ModelEntity wall = new(walls[System.Random.Shared.Int(0, walls.Length - 1)], this) {
+                    Position = p.Value.Position + Position,
+                    Rotation = p.Value.Rotation,
                 };
                 wall.Tags.Add("generated");
             }
         }
+    }
+
+    public void MakeLamp() {
+        if (this is TileEmpty || this is TileX) return;
+
+        Transform? p = Model.GetAttachment("lamp");
+        if (p is null) return;
+
+        ModelEntity lamp = new("models/map/lamppost.vmdl", this) {
+                Position = p.Value.Position + Position,
+                Rotation = p.Value.Rotation,
+        };
+        lamp.Tags.Add("generated");
+
+        PointLightEntity light = new() {
+            Color = new Color(1f, 0.8f, 0.8f),
+            Brightness = 0.7f,
+            Parent = lamp,
+            Position = p.Value.Position + Position + Vector3.Up * 204,
+            Rotation = p.Value.Rotation,
+        };
+        light.Tags.Add("generated");
     }
 
 	protected override void OnDestroy() {
