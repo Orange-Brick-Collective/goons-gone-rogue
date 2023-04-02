@@ -1,12 +1,16 @@
 {
   "UI": false,
   "Volume": "0.40,0.40,0",
-  "Pitch": "1.15,1.27,1",
-  "Decibels": 105,
-  "SelectionMode": "Random",
+  "Pitch": "1.15,1.25,1",
+  "Decibels": 70,
+  "SelectionMode": "RandomExclusive",
   "Sounds": [
-    "sounds/pew.vsnd"
+    "sounds/pew10.vsnd",
+    "sounds/pew9.vsnd",
+    "sounds/pew8.vsnd",
+    "sounds/pew7.vsnd",
+    "sounds/pew6.vsnd"
   ],
-  "MaximumDistance": 2533.85,
-  "MinimumDistance": 126.692505
+  "MaximumDistance": 1143.9335,
+  "MinimumDistance": 57.196674
 }
