@@ -47,8 +47,9 @@ public class Menu : Panel {
             Panel a1 = new(this, "container");
             
             a1.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" +
+                "You and your team are goons, all of which have their own set of stats to upgrade and progress.\n" + 
                 "You simply go as far as you can, while earning the highest score at the same time.\n" + 
-                "The controls are simply WASD to move, LMB to fire, E to interact",
+                "The controls are WASD to move, LMB to fire, E to interact",
                 Classes = "labelb"
             });
 
@@ -61,10 +62,10 @@ public class Menu : Panel {
             i1.AddChild(img1);
 
             i1.AddChild(new Label() {Text = "" +
-                "This is a goons stats. You and your party have the same stats, aside from range does not affect you. " +
-                "For each stat, the first number is the 'BASE' stat, and the added number is the 'ADD' stat. " + 
+                "This is a goon's stats. " +
+                "For each stat, the first number is the 'BASE' stat and the added number is the 'ADD' stat. " + 
                 "This is important to know as Powerups (explained below) only effect 'ADD' stats. " + 
-                "For example, Glass Cannon doubles Add damage, \nso if you had 10 + 2 Damage, \ndamage becomes 10 + 4 damage "
+                "In Example, Glass Cannon doubles Add damage, \nso if you had 10 + 4 Damage, \nyou get 10 + 8 damage."
             });
             ///////////
 
@@ -75,8 +76,8 @@ public class Menu : Panel {
             i2.AddChild(img2);
 
             i2.AddChild(new Label() {Text = "" +
-                "This is the spawn platform for a level\n" +
-                "It serves no other function"
+                "This is the spawn platform for a level.\n" +
+                "The end platform is on the opposite side of the level from it."
             });
 
             ///////////
@@ -88,8 +89,9 @@ public class Menu : Panel {
             i3.AddChild(img3);
 
             i3.AddChild(new Label() {Text = "" +
-                "This is the end platform for a level\n" +
-                "Stepping on it transitions to the next level"
+                "This is the end platform for a level.\n" +
+                "Stepping on it transitions to the next level.\n" + 
+                "Every next level gets slightly larger and more difficult."
             });
 
             ///////////
@@ -101,8 +103,8 @@ public class Menu : Panel {
             i4.AddChild(img4);
 
             i4.AddChild(new Label() {Text = "" +
-                "These are powerups, pressing e on them\n" +
-                "will let you give it's power to yourself or a teammate goon"
+                "These are powerups. They are most commonly found in dead ends.\n" + 
+                "Pressing e on them will let you give it's power to yourself or a teammate goon"
             });
         }
     }
