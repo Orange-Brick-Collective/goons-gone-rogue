@@ -12,7 +12,7 @@ public class Gun : ModelEntity {
         SetModel(model);
         muzzle = Model.GetAttachment("muzzle")?.Position ?? Vector3.Zero;
     }
-    public void Fire(AnimatedEntity owner, TraceResult tr, int damage, Action react) {
+    public void Fire(Pawn owner, TraceResult tr, int damage, Action react) {
         DebugOverlay.Line(Position + muzzle * owner.Scale * owner.Rotation, tr.EndPosition, 0.1f, true);
 
         PlaySound("sounds/fire.sound");
@@ -24,6 +24,11 @@ public class Gun : ModelEntity {
             });
             
             tr.Surface.DoBulletImpact(tr);
+
+            if (owner == Player.Cur && tr.Entity is Goon) {
+                owner.PlaySound("sounds/hitsound.sound");
+            }
+
             react.Invoke();
         }
     }

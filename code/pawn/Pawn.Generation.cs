@@ -79,7 +79,7 @@ public partial class Pawn : AnimatedEntity {
         // 2 ticket per magazinesize
         // 3 ticket per -0.1 degreespread
         // 1 ticket per 2 range
-        float maxValue = 25 * (1 + (depth * 0.2f));
+        float maxValue = 25 * (1 + (depth * 0.3f));
 
         for (int i = 0; i < 9; i++) {
             float weighted = GenerateWeighted();

@@ -13,6 +13,7 @@ public partial class GGame : GameManager {
 	public Arena currentArena;
 	[Net] public int CurrentDepth {get; set;}
 	public Transform currentPosition;
+	public Angles currentViewangles;
 
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
@@ -100,7 +101,7 @@ public partial class GGame : GameManager {
 	}
 
 	public async void TransitionGameEnd() {
-		await TransitionUI();
+		await ToBlackUI();
 
 		Player.Cur.InMenu = true;
 		goons.Clear();
@@ -137,12 +138,15 @@ public partial class GGame : GameManager {
 
 	public async void TransitionStartFight() {
 		currentPosition = Player.Cur.Transform;
+		currentViewangles = Player.Cur.ViewAngles;
+
 		await TransitionUI();
 		
 		await ArenaGen.Cur.GenerateLevel();
 		
-		// tp player and players goons to place on one side of arena
+		// tp player and players goons to one side of arena
 		Player.Cur.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
+		Player.Cur.ViewAngles = new Angles(0, 0, 0);
 		Player.Cur.IsInCombat = true;
 		Player.Cur.CurrentMag = Player.Cur.MagazineSize;
 		foreach (Goon goon in goons) {
@@ -156,7 +160,7 @@ public partial class GGame : GameManager {
 		}
 
 		// spawn enemies on other side
-		for (int i = 0; i < 2 + Random.Shared.Int(0, currentWorld.depth); i++) {
+		for (int i = 0; i < 1 + Random.Shared.Int(currentWorld.depth + 1); i++) {
 			Goon g = new();
 			g.Init(1);
 			g.Generate(currentWorld.depth);
@@ -181,6 +185,7 @@ public partial class GGame : GameManager {
 		}
 
 		Player.Cur.Transform = currentPosition;
+		Player.Cur.ViewAngles = currentViewangles;
 	}
 
 	public async void TransitionLevel() {
@@ -191,19 +196,40 @@ public partial class GGame : GameManager {
 		await WorldGen.Cur.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
 		CurrentDepth = currentWorld.depth;
 		Player.Cur.Transform = GGame.Cur.currentWorld.startPos;
+		Player.Cur.ViewAngles = new Angles(0, 0, 0);
 		Player.Cur.InMenu = false;
 	}
 
-	// fades over 600ms
-	// stays black 600ms
-	// unfades last 600ms --- also dont mark static as vsc wants
+	// fades over 1s
+	// stays black 400ms
+	// unfades last 1s --- also dont mark static as vsc wants
 	public System.Threading.Tasks.Task TransitionUI() {
 		TransitionUIClient();
-		return GameTask.DelayRealtime(600);
+		return GameTask.DelayRealtime(1000);
 	}
-
 	[ClientRpc]
 	public static void TransitionUIClient() {
-		Hud._hud.Loading();
+		Hud._hud.ToAndFromBlack();
+	}
+
+	// fades over 1s
+	// stays black --- also dont mark static as vsc wants
+	public System.Threading.Tasks.Task ToBlackUI() {
+		ToBlackUIClient();
+		return GameTask.DelayRealtime(1000);
+	}
+	[ClientRpc]
+	public static void ToBlackUIClient() {
+		Hud._hud.ToBlack();
+	}
+
+	// unfades over 1s --- also dont mark static as vsc wants
+	public System.Threading.Tasks.Task FromBlackUI() {
+		FromBlackUIClient();
+		return GameTask.DelayRealtime(1000);
+	}
+	[ClientRpc]
+	public static void FromBlackUIClient() {
+		Hud._hud.FromBlack();
 	}
 }

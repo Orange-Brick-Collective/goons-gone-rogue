@@ -74,10 +74,22 @@ public class PowerupUI : Panel {
     private static void ServerConfirm(string password, int netIdent, int pawnNetIdent) {
         if (password != "124") return;
 
-        GGame.Cur.Score += 10;
-
+        Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
         PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);
-        ent.powerup.Action.Invoke(Entity.FindByIndex<Pawn>(pawnNetIdent));
+        if (pawn is null || ent is null) return;
+
+        ent.powerup.Action.Invoke(pawn);
+
+        if (ent.powerup.Title != "Heal Up" && ent.powerup.Title != "Big Heal Up") {
+            if (pawn.AppliedPowerups.ContainsKey(ent.powerup.Title)) {
+                pawn.AppliedPowerups[ent.powerup.Title] += 1;
+            } else {
+                pawn.AppliedPowerups.Add(ent.powerup.Title, 1);
+            }
+
+            GGame.Cur.Score += 20;
+        }
+
         ent.Delete();
     }
 }

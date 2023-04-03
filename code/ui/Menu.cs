@@ -44,9 +44,9 @@ public class Menu : Panel {
 
             ///////////
 
-            Panel a0 = new(this, "container");
+            Panel a1 = new(this, "container");
             
-            a0.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" +
+            a1.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" +
                 "You simply go as far as you can, while earning the highest score at the same time.\n" + 
                 "The controls are simply WASD to move, LMB to fire, E to interact",
                 Classes = "labelb"
@@ -54,39 +54,53 @@ public class Menu : Panel {
 
             ///////////
 
-            Panel a1 = new(this, "container");
+            Panel i1 = new(this, "containerb");
 
             Image img1 = new();
-            img1.SetTexture("images/start.png");
-            a1.AddChild(img1);
+            img1.SetTexture("images/stats.png");
+            i1.AddChild(img1);
 
-            a1.AddChild(new Label() {Text = "" +
+            i1.AddChild(new Label() {Text = "" +
+                "This is a goons stats. You and your party have the same stats, aside from range does not affect you. " +
+                "For each stat, the first number is the 'BASE' stat, and the added number is the 'ADD' stat. " + 
+                "This is important to know as Powerups (explained below) only effect 'ADD' stats. " + 
+                "For example, Glass Cannon doubles Add damage, \nso if you had 10 + 2 Damage, \ndamage becomes 10 + 4 damage "
+            });
+            ///////////
+
+            Panel i2 = new(this, "container");
+
+            Image img2 = new();
+            img2.SetTexture("images/start.png");
+            i2.AddChild(img2);
+
+            i2.AddChild(new Label() {Text = "" +
                 "This is the spawn platform for a level\n" +
                 "It serves no other function"
             });
 
             ///////////
 
-            Panel a2 = new(this, "container");
+            Panel i3 = new(this, "container");
 
-            Image img2 = new();
-            img2.SetTexture("images/end.png");
-            a2.AddChild(img2);
+            Image img3 = new();
+            img3.SetTexture("images/end.png");
+            i3.AddChild(img3);
 
-            a2.AddChild(new Label() {Text = "" +
+            i3.AddChild(new Label() {Text = "" +
                 "This is the end platform for a level\n" +
                 "Stepping on it transitions to the next level"
             });
 
             ///////////
 
-            Panel a3 = new(this, "container");
+            Panel i4 = new(this, "container");
 
-            Image img3 = new();
-            img3.SetTexture("images/powerup.png");
-            a3.AddChild(img3);
+            Image img4 = new();
+            img4.SetTexture("images/powerup.png");
+            i4.AddChild(img4);
 
-            a3.AddChild(new Label() {Text = "" +
+            i4.AddChild(new Label() {Text = "" +
                 "These are powerups, pressing e on them\n" +
                 "will let you give it's power to yourself or a teammate goon"
             });

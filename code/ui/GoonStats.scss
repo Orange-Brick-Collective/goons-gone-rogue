@@ -32,6 +32,7 @@ GoonStats {
 
         .barhealth {
             font-size: 43px;
+            text-overflow: ellipsis;
             color: white;
         }
     }
@@ -39,7 +40,8 @@ GoonStats {
     .stats {
         bottom: 80px;
         height: 200px;
-        line-height: 18px;
+        line-height: 22px;
+        padding: 2px;
         background-color: rgba(black, 0.5);
         flex-direction: column;
         color: white;
@@ -48,6 +50,27 @@ GoonStats {
             height: 22px;
             font-size: 26px;
             color: white;
+            font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
+        }
+    }
+
+    .stats2 {
+        position: absolute;
+        left: 1580px;
+        bottom: 80px;
+        top: 20px;
+        
+        padding: 2px;
+        flex-direction: column;
+        color: white;
+
+        .number {
+            height: 22px;
+            line-height: 26px;
+            font-size: 28px;
+            text-shadow: 1px 1px black;
+            color: white;
+            font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
         }
     }
 

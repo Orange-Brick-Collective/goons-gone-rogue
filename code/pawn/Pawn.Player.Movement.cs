@@ -16,7 +16,7 @@ public partial class Player : Pawn {
 		Rotation = ViewAngles.WithPitch(0).ToRotation();
 		Vector3 input = InputDirection.Normal * Rotation;
 
-		Vector3 newVel = input * 200 + Velocity;
+		Vector3 newVel = input * (IsInCombat ? MoveSpeed : 250) + Velocity;
 
 		MoveHelper helper = new(Position + Vector3.Up * 35, newVel) {
 			Trace = Trace.Box(new Vector3(32, 32, 70), Position, Position).WithoutTags("player", "goon", "trigger"),

@@ -123,6 +123,6 @@ public partial class Player : Pawn {
 		Camera.Position = pos;
 		Camera.Rotation = ViewAngles.ToRotation();
 
-		Camera.FieldOfView = Screen.CreateVerticalFieldOfView(Game.Preferences.FieldOfView);
+		Camera.FieldOfView = Screen.CreateVerticalFieldOfView(86);
 	}
 }

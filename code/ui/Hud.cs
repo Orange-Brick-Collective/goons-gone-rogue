@@ -6,6 +6,7 @@ namespace GGame;
 public partial class Hud : HudEntity<RootPanel> {
     public static Hud _hud;
     public EPanel epanel;
+    public Crosshair crosshair;
 
     public Hud() {
         if (_hud is not null) return;
@@ -13,7 +14,9 @@ public partial class Hud : HudEntity<RootPanel> {
         
         RootPanel.StyleSheet.Load("ui/Hud.scss");
 
-        RootPanel.AddChild(new Crosshair());
+        crosshair = new Crosshair();
+        RootPanel.AddChild(crosshair);
+
         RootPanel.AddChild(new GameHud());
         RootPanel.AddChild(new Menu());
         
@@ -21,10 +24,21 @@ public partial class Hud : HudEntity<RootPanel> {
         RootPanel.AddChild(epanel);
     }
 
-    public async void Loading() {
+    public async void ToAndFromBlack() {
         RootPanel.AddClass("loading");
-        await GameTask.DelayRealtime(1200);
+        await GameTask.DelayRealtime(1400);
         RootPanel.RemoveClass("loading");
     }
 
+    public void ToBlack() {
+        RootPanel.AddClass("loading");
+    }
+
+    public void FromBlack() {
+        RootPanel.RemoveClass("loading");
+    }
+
+    public void CrosshairInRange(bool inRange) {
+        crosshair.SetClass("inrange", inRange);
+    }
 }

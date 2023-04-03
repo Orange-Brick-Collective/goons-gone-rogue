@@ -12,6 +12,10 @@ RootPanel {
         background-color: white;
         width: 3px;
         height: 3px;
+
+        &.inrange {
+            background-color: rgb(255, 120, 120);
+        }
     }
 }
 

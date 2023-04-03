@@ -62,12 +62,14 @@ PowerupUI {
         margin-bottom: 2px;
         border: 1px black;
         background-color: rgb(195, 202, 207);
-        font-size: 15px;
+        font-size: 18px;
+        font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
+        padding: 1px;
 
         &.selected {
             border-color: rgb(240, 66, 66);
             height: 150px;
-            line-height: 14px;
+            line-height: 16px;
         }
 
         &:hover {

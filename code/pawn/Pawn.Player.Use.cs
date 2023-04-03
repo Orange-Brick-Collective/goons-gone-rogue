@@ -7,12 +7,22 @@ public partial class Player : Pawn {
     public Entity hitEnt;
     
     public void SimulateUse() {
+        // for range
+        TraceResult rangeTrace = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * (Range + 50))
+            .Ignore(this)
+            .WithoutTags("team0", "trigger")
+            .Run();
+            
+        if (Game.IsClient) {
+            Hud._hud.CrosshairInRange(rangeTrace.Hit);
+        }
+
+        // for ui
         TraceResult useTrace = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 200)
             .Ignore(this)
             .WithoutTags("team0", "trigger")
             .Run();
 
-        // for ui shit
         if (useTrace.Hit) {
             switch (useTrace.Entity) {
                 case PowerupEntity: {
@@ -30,7 +40,7 @@ public partial class Player : Pawn {
 
         if (!Input.Pressed(InputButton.Use)) return;
 
-        // for using shit
+        // for using
         switch (useTrace.Entity) {
             case PowerupEntity powerupEnt: {
                 if (Game.IsClient) {

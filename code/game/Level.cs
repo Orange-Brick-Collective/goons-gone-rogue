@@ -44,12 +44,14 @@ public static class WallModels {
         "models/map/walls/wall0-half.vmdl",
         "models/map/walls/wall0-flat.vmdl",
         "models/map/walls/wall0-flat.vmdl",
+        "models/map/walls/wall0-flat.vmdl",
     };
 
     public static readonly string[] level1 = {
         "models/map/walls/wall1-full.vmdl",
         "models/map/walls/wall1-half.vmdl",
         "models/map/walls/wall1-half.vmdl",
+        "models/map/walls/wall1-flat.vmdl",
         "models/map/walls/wall1-flat.vmdl",
         "models/map/walls/wall1-flat.vmdl",
     };

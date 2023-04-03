@@ -12,8 +12,8 @@ public class PawnHealth {
         Event.Register(this);
     }
 
-    [Event.Tick.Client]
-    public void Tick() {
+    [Event.Client.Frame]
+    public void Frame() {
         var goo = GGame.Cur.goons;
         
         for (int i = 0; i < goo.Count; i++) {
@@ -23,24 +23,25 @@ public class PawnHealth {
 				WorldPanel e = new();
                 e.Style.JustifyContent = Justify.Center;
                 e.PanelBounds = new Rect(-4000, -600, 8000, 600);
-                e.WorldScale = 1f;
+                e.WorldScale = 0.8f;
 				e.AddChild(new GoonStats(goo[i]));
 				goo[i].healthPanel = e;
 			} else {
                 goo[i].healthPanel.Rotation = Rotation.FromYaw(Camera.Rotation.Yaw() + 180);
-                goo[i].healthPanel.Position = goo[i].Position + goo[i].HeightOffset * 2.2f + Vector3.Up * 4;
+                goo[i].healthPanel.Position = goo[i].Position + goo[i].HeightOffset * 2.2f;
             }
 		}
-    }
 
-    [Event.Client.Frame]
-    public void Frame() {
         if (Player.Cur.healthPanel is null) {
             WorldPanel e = new();
             e.Style.JustifyContent = Justify.Center;
             e.PanelBounds = new Rect(-4000, -600, 8000, 600);
             e.WorldScale = 0.8f;
-            e.AddChild(new GoonStats(Player.Cur));
+
+            GoonStats stats = new(Player.Cur);
+            stats.stats.Style.BackgroundColor = new Color(0, 0, 0, 0.8f);
+            e.AddChild(stats);
+            
             Player.Cur.healthPanel = e;
         } else {
             if (Player.Cur.InMenu) {
