@@ -73,9 +73,8 @@ public partial class Player : Pawn {
 	}
 
 	public override void OnKilled() {
-		// game over
-
-		// back to menu
+		if (InMenu) return;
+		GGame.Cur.TransitionGameEnd();
 	}
 
 	public void OnInMenuChanged() {
@@ -101,39 +100,6 @@ public partial class Player : Pawn {
 
 		if (Input.Down(InputButton.PrimaryAttack) && Game.IsServer) {
 			FireGun();
-		}
-
-		if (Input.Pressed(InputButton.Slot1) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 4000).Ignore(this).Run();
-			Goon g = new();
-			g.Init(0, this);
-			g.Position = tr.EndPosition + Vector3.Up * 5;
-		}
-
-		if (Input.Pressed(InputButton.Slot2) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 4000).Ignore(this).Run();
-			Goon g = new();
-			g.Init(1);
-			g.Position = tr.EndPosition + Vector3.Up * 5;
-
-			float rHP = Random.Shared.Float(50, 400);
-			g.MaxHealth = rHP;
-			g.Health = rHP;
-
-			float rScale = Random.Shared.Float(0.4f, 2f);
-			g.Scale = rScale;
-		}
-
-		if (Input.Pressed(InputButton.Reload) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 400).Ignore(this).Run();
-			PowerupEntity p = new();
-			p.Init(Powerups.GetRandomIndex);
-			p.Position = tr.EndPosition + Vector3.Up * 50;
-		}
-
-		if (Input.Pressed(InputButton.Slot4) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * 8000).Ignore(this).Run();
-			Position = tr.EndPosition + tr.Normal * 50;
 		}
 	}
 

@@ -13,7 +13,7 @@ public class Menu : Panel {
         Panel buttons = new(this, "buttons");
 
         buttons.AddChild(new Button("Start","", () => {
-            GGame.TransitionStart("dpiol");
+            GGame.TransitionGameStart("dpiol");
         }) {Classes = "buttone"});
 
         buttons.AddChild(new Button("Beginner Info","", () => {
@@ -42,15 +42,28 @@ public class Menu : Panel {
         public Help() {
             Classes = "popup help";
 
+            ///////////
+
+            Panel a0 = new(this, "container");
+            
+            a0.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" +
+                "You simply go as far as you can, while earning the highest score at the same time.\n" + 
+                "The controls are simply WASD to move, LMB to fire, E to interact",
+                Classes = "labelb"
+            });
+
+            ///////////
+
             Panel a1 = new(this, "container");
 
             Image img1 = new();
             img1.SetTexture("images/start.png");
             a1.AddChild(img1);
 
-            a1.AddChild(new Label() {Text = @"
-                This is the spawn platform for a level.
-            "});
+            a1.AddChild(new Label() {Text = "" +
+                "This is the spawn platform for a level\n" +
+                "It serves no other function"
+            });
 
             ///////////
 
@@ -60,7 +73,10 @@ public class Menu : Panel {
             img2.SetTexture("images/end.png");
             a2.AddChild(img2);
 
-            a2.AddChild(new Label() {Text = ""});
+            a2.AddChild(new Label() {Text = "" +
+                "This is the end platform for a level\n" +
+                "Stepping on it transitions to the next level"
+            });
 
             ///////////
 
@@ -70,7 +86,10 @@ public class Menu : Panel {
             img3.SetTexture("images/powerup.png");
             a3.AddChild(img3);
 
-            a3.AddChild(new Label() {Text = ""});
+            a3.AddChild(new Label() {Text = "" +
+                "These are powerups, pressing e on them\n" +
+                "will let you give it's power to yourself or a teammate goon"
+            });
         }
     }
 
@@ -78,13 +97,11 @@ public class Menu : Panel {
         public About() {
             Classes = "popup about";
 
-            AddChild(new Label() {Text = @"
-                Made for the Three Thieves spring 2023 gamejam
-
-                -- Made By OBC --
-                Kodi022 - conception, programming, ui
-                Andy - theme, art, modelling
-            "});
+            AddChild(new Label() {Text = "Made for the Three Thieves spring 2023 gamejam\n\n" +
+                "-- Made By OBC --\n" + 
+                "Kodi022 - conception, programming, ui\n" + 
+                "Andy - theme, art, modelling"
+            });
         }
     }
 

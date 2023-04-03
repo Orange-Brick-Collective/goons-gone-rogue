@@ -40,6 +40,7 @@ public class FightEndUI : Panel {
     [ConCmd.Server]
     private static void ServerHeal(string password) {
         if (password != "1247") return;
+        
 		Player.Cur.Health = Math.Min(Player.Cur.Health + 50, Player.Cur.MaxHealth);
 
 		foreach (Goon goon in GGame.Cur.goons) {
@@ -57,8 +58,10 @@ public class FightEndUI : Panel {
     [ConCmd.Server]
     private static void ServerNewPawn(string password) {
         if (password != "1245") return;
+
         Goon g = new();
         g.Init(0, Player.Cur);
+        g.Generate(GGame.Cur.currentWorld.depth);
         g.Position = Player.Cur.Position + g.posInGroup;
 
         GGame.Cur.TransitionEndFight();

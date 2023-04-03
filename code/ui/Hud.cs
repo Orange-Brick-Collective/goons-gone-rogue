@@ -13,10 +13,10 @@ public partial class Hud : HudEntity<RootPanel> {
         
         RootPanel.StyleSheet.Load("ui/Hud.scss");
 
-        RootPanel.AddChild(new Menu());
         RootPanel.AddChild(new Crosshair());
         RootPanel.AddChild(new GameHud());
-
+        RootPanel.AddChild(new Menu());
+        
         epanel = new EPanel();
         RootPanel.AddChild(epanel);
     }

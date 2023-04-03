@@ -6,6 +6,7 @@ namespace GGame;
 
 public partial class Player : Pawn {
     [Net, Predicted] public bool IsGrounded {get; set;} = true;
+	public TimeSince footstep;
 
 	public void SimulateMovement() {
 		TraceResult ground = BoxTrace(new Vector3(32, 32, 16), Position + new Vector3(0, 0, 7.9f)); 
@@ -30,8 +31,13 @@ public partial class Player : Pawn {
 			Velocity = helper.Velocity * 0.5f - new Vector3(0, 0, 80);
 		}
 
-		if (helper.TryMoveWithStep(Time.Delta, 30) > 0) {
+		if (helper.TryMoveWithStep(Time.Delta, 30) > 0.01f) {
 			Position = helper.Position + Vector3.Down * 35;
+
+			if (footstep > 0.36f) {
+				footstep = 0;
+				PlaySound("sounds/step.sound");
+			}
 		}
 	}
 	public static TraceResult BoxTrace(Vector3 extents, Vector3 pos) {

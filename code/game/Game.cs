@@ -14,7 +14,10 @@ public partial class GGame : GameManager {
 	[Net] public int CurrentDepth {get; set;}
 	public Transform currentPosition;
 
-	[Net] public int Points {get; set;} = 0;
+	[Net] public int Score {get; set;} = 0;
+	[Net] public int Kills {get; set;} = 0;
+	[Net] public int DamageDealt {get; set;} = 0;
+	[Net] public int DamageTaken {get; set;} = 0;
 
 	public List<Goon> goons = new();
 	
@@ -55,7 +58,7 @@ public partial class GGame : GameManager {
 		}
 
 		await GameTask.DelayRealtime(500);
-		Points += 250;
+		Score += 250;
 
 		ClientFightOverCheck();
 	}
@@ -65,20 +68,29 @@ public partial class GGame : GameManager {
 	}
 
 	public async void GenSpawnArena() {
-		await GameTask.DelayRealtime(2000); // delay because map isnt loaded when game starts...
-		ArenaMarker = Entity.All.OfType<ArenaMarker>().First().Transform;
+		while (true) {
+			await GameTask.DelayRealtime(100);
+
+			try {
+				ArenaMarker = Entity.All.OfType<ArenaMarker>().First().Transform;
+			} catch {}
+
+			if (ArenaMarker != new Transform(Vector3.Zero, new Rotation(0, 0, 0, 0), 0)) break;
+		}
+
 		await ArenaGen.Cur.GenerateLevel(0);
 	}
 
 	[ConCmd.Server] // password just as a safety to deter console foolery
-	public static async void TransitionStart(string password) {
+	public static async void TransitionGameStart(string password) {
 		if (password != "dpiol") return;
 
 		await GGame.Cur.TransitionUI();
 
-		await WorldGen.Cur.GenerateLevel(7, 5, 0, false);
+		await WorldGen.Cur.GenerateLevel(8, 6, 0, false);
 		Player.Cur.InMenu = false;
 		Player.Cur.Transform = GGame.Cur.currentWorld.startPos;
+
 		Goon g = new();
 		g.Init(0, Player.Cur);
 		g.Generate(5);
@@ -87,11 +99,34 @@ public partial class GGame : GameManager {
 		g2.Generate(5);
 	}
 
-	public async void TransitionEnd() {
+	public async void TransitionGameEnd() {
 		await TransitionUI();
-		
+
 		Player.Cur.InMenu = true;
+		goons.Clear();
+		foreach (var goon in Entity.All.OfType<Goon>()) {
+			goon.OnKilled();
+		}
+
+		await ArenaGen.Cur.GenerateLevel(WallModels.RandomWall());
+
 		Player.Cur.Transform = ArenaMarker;
+		Player.Cur.MaxHealth = 200;
+		Player.Cur.Health = 200;
+		Player.Cur.Armor = 0;
+		Player.Cur.AddMoveSpeed = 0;
+		Player.Cur.AddWeaponDamage = 0;
+		Player.Cur.AddFireRate = 0;
+		Player.Cur.AddReloadTime = 0;
+		Player.Cur.AddMagazineSize = 0;
+		Player.Cur.AddDegreeSpread = 0;
+		Player.Cur.AddRange = 0;
+		Player.Cur.CurrentMag = 20;
+
+		Score = 0;
+		Kills = 0;
+		DamageDealt = 0;
+		DamageTaken = 0;
 	}
 
 	public async void TransitionLoad() {
@@ -102,7 +137,6 @@ public partial class GGame : GameManager {
 
 	public async void TransitionStartFight() {
 		currentPosition = Player.Cur.Transform;
-
 		await TransitionUI();
 		
 		await ArenaGen.Cur.GenerateLevel();
@@ -152,7 +186,7 @@ public partial class GGame : GameManager {
 	public async void TransitionLevel() {
 		await TransitionUI();
 
-		Points += 500;
+		Score += 500;
 
 		await WorldGen.Cur.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
 		CurrentDepth = currentWorld.depth;

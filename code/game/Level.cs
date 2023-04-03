@@ -24,10 +24,16 @@ public enum TileType {
 }
 
 public static class WallModels {
+    public static int RandomWall() {
+        return System.Random.Shared.Int(0, 1);
+    }
+
     public static string[] GetModels(int i) {
         return (i % 2) switch {
             1 => level1,
             2 => level2,
+            3 => level3,
+            4 => level4,
             _ => level0,
         };
     }
@@ -41,10 +47,22 @@ public static class WallModels {
     };
 
     public static readonly string[] level1 = {
-        "models/map/walls/town0-wall0.vmdl",
+        "models/map/walls/wall1-full.vmdl",
+        "models/map/walls/wall1-half.vmdl",
+        "models/map/walls/wall1-half.vmdl",
+        "models/map/walls/wall1-flat.vmdl",
+        "models/map/walls/wall1-flat.vmdl",
     };
 
     public static readonly string[] level2 = {
+        "models/map/walls/town0-wall0.vmdl",
+    };
+
+    public static readonly string[] level3 = {
+        "models/map/walls/town0-wall0.vmdl",
+    };
+
+    public static readonly string[] level4 = {
         "models/map/walls/town0-wall0.vmdl",
     };
 }
@@ -99,17 +117,14 @@ public class Tile : ModelEntity {
         if (p is null) return;
 
         ModelEntity lamp = new("models/map/lamppost.vmdl", this) {
-                Position = p.Value.Position + Position,
-                Rotation = p.Value.Rotation,
+            Position = p.Value.Position * Rotation.FromYaw(rot * 90) + Position,
         };
         lamp.Tags.Add("generated");
 
         PointLightEntity light = new() {
-            Color = new Color(1f, 0.8f, 0.8f),
-            Brightness = 0.7f,
+            Color = new Color(1f, 0.8f, 0.6f),
             Parent = lamp,
-            Position = p.Value.Position + Position + Vector3.Up * 204,
-            Rotation = p.Value.Rotation,
+            Position = p.Value.Position * Rotation.FromYaw(rot * 90) + Position + Vector3.Up * 204,
         };
         light.Tags.Add("generated");
     }
@@ -243,7 +258,7 @@ public class TileEventStart : TileEvent {
 
     public override void Init(Tile tile) {
         base.Init(tile);
-        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-128, -128, 0), new Vector3(128, 128, 260));
+        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-104, -104, -12), new Vector3(104, 104, 256));
     }
 }
 
@@ -254,7 +269,7 @@ public class TileEventEnd : TileEvent {
 
     public override void Init(Tile tile) {
         base.Init(tile);
-        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-128, -128, 0), new Vector3(128, 128, 260));
+        SetupPhysicsFromAABB(PhysicsMotionType.Static, new Vector3(-104, -104, -12), new Vector3(104, 104, 256));
     }
 }
 

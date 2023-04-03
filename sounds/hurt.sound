@@ -1,0 +1,17 @@
+{
+  "UI": false,
+  "Volume": "1.00,1.00,0",
+  "Pitch": "1.09,1.16,1",
+  "Decibels": 85,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/hurt1.vsnd",
+    "sounds/hurt2.vsnd",
+    "sounds/hurt3.vsnd",
+    "sounds/hurt4.vsnd",
+    "sounds/hurt5.vsnd",
+    "sounds/hurt6.vsnd"
+  ],
+  "MaximumDistance": 1671.5345,
+  "MinimumDistance": 83.57673
+}

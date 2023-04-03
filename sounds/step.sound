@@ -1,0 +1,14 @@
+{
+  "UI": false,
+  "Volume": "1.00,1.00,0",
+  "Pitch": "0.91,1.06,1",
+  "Decibels": 60,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/step1.vsnd",
+    "sounds/step2.vsnd",
+    "sounds/step3.vsnd"
+  ],
+  "MaximumDistance": 848.93066,
+  "MinimumDistance": 42.446533
+}

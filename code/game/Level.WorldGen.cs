@@ -29,7 +29,7 @@ public class WorldGen {
             length = len,
             width = wid,
             depth = depth,
-            wallType = 0,
+            wallType = WallModels.RandomWall(),
             tiles = FillTilesEmpty(len, wid),
         };
 
@@ -110,26 +110,36 @@ public class WorldGen {
         lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
 
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            if (lvl.tiles[l][w] is TileEmpty) continue;
+            Tile tile = lvl.tiles[l][w];
+            if (tile is TileEmpty) continue;
+
             Vector2 e = new(l, w);
             if (e == startP || e == endP) continue;
 
-            if (lvl.tiles[l][w] is TileEnd || Random.Shared.Float(0, 1) > 0.99f) {
-                new TileEventPowerups().Init(lvl.tiles[l][w]);
+            if (tile is TileEnd || Random.Shared.Float(0, 1) > 0.99f) {
+                new TileEventPowerups().Init(tile);
                 continue;
             }
 
-            if (Random.Shared.Float(0, 1) > 0.85f) {
-                new TileEventFight().Init(lvl.tiles[l][w]);
-                continue;
+            if (tile is TileStraight) {
+                if (Random.Shared.Float(0, 1) > 0.44f) {
+                    new TileEventFight().Init(tile);
+                    continue;
+                }
+            } else {
+                if (Random.Shared.Float(0, 1) > 0.82f) {
+                    new TileEventFight().Init(tile);
+                    continue;
+                }
             }
+
         }
 
         // *
         // * props stage
         // *
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            if (Random.Shared.Float(0, 1) > 0.87f) {
+            if (Random.Shared.Float(0, 1) > 0.6f) {
                 lvl.tiles[l][w].MakeLamp();
             }
         }

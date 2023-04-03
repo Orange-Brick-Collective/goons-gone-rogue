@@ -35,11 +35,11 @@ public class ArenaGen {
         for (int i = 0; i < 4; i++) {
             int dirX = 0, dirY = 0;
 
-            if (i == 0) dirX = 752;
-            else if (i == 2) dirX = -752;
+            if (i == 0) dirX = 716;
+            else if (i == 2) dirX = -716;
             
-            if (i == 1) dirY = 752;
-            else if (i == 3) dirY = -752;
+            if (i == 1) dirY = 716;
+            else if (i == 3) dirY = -716;
 
             for (int j = 0; j < 3; j++) {
                 Vector3 arenaPos;

@@ -8,10 +8,13 @@ public class GameHud : Panel {
 
     public GameHud() {
         StyleSheet.Load("ui/GameHud.scss");
+        
         points = new() {Classes = "points"};
         AddChild(points);
         depth = new() {Classes = "depth"};
         AddChild(depth);
+
+        AddChild(new TeamUI());
     }
 
     public override void Tick() {
@@ -22,7 +25,7 @@ public class GameHud : Panel {
             Style.Opacity = 1;
         }
 
-        points.SetText($"Points: {GGame.Cur.Points}");
+        points.SetText($"Points: {GGame.Cur.Score}");
         depth.SetText($"Depth: {GGame.Cur.CurrentDepth}");
     }
 }

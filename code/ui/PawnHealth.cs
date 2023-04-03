@@ -23,7 +23,7 @@ public class PawnHealth {
 				WorldPanel e = new();
                 e.Style.JustifyContent = Justify.Center;
                 e.PanelBounds = new Rect(-4000, -600, 8000, 600);
-                e.WorldScale = 1.5f;
+                e.WorldScale = 1f;
 				e.AddChild(new GoonStats(goo[i]));
 				goo[i].healthPanel = e;
 			} else {
@@ -35,8 +35,6 @@ public class PawnHealth {
 
     [Event.Client.Frame]
     public void Frame() {
-        if (Player.Cur.InMenu) return;
-
         if (Player.Cur.healthPanel is null) {
             WorldPanel e = new();
             e.Style.JustifyContent = Justify.Center;
@@ -45,6 +43,13 @@ public class PawnHealth {
             e.AddChild(new GoonStats(Player.Cur));
             Player.Cur.healthPanel = e;
         } else {
+            if (Player.Cur.InMenu) {
+                Player.Cur.healthPanel.Style.Opacity = 0;
+                return;
+            } else {
+                Player.Cur.healthPanel.Style.Opacity = 1;
+            }
+
             Player.Cur.healthPanel.Rotation = Rotation.FromYaw(Player.Cur.Rotation.Yaw() + 180);
             Player.Cur.healthPanel.Position = Player.Cur.Position + Vector3.Up * 26 + Player.Cur.Rotation.Backward * 3.8f;
         }

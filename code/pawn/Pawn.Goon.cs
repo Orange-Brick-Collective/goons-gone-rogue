@@ -25,6 +25,7 @@ public partial class Goon : Pawn {
     private Vector3[] path;
     private int currentPath;
     private TimeSince timeSinceHitPath;
+    public TimeSince footstep;
     
     // for offsetting occasional ai loop to improve performance
     private int tickCycle = 0;
@@ -45,12 +46,12 @@ public partial class Goon : Pawn {
         weapon.Owner = this;
         weapon.Parent = this;
 
-        Generate(1);
-
         RegisterSelf();
 	}
 	public override void ClientSpawn() {
 		base.ClientSpawn();
+        if (Team == 0) TeamUI.Add(this);
+
         RegisterSelf();
 	}
 
@@ -60,9 +61,14 @@ public partial class Goon : Pawn {
         ClientOnKilled();
         UnregisterSelf();
 
-        if (Team != 0) GGame.Cur.Points += 50;
+        if (!Player.Cur.InMenu)  {
+            if (Team != 0) {
+                GGame.Cur.Kills += 1;
+                GGame.Cur.Score += 50;
+            }
 
-        GGame.Cur.FightOverCheck();
+            GGame.Cur.FightOverCheck();
+        }
 
         Delete();
 	}
@@ -70,6 +76,8 @@ public partial class Goon : Pawn {
     [ClientRpc]
     public void ClientOnKilled() {
         UnregisterSelf();
+
+        if (Team == 0) TeamUI.Remove(this);
         healthPanel?.Delete();
     }
 
@@ -208,9 +216,16 @@ public partial class Goon : Pawn {
             Trace = Trace.Body(PhysicsBody, Position)
                 .WithoutTags("player", "goon", "trigger"),
         };
-        
         help.TryMoveWithStep(Time.Delta, 20);
-        Position = help.Position;
+
+        if (Vector3.DistanceBetweenSquared(Position, help.Position) > 1) {
+            Position = help.Position;
+
+            if (footstep > 0.36f) {
+                footstep = 0;
+                PlaySound("sounds/step.sound");
+            }
+        }
     }
 
     private void AiMoveGravity() {
@@ -258,16 +273,24 @@ public partial class Goon : Pawn {
             Trace = Trace.Body(PhysicsBody, Position)
                 .WithoutTags("player", "goon", "trigger"),
         };
-            
-        help.TryMoveWithStep(Time.Delta, 16);
-        Position = help.Position;
+
+        help.TryMove(Time.Delta);
+
+        if (Vector3.DistanceBetweenSquared(Position, help.Position) > 1) {
+            Position = help.Position;
+
+            if (footstep > 0.36f) {
+                footstep = 0;
+                PlaySound("sounds/step.sound");
+            }
+        }
 
         if (timeSinceHitPath > 3) {
             Position = path[currentPath];
             timeSinceHitPath = 0;
         }
 
-        if (Vector3.DistanceBetween(Position, path[currentPath]) < 20) {
+        if (Vector3.DistanceBetweenSquared(Position, path[currentPath]) < 400) {
             timeSinceHitPath = 0;
             currentPath++;
         }

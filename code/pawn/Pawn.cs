@@ -18,6 +18,8 @@ public partial class Pawn : AnimatedEntity {
     public List<Action<DamageInfo>> HurtActions = new();
     public List<Action<DamageInfo>> DieActions = new();
 
+    public Dictionary<string, int> AppliedPowerups = new();
+
     // ! make work
     // gets added and removed actively (not functional)
     public List<Action> TickActions = new();
@@ -83,7 +85,7 @@ public partial class Pawn : AnimatedEntity {
             weapon.Fire(this, tr, WeaponDamage, () => {});
             CurrentMag -= 1;
 
-            if (tr.Entity is Pawn a && a.Team != Team) {
+            if (tr.Entity is Pawn a) {
                 foreach (Action<Pawn> act in AttackActions) {
                     act.Invoke(a);
                 }
@@ -132,12 +134,23 @@ public partial class Pawn : AnimatedEntity {
         float newDamage = info.Damage * ArmorReduction;
         Health -= newDamage;
 
+        if (Team == 0) {
+            GGame.Cur.DamageDealt += (int)info.Damage;
+        } else {
+            GGame.Cur.DamageTaken += (int)info.Damage;
+        }   
+
         if (Health <= 0) {
             foreach (Action<DamageInfo> act in DieActions) {
                 act.Invoke(info);
             }
+            PlaySound("sounds/hurt.sound");
             OnKilled();
             return;
+        }
+
+        if (Random.Shared.Float(0, 1) > 0.8f) {
+            PlaySound("sounds/hurt.sound");       
         }
 
         foreach (Action<DamageInfo> act in HurtActions) {
@@ -207,13 +220,14 @@ public partial class Pawn : AnimatedEntity {
     }
     public void PowerupCriticalHit(Pawn pawn) {
         if (Random.Shared.Float(0, 1) < 0.1f) {
-            pawn.TakeDamage(QuickDamageInfo(WeaponDamage));
+            DamageInfo a = QuickDamageInfo(WeaponDamage);
+            pawn.TakeDamage(a);
         }
     }
 
     public void PowerupThorns(DamageInfo info) {
         if (Random.Shared.Float(0, 1) < 0.333f) {
-            info.Attacker.TakeDamage(QuickDamageInfo(info.Damage * 0.5f));
+            info.Attacker.TakeDamage(QuickDamageInfo(info.Damage * 0.5f)); 
         }
     }
 }

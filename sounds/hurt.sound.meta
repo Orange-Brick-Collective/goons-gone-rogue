@@ -1,0 +1,22 @@
+{
+  "publish": {
+    "Enabled": false,
+    "ProjectConfig": {
+      "Title": "hurt",
+      "Type": "sound",
+      "Org": "local",
+      "Ident": "hurt",
+      "Tags": null,
+      "Schema": 0,
+      "HasAssets": false,
+      "AssetsPath": null,
+      "ResourcePaths": null,
+      "HasCode": false,
+      "CodePath": null,
+      "PackageReferences": null,
+      "Metadata": {
+        "SingleAssetSource": "sounds/hurt.sound"
+      }
+    }
+  }
+}

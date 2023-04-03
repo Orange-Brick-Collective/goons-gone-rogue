@@ -2,7 +2,8 @@ GoonStats {
     justify-content: center;
     align-items: flex-end;
     width: 10000px;
-
+    color: white;
+    
     .bar {
         bottom: 26px;
         position: absolute;
@@ -39,8 +40,9 @@ GoonStats {
         bottom: 80px;
         height: 200px;
         line-height: 18px;
-        background-color: rgba(black, 0.8);
+        background-color: rgba(black, 0.5);
         flex-direction: column;
+        color: white;
 
         .number {
             height: 22px;
