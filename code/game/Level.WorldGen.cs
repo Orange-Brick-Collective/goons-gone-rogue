@@ -5,19 +5,19 @@ using System.Collections.Generic;
 namespace GGame;
 
 public class WorldGen {
-    public static WorldGen Cur {get; set;}
+    public static WorldGen Current {get; set;}
     
     public WorldGen() {
-        if (Cur is not null) return;
-        Cur = this;
+        if (Current is not null) return;
+        Current = this;
     }
 
     [ConCmd.Server("gen_world")]
-    public static async void GenerateLevelCMD() {
-        await Cur.GenerateLevel(12, 10, 0, false);
+    public static async void GenerateLevelCMD(int? wall = null) {
+        await Current.GenerateLevel(12, 10, 0, false, wall);
     }
 
-    public async System.Threading.Tasks.Task GenerateLevel(int len, int wid, int depth, bool debug) {
+    public async System.Threading.Tasks.Task GenerateLevel(int len, int wid, int depth, bool debug, int? wall = null) {
         Game.AssertServer();
         Log.Info("Generating World");
 
@@ -29,7 +29,7 @@ public class WorldGen {
             length = len,
             width = wid,
             depth = depth,
-            wallType = WallModels.RandomWall(),
+            wallType = wall ?? WallModels.RandomWall(),
             tiles = FillTilesEmpty(len, wid),
         };
 
@@ -145,7 +145,7 @@ public class WorldGen {
         }
         
 
-        GGame.Cur.currentWorld = lvl;
+        GGame.Current.currentWorld = lvl;
         return;
     }
 

@@ -4,31 +4,32 @@ using System;
 namespace GGame;
 
 public partial class Player : Pawn {
-	public static Player Cur {get; set;}
+	public static Player Current {get; set;}
 
+	[Net] public bool IsPlaying {get; set;} = false;
 	[Net, Change] public bool InMenu {get; set;} = true;
 
 	[ClientInput] public Vector3 InputDirection {get; protected set;}
 	[ClientInput] public Angles ViewAngles {get; set;}
 
 	public override void BuildInput() {
-		InputDirection = Input.AnalogMove;
-
-		Angles look = Input.AnalogLook;
-
 		if (!InMenu) {
 			Angles viewAngles = ViewAngles;
-			viewAngles += look;
+			viewAngles += Input.AnalogLook;
 			viewAngles.pitch = viewAngles.pitch.Clamp(-72, 68);
 			ViewAngles = viewAngles.Normal;
 		} else {
 			ViewAngles = new Angles(20, Time.Tick * 0.16f, 0);
 		}
+
+		if (!InMenu && IsPlaying) {
+			InputDirection = Input.AnalogMove;
+		}
 	}
 
 	public override void Spawn() {
 		base.Spawn();
-		Cur = this;
+		Current = this;
 
 		Tags.Add("player");
 		Tags.Add("team0");
@@ -42,17 +43,25 @@ public partial class Player : Pawn {
         
 		weapon = new();
         weapon.Init("models/gun.vmdl");
-        weapon.Position = Position + new Vector3(0, -12 * Scale, 35 * Scale);
+        weapon.Position = Position + new Vector3(8, -12 * Scale, 32 * Scale);
         weapon.Rotation = Rotation;
+		weapon.RenderColor = new Color(0.8f, 0.8f, 0.8f);
         weapon.Owner = this;
         weapon.Parent = this;
+
+		int random = Random.Shared.Int(hats.Length);
+		if (random != hats.Length) {
+			_ = new ModelEntity(hats[random], this);
+		}
+
+		RenderColor = new Color(0.5f, 0.5f, 0.5f);
 
 		MaxHealth = 200;
 		Health = 200;
 		BaseWeaponDamage = 10;
 	}
 	public override void ClientSpawn() {
-		Cur = this;
+		Current = this;
 		base.ClientSpawn();
 	}
 
@@ -62,19 +71,19 @@ public partial class Player : Pawn {
 		switch (ent) {
 			case TileEventFight: {
 				ent.Delete();
-				GGame.Cur.TransitionStartFight();
+				GGame.Current.TransitionStartFight();
 				break;
 			}
 			case TileEventEnd: {
-				GGame.Cur.TransitionLevel();
+				GGame.Current.TransitionLevel();
 				break;
 			}
 		}
 	}
 
 	public override void OnKilled() {
-		if (InMenu) return;
-		GGame.Cur.TransitionGameEnd();
+		if (InMenu || !IsPlaying) return;
+		GGame.Current.TransitionGameEnd();
 	}
 
 	public void OnInMenuChanged() {
@@ -93,13 +102,18 @@ public partial class Player : Pawn {
 
 	public override void Simulate(IClient cl) {
 		base.Simulate(cl);
-		if (InMenu) return;
+		if (InMenu || !IsPlaying) return;
 
 		SimulateMovement();
 		SimulateUse();
 
 		if (Input.Down(InputButton.PrimaryAttack) && Game.IsServer) {
 			FireGun();
+		}
+
+		if (Input.Pressed(InputButton.Slot1) && Game.IsServer) {
+			TraceResult tr = Trace.Ray(Position + HeightOffset, Position + ViewAngles.Forward * 2000).Ignore(this).Run();
+			Position = tr.EndPosition;
 		}
 	}
 

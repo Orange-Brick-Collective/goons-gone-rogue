@@ -5,16 +5,16 @@ using System.Collections.Generic;
 namespace GGame;
 
 public class ArenaGen {
-    public static ArenaGen Cur {get; set;}
+    public static ArenaGen Current {get; set;}
 
     public ArenaGen() {
-        if (Cur is not null) return;
-        Cur = this;
+        if (Current is not null) return;
+        Current = this;
     }
 
     [ConCmd.Server("gen_arena")]
     public static async void GenerateLevelCMD() {
-        await Cur.GenerateLevel();
+        await Current.GenerateLevel();
     }
 
     public async System.Threading.Tasks.Task GenerateLevel(int? wallType = null) {
@@ -26,11 +26,11 @@ public class ArenaGen {
         }
 
         Arena lvl = new() {
-            wallType = wallType ?? GGame.Cur.currentWorld?.wallType ?? 0,
+            wallType = wallType ?? GGame.Current.currentWorld?.wallType ?? 0,
         };
         string[] models = WallModels.GetModels(wallType ?? lvl.wallType);
 
-        Transform pos = GGame.Cur.ArenaMarker;
+        Transform pos = GGame.Current.ArenaMarker;
 
         for (int i = 0; i < 4; i++) {
             int dirX = 0, dirY = 0;
@@ -58,7 +58,7 @@ public class ArenaGen {
             }
         }
 
-        GGame.Cur.currentArena = lvl;
+        GGame.Current.currentArena = lvl;
         await GameTask.DelayRealtime(1);
         return;
     }

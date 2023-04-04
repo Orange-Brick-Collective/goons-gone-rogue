@@ -14,7 +14,7 @@ public class PawnHealth {
 
     [Event.Client.Frame]
     public void Frame() {
-        var goo = GGame.Cur.goons;
+        var goo = GGame.Current.goons;
         
         for (int i = 0; i < goo.Count; i++) {
             if (goo[i] is null || !goo[i].IsValid()) continue;
@@ -32,27 +32,27 @@ public class PawnHealth {
             }
 		}
 
-        if (Player.Cur.healthPanel is null) {
+        if (Player.Current.healthPanel is null) {
             WorldPanel e = new();
             e.Style.JustifyContent = Justify.Center;
             e.PanelBounds = new Rect(-4000, -600, 8000, 600);
             e.WorldScale = 0.8f;
 
-            GoonStats stats = new(Player.Cur);
+            GoonStats stats = new(Player.Current);
             stats.stats.Style.BackgroundColor = new Color(0, 0, 0, 0.8f);
             e.AddChild(stats);
             
-            Player.Cur.healthPanel = e;
+            Player.Current.healthPanel = e;
         } else {
-            if (Player.Cur.InMenu) {
-                Player.Cur.healthPanel.Style.Opacity = 0;
+            if (Player.Current.InMenu) {
+                Player.Current.healthPanel.Style.Opacity = 0;
                 return;
             } else {
-                Player.Cur.healthPanel.Style.Opacity = 1;
+                Player.Current.healthPanel.Style.Opacity = 1;
             }
 
-            Player.Cur.healthPanel.Rotation = Rotation.FromYaw(Player.Cur.Rotation.Yaw() + 180);
-            Player.Cur.healthPanel.Position = Player.Cur.Position + Vector3.Up * 26 + Player.Cur.Rotation.Backward * 3.8f;
+            Player.Current.healthPanel.Rotation = Rotation.FromYaw(Player.Current.Rotation.Yaw() + 180);
+            Player.Current.healthPanel.Position = Player.Current.Position + Vector3.Up * 26 + Player.Current.Rotation.Backward * 3.8f;
         }
     }
 }

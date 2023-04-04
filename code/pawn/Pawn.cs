@@ -137,9 +137,9 @@ public partial class Pawn : AnimatedEntity {
         Health -= newDamage;
 
         if (Team == 0) {
-            GGame.Cur.DamageDealt += (int)info.Damage;
+            GGame.Current.DamageDealt += (int)info.Damage;
         } else {
-            GGame.Cur.DamageTaken += (int)info.Damage;
+            GGame.Current.DamageTaken += (int)info.Damage;
         }   
 
         if (Health <= 0) {

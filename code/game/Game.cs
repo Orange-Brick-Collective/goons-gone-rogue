@@ -6,7 +6,7 @@ using System.Linq;
 namespace GGame;
 
 public partial class GGame : GameManager {
-	public static GGame Cur => (GGame)Current;
+	public static new GGame Current => (GGame)GameManager.Current;
 
 	public Transform ArenaMarker {get; set;}
 	public World currentWorld;
@@ -79,76 +79,89 @@ public partial class GGame : GameManager {
 			if (ArenaMarker != new Transform(Vector3.Zero, new Rotation(0, 0, 0, 0), 0)) break;
 		}
 
-		await ArenaGen.Cur.GenerateLevel(0);
+		await ArenaGen.Current.GenerateLevel(0);
 	}
 
 	[ConCmd.Server] // password just as a safety to deter console foolery
 	public static async void TransitionGameStart(string password) {
 		if (password != "dpiol") return;
 
-		await GGame.Cur.TransitionUI();
+		if (Player.Current.IsPlaying) return;
+		Player.Current.IsPlaying = true;
 
-		await WorldGen.Cur.GenerateLevel(8, 6, 0, false);
-		Player.Cur.InMenu = false;
-		Player.Cur.Transform = GGame.Cur.currentWorld.startPos;
+		await GGame.Current.TransitionUI();
+
+		await WorldGen.Current.GenerateLevel(8, 6, 0, false);
+		Player.Current.InMenu = false;
+		Player.Current.Transform = GGame.Current.currentWorld.startPos;
 
 		Goon g = new();
-		g.Init(0, Player.Cur);
+		g.Init(0, Player.Current);
 		g.Generate(5);
 		Goon g2 = new();
-		g2.Init(0, Player.Cur);
+		g2.Init(0, Player.Current);
 		g2.Generate(5);
 	}
 
 	public async void TransitionGameEnd() {
+		if (!Player.Current.IsPlaying) return;
+
+		Player.Current.IsPlaying = false;
+
 		await ToBlackUI();
 
-		Player.Cur.InMenu = true;
 		goons.Clear();
 		foreach (var goon in Entity.All.OfType<Goon>()) {
 			goon.OnKilled();
 		}
 
-		await ArenaGen.Cur.GenerateLevel(WallModels.RandomWall());
+		await ArenaGen.Current.GenerateLevel(WallModels.RandomWall());
 
-		Player.Cur.Transform = ArenaMarker;
-		Player.Cur.MaxHealth = 200;
-		Player.Cur.Health = 200;
-		Player.Cur.Armor = 0;
-		Player.Cur.AddMoveSpeed = 0;
-		Player.Cur.AddWeaponDamage = 0;
-		Player.Cur.AddFireRate = 0;
-		Player.Cur.AddReloadTime = 0;
-		Player.Cur.AddMagazineSize = 0;
-		Player.Cur.AddDegreeSpread = 0;
-		Player.Cur.AddRange = 0;
-		Player.Cur.CurrentMag = 20;
+		ClientGameEnd();
+
+		Player.Current.Transform = ArenaMarker;
+		Player.Current.MaxHealth = 200;
+		Player.Current.Health = 200;
+		Player.Current.Armor = 0;
+		Player.Current.AddMoveSpeed = 0;
+		Player.Current.AddWeaponDamage = 0;
+		Player.Current.AddFireRate = 0;
+		Player.Current.AddReloadTime = 0;
+		Player.Current.AddMagazineSize = 0;
+		Player.Current.AddDegreeSpread = 0;
+		Player.Current.AddRange = 0;
+		Player.Current.CurrentMag = 20;
 
 		Score = 0;
 		Kills = 0;
 		DamageDealt = 0;
 		DamageTaken = 0;
 	}
+	[ClientRpc]
+	public static void ClientGameEnd() {
+		Hud._hud.RootPanel.AddChild(new GameEndUI());
+	}
 
 	public async void TransitionLoad() {
 		await TransitionUI();
 
-
 	}
 
 	public async void TransitionStartFight() {
-		currentPosition = Player.Cur.Transform;
-		currentViewangles = Player.Cur.ViewAngles;
+		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
+		
+		currentPosition = Player.Current.Transform;
+		currentViewangles = Player.Current.ViewAngles;
 
 		await TransitionUI();
 		
-		await ArenaGen.Cur.GenerateLevel();
+		await ArenaGen.Current.GenerateLevel();
 		
 		// tp player and players goons to one side of arena
-		Player.Cur.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
-		Player.Cur.ViewAngles = new Angles(0, 0, 0);
-		Player.Cur.IsInCombat = true;
-		Player.Cur.CurrentMag = Player.Cur.MagazineSize;
+		Player.Current.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
+		Player.Current.ViewAngles = new Angles(0, 0, 0);
+		Player.Current.IsInCombat = true;
+		Player.Current.CurrentMag = Player.Current.MagazineSize;
 		foreach (Goon goon in goons) {
 			if (goon.Team == 0) {
 				int x = Random.Shared.Int(-650, -500);
@@ -172,10 +185,12 @@ public partial class GGame : GameManager {
 	}
 
 	public async void TransitionEndFight() {
+		if (!Player.Current.IsPlaying) return;
+
 		await TransitionUI();
 
-		Player.Cur.IsInCombat = false;
-		Player.Cur.CurrentMag = Player.Cur.MagazineSize;
+		Player.Current.IsInCombat = false;
+		Player.Current.CurrentMag = Player.Current.MagazineSize;
 
 		foreach (Goon goon in goons) {
 			if (goon.Team == 0) {
@@ -184,8 +199,8 @@ public partial class GGame : GameManager {
 			}
 		}
 
-		Player.Cur.Transform = currentPosition;
-		Player.Cur.ViewAngles = currentViewangles;
+		Player.Current.Transform = currentPosition;
+		Player.Current.ViewAngles = currentViewangles;
 	}
 
 	public async void TransitionLevel() {
@@ -193,43 +208,43 @@ public partial class GGame : GameManager {
 
 		Score += 500;
 
-		await WorldGen.Cur.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
+		await WorldGen.Current.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
 		CurrentDepth = currentWorld.depth;
-		Player.Cur.Transform = GGame.Cur.currentWorld.startPos;
-		Player.Cur.ViewAngles = new Angles(0, 0, 0);
-		Player.Cur.InMenu = false;
+		Player.Current.Transform = GGame.Current.currentWorld.startPos;
+		Player.Current.ViewAngles = new Angles(0, 0, 0);
+		Player.Current.InMenu = false;
 	}
 
 	// fades over 1s
 	// stays black 400ms
 	// unfades last 1s --- also dont mark static as vsc wants
 	public System.Threading.Tasks.Task TransitionUI() {
-		TransitionUIClient();
+		ClientTransitionUI();
 		return GameTask.DelayRealtime(1000);
 	}
 	[ClientRpc]
-	public static void TransitionUIClient() {
+	public static void ClientTransitionUI() {
 		Hud._hud.ToAndFromBlack();
 	}
 
 	// fades over 1s
 	// stays black --- also dont mark static as vsc wants
 	public System.Threading.Tasks.Task ToBlackUI() {
-		ToBlackUIClient();
+		ClientToBlackUI();
 		return GameTask.DelayRealtime(1000);
 	}
 	[ClientRpc]
-	public static void ToBlackUIClient() {
+	public static void ClientToBlackUI() {
 		Hud._hud.ToBlack();
 	}
 
 	// unfades over 1s --- also dont mark static as vsc wants
 	public System.Threading.Tasks.Task FromBlackUI() {
-		FromBlackUIClient();
+		ClientFromBlackUI();
 		return GameTask.DelayRealtime(1000);
 	}
 	[ClientRpc]
-	public static void FromBlackUIClient() {
+	public static void ClientFromBlackUI() {
 		Hud._hud.FromBlack();
 	}
 }

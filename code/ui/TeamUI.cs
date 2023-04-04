@@ -6,12 +6,12 @@ using System.Collections.Generic;
 namespace GGame;
 
 public class TeamUI : Panel {
-    public static TeamUI Cur {get; set;}
+    public static TeamUI Current {get; set;}
     public static List<PawnPanel> pawns = new();
 
     public TeamUI() {
-        if (Cur is not null) return;
-        Cur = this;
+        if (Current is not null) return;
+        Current = this;
     }
 
     public override void Tick() {
@@ -21,7 +21,7 @@ public class TeamUI : Panel {
     public new static void Add(Goon goon) {
         PawnPanel a = new(goon);
         pawns.Add(a);
-        TeamUI.Cur.AddChild(a);
+        TeamUI.Current.AddChild(a);
     }
     public static void Remove(Goon goon) {
         var p = pawns.Where(p => p.goon == goon);

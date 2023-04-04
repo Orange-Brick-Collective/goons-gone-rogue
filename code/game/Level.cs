@@ -25,7 +25,7 @@ public enum TileType {
 
 public static class WallModels {
     public static int RandomWall() {
-        return System.Random.Shared.Int(0, 1);
+        return System.Random.Shared.Int(0, 3);
     }
 
     public static string[] GetModels(int i) {
@@ -33,7 +33,6 @@ public static class WallModels {
             1 => level1,
             2 => level2,
             3 => level3,
-            4 => level4,
             _ => level0,
         };
     }
@@ -57,15 +56,21 @@ public static class WallModels {
     };
 
     public static readonly string[] level2 = {
-        "models/map/walls/town0-wall0.vmdl",
+        "models/map/walls/wall2-full.vmdl",
+        "models/map/walls/wall2-half.vmdl",
+        "models/map/walls/wall2-half.vmdl",
+        "models/map/walls/wall2-flat.vmdl",
+        "models/map/walls/wall2-flat.vmdl",
+        "models/map/walls/wall2-flat.vmdl",
     };
 
     public static readonly string[] level3 = {
-        "models/map/walls/town0-wall0.vmdl",
-    };
-
-    public static readonly string[] level4 = {
-        "models/map/walls/town0-wall0.vmdl",
+        "models/map/walls/wall3-full.vmdl",
+        "models/map/walls/wall3-half.vmdl",
+        "models/map/walls/wall3-half.vmdl",
+        "models/map/walls/wall3-flat.vmdl",
+        "models/map/walls/wall3-flat.vmdl",
+        "models/map/walls/wall3-flat.vmdl",
     };
 }
 

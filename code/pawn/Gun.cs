@@ -25,7 +25,7 @@ public class Gun : ModelEntity {
             
             tr.Surface.DoBulletImpact(tr);
 
-            if (owner == Player.Cur && tr.Entity is Goon) {
+            if (owner == Player.Current && tr.Entity is Goon) {
                 owner.PlaySound("sounds/hitsound.sound");
             }
 

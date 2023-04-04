@@ -18,14 +18,14 @@ public class GameHud : Panel {
     }
 
     public override void Tick() {
-        if (Player.Cur.InMenu) {
+        if (Player.Current.InMenu) {
             Style.Opacity = 0;
             return;
         } else {
             Style.Opacity = 1;
         }
 
-        points.SetText($"Points: {GGame.Cur.Score}");
-        depth.SetText($"Depth: {GGame.Cur.CurrentDepth}");
+        points.SetText($"Points: {GGame.Current.Score}");
+        depth.SetText($"Depth: {GGame.Current.CurrentDepth}");
     }
 }

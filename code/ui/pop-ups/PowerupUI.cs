@@ -45,7 +45,7 @@ public class PowerupUI : Panel {
         chosenButton = plrButton;
 
         // add button for each teammate goon
-        foreach (Pawn pawn in GGame.Cur.goons) {
+        foreach (Pawn pawn in GGame.Current.goons) {
             if (pawn.Team != player.Team) return;
 
             Button b = new(pawn.Name, "") {Classes = "button"};
@@ -87,7 +87,7 @@ public class PowerupUI : Panel {
                 pawn.AppliedPowerups.Add(ent.powerup.Title, 1);
             }
 
-            GGame.Cur.Score += 20;
+            GGame.Current.Score += 20;
         }
 
         ent.Delete();

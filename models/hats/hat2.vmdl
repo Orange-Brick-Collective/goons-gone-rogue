@@ -11,7 +11,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						name = "player1"
+						name = "player"
 						filename = "models/player/player1.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
@@ -25,25 +25,11 @@
 							exclude_by_default = false
 							exception_list = 
 							[
-								"Cylinder_003",
+								"Cube_004",
+								"Cube",
 								"Cube_006",
 							]
 						}
-					},
-				]
-			},
-			{
-				_class = "PhysicsShapeList"
-				children = 
-				[
-					{
-						_class = "PhysicsShapeBox"
-						parent_bone = ""
-						surface_prop = "flesh"
-						collision_tags = "solid"
-						origin = [ 0.0, 0.0, 35.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 32.0, 32.0, 70.0 ]
 					},
 				]
 			},

@@ -48,7 +48,7 @@ public class GoonStats : Panel {
             numbers.SetText(parent.Name + $"\n {parent.AmmoString()}");
             powerupLabel.SetText(""); 
 
-            if (parent == Player.Cur) return;
+            if (parent == Player.Current) return;
             parent.healthPanel.WorldScale = 2.5f;
         } else {
             numbers.SetText(parent.PawnString());

@@ -4,6 +4,11 @@ using System;
 namespace GGame;
 
 public partial class Pawn : AnimatedEntity {
+    public string[] hats = new[] {
+        "models/hats/hat1.vmdl",
+        "models/hats/hat2.vmdl",
+    };
+
     public string[] PawnNames = new[] {
         "Arduino",
         "Adriano",
@@ -51,18 +56,23 @@ public partial class Pawn : AnimatedEntity {
     };
 
     public void Generate(float depth = 0) {
-        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + 
-            " " + 
+        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + " " + 
             PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
 
         Scale = Random.Shared.Float(0.8f, 1.1f);
 
         if (Team == 0) {
-            RenderColor = Random.Shared.Float(0, 1) > 0.5f ? new Color(0.8f, 1f, 0.8f) : new Color(0.8f, 0.8f, 1f);
+            RenderColor = Random.Shared.Float(0, 1) > 0.5f ? new Color(0.3f, 0.5f, 0.3f) : new Color(0.3f, 0.3f, 0.5f);
         } else {
-            RenderColor = new Color(1f, 0.8f, 1f);
+            RenderColor = new Color(0.5f, 0.3f, 0.3f);
         }
         
+		int random = Random.Shared.Int(hats.Length);
+		if (random != hats.Length) {
+			_ = new ModelEntity(hats[random], this);
+		}
+
+
         // outift
 
         // hat

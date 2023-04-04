@@ -41,13 +41,13 @@ public class FightEndUI : Panel {
     private static void ServerHeal(string password) {
         if (password != "1247") return;
         
-		Player.Cur.Health = Math.Min(Player.Cur.Health + 50, Player.Cur.MaxHealth);
+		Player.Current.Health = Math.Min(Player.Current.Health + 50, Player.Current.MaxHealth);
 
-		foreach (Goon goon in GGame.Cur.goons) {
+		foreach (Goon goon in GGame.Current.goons) {
 			if (goon.Team == 0) goon.Health = Math.Min(goon.Health + 50, goon.MaxHealth);
 		}
 
-        GGame.Cur.TransitionEndFight();
+        GGame.Current.TransitionEndFight();
     }
 
     private void NewPawn() {
@@ -60,10 +60,10 @@ public class FightEndUI : Panel {
         if (password != "1245") return;
 
         Goon g = new();
-        g.Init(0, Player.Cur);
-        g.Generate(GGame.Cur.currentWorld.depth);
-        g.Position = Player.Cur.Position + g.posInGroup;
+        g.Init(0, Player.Current);
+        g.Generate(GGame.Current.currentWorld.depth);
+        g.Position = Player.Current.Position + g.posInGroup;
 
-        GGame.Cur.TransitionEndFight();
+        GGame.Current.TransitionEndFight();
     }
 }

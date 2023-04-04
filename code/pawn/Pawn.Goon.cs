@@ -41,8 +41,9 @@ public partial class Goon : Pawn {
 
         weapon = new();
         weapon.Init("models/gun.vmdl");
-        weapon.Position = Position + new Vector3(0, -12 * Scale, 35 * Scale);
+        weapon.Position = Position + new Vector3(8, -12 * Scale, 32 * Scale);
         weapon.Rotation = Rotation;
+        weapon.RenderColor = new Color(0.8f, 0.8f, 0.8f);
         weapon.Owner = this;
         weapon.Parent = this;
 
@@ -61,13 +62,13 @@ public partial class Goon : Pawn {
         ClientOnKilled();
         UnregisterSelf();
 
-        if (!Player.Cur.InMenu)  {
+        if (!Player.Current.InMenu)  {
             if (Team != 0) {
-                GGame.Cur.Kills += 1;
-                GGame.Cur.Score += 50;
+                GGame.Current.Kills += 1;
+                GGame.Current.Score += 50;
             }
 
-            GGame.Cur.FightOverCheck();
+            GGame.Current.FightOverCheck();
         }
 
         Delete();
@@ -94,12 +95,12 @@ public partial class Goon : Pawn {
     }
 
     public void RegisterSelf() {
-        GGame.Cur.goons.Add(this);
-        tickCycle = GGame.Cur.goons.Count % 50;
+        GGame.Current.goons.Add(this);
+        tickCycle = GGame.Current.goons.Count % 50;
     }
     
     public void UnregisterSelf() {
-        GGame.Cur.goons.Remove(this);
+        GGame.Current.goons.Remove(this);
     }
 
     // *
