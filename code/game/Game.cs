@@ -54,6 +54,8 @@ public partial class GGame : GameManager {
 	}
 
 	public async void FightOverCheck() {
+		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
+		
 		foreach (Goon goon in goons) {
 			if (goon.Team != 0) return;
 		}
@@ -115,9 +117,10 @@ public partial class GGame : GameManager {
 			goon.OnKilled();
 		}
 
-		await ArenaGen.Current.GenerateLevel(WallModels.RandomWall());
-
 		ClientGameEnd();
+
+		await ArenaGen.Current.GenerateLevel(WallModels.RandomWall());
+		await GameTask.DelayRealtime(200);
 
 		Player.Current.Transform = ArenaMarker;
 		Player.Current.MaxHealth = 200;
@@ -149,7 +152,7 @@ public partial class GGame : GameManager {
 
 	public async void TransitionStartFight() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
-		
+
 		currentPosition = Player.Current.Transform;
 		currentViewangles = Player.Current.ViewAngles;
 
@@ -185,7 +188,7 @@ public partial class GGame : GameManager {
 	}
 
 	public async void TransitionEndFight() {
-		if (!Player.Current.IsPlaying) return;
+		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
 		await TransitionUI();
 
