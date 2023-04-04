@@ -29,7 +29,7 @@ public static class WallModels {
     }
 
     public static string[] GetModels(int i) {
-        return (i % 2) switch {
+        return i switch {
             1 => level1,
             2 => level2,
             3 => level3,
@@ -102,7 +102,7 @@ public class Tile : ModelEntity {
         if (this is TileEmpty) return;
 
         string[] walls = WallModels.GetModels(wallType);
-
+        Log.Info(walls[0]);
         for (int i = 0; i < 4; i++) {
             if (!directions[(i + rot) % 4]) {
                 Transform? p = Model.GetAttachment(attachmentNames[i]);

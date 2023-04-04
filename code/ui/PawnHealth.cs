@@ -52,7 +52,7 @@ public class PawnHealth {
             }
 
             Player.Current.healthPanel.Rotation = Rotation.FromYaw(Player.Current.Rotation.Yaw() + 180);
-            Player.Current.healthPanel.Position = Player.Current.Position + Vector3.Up * 26 + Player.Current.Rotation.Backward * 3.8f;
+            Player.Current.healthPanel.Position = Player.Current.Position + Vector3.Up * 25 + Player.Current.Rotation.Backward * 3.2f;
         }
     }
 }
