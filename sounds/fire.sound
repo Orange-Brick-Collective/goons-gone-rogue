@@ -1,12 +1,16 @@
 {
   "UI": false,
-  "Volume": "0.30,0.30,0",
+  "Volume": "1.00,1.00,0",
   "Pitch": "1.15,1.25,1",
-  "Decibels": 70,
+  "Decibels": 135,
   "SelectionMode": "RandomExclusive",
   "Sounds": [
-    "sounds/pew61.vsnd"
+    "sounds/fire1.vsnd",
+    "sounds/fire2.vsnd",
+    "sounds/fire3.vsnd",
+    "sounds/fire4.vsnd",
+    "sounds/fire5.vsnd"
   ],
-  "MaximumDistance": 1143.9335,
-  "MinimumDistance": 57.196674
+  "MaximumDistance": 4167.7114,
+  "MinimumDistance": 208.38557
 }
