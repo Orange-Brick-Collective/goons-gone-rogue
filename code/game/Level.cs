@@ -108,7 +108,7 @@ public class Tile : ModelEntity {
                 Transform? p = Model.GetAttachment(attachmentNames[i]);
                 if (p is null) return;
 
-                ModelEntity wall = new(walls[System.Random.Shared.Int(0, walls.Length - 1)], this) {
+                ModelEntity wall = new(walls[System.Random.Shared.Int(walls.Length - 1)], this) {
                     Position = p.Value.Position + Position,
                     Rotation = p.Value.Rotation,
                 };
