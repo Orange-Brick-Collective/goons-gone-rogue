@@ -11,8 +11,8 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						name = "player"
-						filename = "models/src/player.fbx"
+						name = "player1"
+						filename = "models/player/player1.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0
@@ -23,20 +23,11 @@
 						import_filter = 
 						{
 							exclude_by_default = false
-							exception_list = [  ]
+							exception_list = 
+							[
+								"Cylinder_003",
+							]
 						}
-					},
-				]
-			},
-			{
-				_class = "MaterialGroupList"
-				children = 
-				[
-					{
-						_class = "DefaultMaterialGroup"
-						remaps = [  ]
-						use_global_default = false
-						global_default_material = ""
 					},
 				]
 			},

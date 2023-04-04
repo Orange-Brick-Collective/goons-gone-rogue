@@ -5,9 +5,7 @@
   "Decibels": 60,
   "SelectionMode": "Random",
   "Sounds": [
-    "sounds/step1.vsnd",
-    "sounds/step2.vsnd",
-    "sounds/step3.vsnd"
+    "sounds/step6.vsnd"
   ],
   "MaximumDistance": 848.93066,
   "MinimumDistance": 42.446533
