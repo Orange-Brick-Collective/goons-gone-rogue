@@ -55,16 +55,26 @@ public partial class Pawn : AnimatedEntity {
         "Zello",
     };
 
-    public void Generate(float depth = 0) {
+    public void Generate(float depth) {
         Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + " " + 
             PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
 
         Scale = Random.Shared.Float(0.8f, 1.1f);
 
         if (Team == 0) {
-            RenderColor = Random.Shared.Float(0, 1) > 0.5f ? new Color(0.3f, 0.5f, 0.3f) : new Color(0.3f, 0.3f, 0.5f);
+            RenderColor = Random.Shared.Int(0, 3) switch {
+                1 => new Color(0.3f, 0.3f, 0.5f),
+                2 => new Color(0.1f, 0.4f, 0.4f),   
+                3 => new Color(0.3f, 0.7f, 0.5f),  
+                _ => new Color(0.3f, 0.5f, 0.3f),
+            };
         } else {
-            RenderColor = new Color(0.5f, 0.3f, 0.3f);
+            RenderColor = Random.Shared.Int(0, 3) switch {
+                1 => new Color(0.5f, 0.3f, 0.3f),
+                2 => new Color(0.5f, 0.4f, 0.3f),   
+                3 => new Color(0.7f, 0.3f, 0.4f),  
+                _ => new Color(0.5f, 0.1f, 0.1f),
+            };
         }
         
 		int random = Random.Shared.Int(hats.Length);
@@ -89,7 +99,7 @@ public partial class Pawn : AnimatedEntity {
         // 2 ticket per magazinesize
         // 3 ticket per -0.1 degreespread
         // 1 ticket per 2 range
-        float maxValue = 25 * (1 + (depth * 0.3f));
+        float maxValue = 25 * (1 + (depth * 0.2f));
 
         for (int i = 0; i < 9; i++) {
             float weighted = GenerateWeighted();

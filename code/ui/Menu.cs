@@ -49,7 +49,7 @@ public class Menu : Panel {
             a1.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" +
                 "You and your team are goons, all of which have their own set of stats to upgrade and progress.\n" + 
                 "You simply go as far as you can, while earning the highest score at the same time.\n" + 
-                "The controls are WASD to move, LMB to fire, E to interact",
+                "The controls are WASD to move, LMB to fire, E to interact.",
                 Classes = "labelb"
             });
 
@@ -65,8 +65,9 @@ public class Menu : Panel {
                 "This is a goon's stats. " +
                 "For each stat, the first number is the 'BASE' stat and the added number is the 'ADD' stat. " + 
                 "This is important to know as Powerups (explained below) only effect 'ADD' stats. " + 
-                "In Example, Glass Cannon doubles Add damage, \nso if you had 10 + 4 Damage, \nyou get 10 + 8 damage."
-            });
+                "In Example, Glass Cannon doubles Add damage, \nso if you had 10 + 4 Damage, \nyou get 10 + 8 damage. " + 
+                "Stats cannot be worse under a functional level, so they cannot become unusable."
+            }); 
             ///////////
 
             Panel i2 = new(this, "container");
@@ -104,7 +105,7 @@ public class Menu : Panel {
 
             i4.AddChild(new Label() {Text = "" +
                 "These are powerups. They are most commonly found in dead ends.\n" + 
-                "Pressing e on them will let you give it's power to yourself or a teammate goon"
+                "Pressing e on them will let you give it's power to yourself or a teammate goon."
             });
         }
     }
@@ -125,9 +126,14 @@ public class Menu : Panel {
         public Leaderboard() {
             Classes = "popup leaderboard";
 
+            AddChild(new Label() {Classes = "text", Text = "Leaderboards"});
 
+            string scores = "";
+            foreach (var item in Leaderboards.Current.TopScores) {
+                scores += $"{item.Key} --- {item.Value}\n";
+            }
 
-            AddChild(new Label() {Text = ""});
+            AddChild(new Label() {Classes = "entries", Text = scores});
         }
     }
 }

@@ -30,13 +30,26 @@ public class FightEndUI : Panel {
         Button newPawnButton = new("Get a new goon", "") {Classes = "button"};
         newPawnButton.AddEventListener("onclick", NewPawn);
         buttons.AddChild(newPawnButton);
+
+        Button nothingButton = new("Nothing", "") {Classes = "button"};
+        nothingButton.AddEventListener("onclick", Nothing);
+        buttons.AddChild(nothingButton);
+    }
+    
+    private void Nothing() {
+        ServerNothing("1249");
+        Delete();
+    }
+    [ConCmd.Server]
+    private static void ServerNothing(string password) {
+        if (password != "1249") return;
+        GGame.Current.TransitionEndFight();
     }
 
     private void Heal() {
         ServerHeal("1247");
         Delete();
     }
-    
     [ConCmd.Server]
     private static void ServerHeal(string password) {
         if (password != "1247") return;
@@ -54,7 +67,6 @@ public class FightEndUI : Panel {
         ServerNewPawn("1245");
         Delete();
     }
-    
     [ConCmd.Server]
     private static void ServerNewPawn(string password) {
         if (password != "1245") return;

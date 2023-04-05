@@ -222,7 +222,9 @@ public class TileEvent : ModelEntity {
 public class TileEventFight : TileEvent {
     public override string ModelStr {get; set;} = "models/map/enemyevent.vmdl";
 
-    public TileEventFight() {}
+    public TileEventFight() {
+        RenderColor = new Color(0.5f, 0.3f, 0.3f);
+    }
 }
 
 public class TileEventPowerups : TileEvent {

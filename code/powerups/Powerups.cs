@@ -11,8 +11,7 @@ public class Powerups {
         return list[Math.Clamp(index, 0, list.Length - 1)];
     }
 
-    // ! all actions currently null on hotload
-    // ! and actions with ';' break even more
+    // ! actions with ';' break even
     public static readonly Powerup[] list = new Powerup[] {
         // *
         // * Simple actions
@@ -44,8 +43,8 @@ public class Powerups {
         new Powerup(
             "",
             "Trigger Happy",
-            "Fires 0.06 seconds faster",
-            (p) => p.AddFireRate -= 0.06f
+            "Fires 0.02 seconds faster",
+            (p) => p.AddFireRate -= 0.02f
         ),
         new Powerup(
             "",
@@ -56,8 +55,8 @@ public class Powerups {
         new Powerup(
             "",
             "Extra Padding",
-            "Adds 100 max health",
-            (p) => p.MaxHealth += 100
+            "Adds 80 max health",
+            (p) => p.MaxHealth += 80
         ),
         new Powerup(
             "",
@@ -90,28 +89,33 @@ public class Powerups {
         new Powerup(
             "",
             "Glass Cannon",
-            "Doubles Add damage, but sets health and max health to 25",
-            (p) => p.PowerupGlassCannon()
+            "Adds 24 damage, but sets health and max health to 25",
+            PowerupGlassCannon
         ),
         new Powerup(
             "",
             "Speedy Cheesy",
-            "Fire 0.08 seconds faster and moves 100 speed faster, but loses 100 range and 0.4 spread",
-            (p) => p.PowerupSpeedyCheesy()
+            "Fire 0.04 seconds faster and moves 80 speed faster, but loses 100 range and 0.6 spread",
+            PowerupSpeedyCheesy
         ),
         new Powerup(
             "",
             "Tank",
             "Gains 25 armor, but loses 100 range and 150 move speed",
-            (p) => p.PowerupTank()
+            PowerupTank
         ),
         new Powerup(
             "",
             "Sniper Rounds",
-            "Add 14 damage, 100 range and 1 less spread, but lose 0.14 firerate and 15 mag",
-            (p) => p.PowerupSniperRounds()
+            "Add 14 damage and 100 range, but lose 0.14 firerate and 15 mag",
+            PowerupSniperRounds
         ),
-
+        new Powerup(
+            "",
+            "Trigger Happy",
+            "Fire 0.06 faster, but lose 0.8 spread",
+            PowerupTriggerHappy
+        ),
         // *
         // * Attack Actions
         // *
@@ -143,6 +147,33 @@ public class Powerups {
         // * Attack Actions
         // *
     };
+
+    public static void PowerupGlassCannon(Pawn pawn) {
+        pawn.MaxHealth = 25;
+        pawn.Health = 25;
+        pawn.AddWeaponDamage += 24;
+    }
+    public static void PowerupSpeedyCheesy(Pawn pawn) {
+        pawn.AddFireRate -= 0.04f;
+        pawn.AddMoveSpeed += 80;
+        pawn.AddRange -= 100;
+        pawn.AddDegreeSpread += 0.6f;
+    }
+    public static void PowerupTank(Pawn pawn) {
+        pawn.Armor += 25;
+        pawn.AddMoveSpeed -= 100;
+        pawn.AddRange -= 100;
+    } 
+    public static void PowerupSniperRounds(Pawn pawn) {
+        pawn.AddWeaponDamage += 14;
+        pawn.AddRange += 100;
+        pawn.AddFireRate += 0.14f;
+        pawn.AddMagazineSize -= 15;
+    }
+    public static void PowerupTriggerHappy(Pawn pawn) {
+        pawn.AddFireRate -= 0.06f;
+        pawn.AddDegreeSpread += 0.8f;
+    }
 }
 
 public class Powerup {
