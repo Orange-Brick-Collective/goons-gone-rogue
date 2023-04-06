@@ -12,6 +12,7 @@
 					{
 						_class = "RenderPrimitiveBox"
 						name = "box"
+						disabled = true
 						parent_bone = ""
 						material_name = "dev/helper/testgrid.vmat"
 						origin = [ 0.0, 0.0, 0.0 ]
