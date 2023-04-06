@@ -5,9 +5,8 @@
   "Decibels": 70,
   "SelectionMode": "RandomExclusive",
   "Sounds": [
-    "sounds/pew91.vsnd",
-    "sounds/stepnoise 2023-04-06 1252.vsnd",
-    "sounds/stepnoise 2023-04-06 1250.vsnd"
+    "sounds/fire1new.vsnd",
+    "sounds/fire2.vsnd"
   ],
   "MaximumDistance": 1143.9335,
   "MinimumDistance": 57.196674
