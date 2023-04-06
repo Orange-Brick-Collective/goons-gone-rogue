@@ -207,6 +207,7 @@ public class TileEvent : ModelEntity {
 
     public virtual void Init(Tile tile) {
         parentTile = tile;
+        parentTile.tileEvent = this;
         Tags.Add("trigger");
         Tags.Add("generated");
         
@@ -234,6 +235,7 @@ public class TileEventPowerups : TileEvent {
 
     public override void Init(Tile tile) {
         parentTile = tile;
+        parentTile.tileEvent = this;
         Tags.Add("generated");
 
         SetModel(ModelStr);

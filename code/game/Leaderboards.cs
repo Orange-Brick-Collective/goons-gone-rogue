@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GGame;
 
-public partial class Leaderboards : Entity {
+public partial class Leaderboards : BaseNetworkable {
     public static Leaderboards Current {get; set;}
     [Net] public IDictionary<string, int> TopScores {get; set;} = new Dictionary<string, int>();
     int playerScores = 0;

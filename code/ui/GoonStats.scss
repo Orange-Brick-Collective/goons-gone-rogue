@@ -54,9 +54,10 @@ GoonStats {
         }
 
         .name {
+            margin-top: -2px;
             width: 100%;
             text-align: center;
-            padding: 3px;
+            line-height: 29px;
             font-size: 34px;
         }
     }

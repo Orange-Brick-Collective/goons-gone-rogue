@@ -17,6 +17,7 @@ public class GameEndUI : Panel {
         $"Depth: {GGame.Current.CurrentDepth}\n" +
         $"Score: {GGame.Current.Score}\n" +
         $"Kills: {GGame.Current.Kills}\n" +
+        $"Powerups Used: {GGame.Current.Powerups}\n" + 
         $"Damage Dealt: {GGame.Current.DamageDealt}\n" +
         $"Damage Taken: {GGame.Current.DamageTaken}"
         });
@@ -25,6 +26,9 @@ public class GameEndUI : Panel {
     }
 
     private void BackToMenu() {
+        GGame.Current.exploreSong.SetVolume(0);
+        GGame.Current.currentSong = GGame.Current.PlaySound("music/menu.sound");
+        
         ServerBackToMenu("1209825");
         Delete();
     }

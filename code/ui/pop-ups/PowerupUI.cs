@@ -1,5 +1,7 @@
 using Sandbox;
 using Sandbox.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GGame;
 
@@ -41,9 +43,7 @@ public class PowerupUI : Panel {
         Button plrButton = new(player.PawnString(), "") {Classes = "button selected"};
         plrButton.AddEventListener("onclick", () => {Select(plrButton, player);});
         buttons.AddChild(plrButton);
-        chosen = player;
-        chosenButton = plrButton;
-
+        
         // add button for each teammate goon
         foreach (Pawn pawn in GGame.Current.goons) {
             if (pawn.Team != player.Team) return;
@@ -52,18 +52,42 @@ public class PowerupUI : Panel {
             b.AddEventListener("onclick", () => {Select(b, pawn);});
             buttons.AddChild(b);
         }
+
+        Select(plrButton, player);
     }
 
     private void Select(Button chosenButton, Pawn chosen) {
-        this.chosenButton.RemoveClass("selected");
-        this.chosenButton.SetText(this.chosen.Name);
+        if (this.chosenButton is not null) {
+            foreach(Label lb in this.chosenButton.ChildrenOfType<PLabel>()) {
+                lb.Delete();
+            }
+
+            this.chosenButton.RemoveClass("selected");
+            this.chosenButton.SetText(this.chosen.Name);
+        }
 
         this.chosenButton = chosenButton;
         this.chosen = chosen;
 
         this.chosenButton.AddClass("selected");
-        this.chosenButton.SetText(chosen.PawnString());
+        this.chosenButton.SetText("  " + chosen.Name + "\n" + chosen.PawnString());
+
+        if (ent.powerup.AffectedStats is null) return;
+        for (int i = 0; i < 8; i++) {
+            List<SelectedStat> a = ent.powerup.AffectedStats.Where(s => (int)s.stat == i).ToList();
+            if (a.Any()) {
+                PLabel p = new() {Text = $"{a.First().amount}"};
+                p.Style.Position = PositionMode.Absolute;
+                p.Style.FontColor = a.First().good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
+                p.Style.Top = Length.Pixels(i * 16 + 17);
+                p.Style.Left = Length.Pixels(250);
+                this.chosenButton.AddChild(p);
+            }
+        }
     }
+
+    // idk what P means i just need a special type to easily find/remove
+    public class PLabel : Label {}
 
     private void Confirm() {
         ServerConfirm("124", ent.NetworkIdent, chosen.NetworkIdent);
@@ -87,6 +111,7 @@ public class PowerupUI : Panel {
                 pawn.AppliedPowerups.Add(ent.powerup.Title, 1);
             }
 
+            GGame.Current.Powerups += 1;
             GGame.Current.Score += 20;
         }
 

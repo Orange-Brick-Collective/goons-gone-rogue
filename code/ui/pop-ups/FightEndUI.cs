@@ -73,7 +73,7 @@ public class FightEndUI : Panel {
 
         Goon g = new();
         g.Init(0, Player.Current);
-        g.Generate(GGame.Current.currentWorld.depth);
+        g.Generate(GGame.Current.currentWorld.depth + 2);
         g.Position = Player.Current.Position + g.posInGroup;
 
         GGame.Current.TransitionEndFight();
