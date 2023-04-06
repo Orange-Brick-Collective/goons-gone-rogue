@@ -17,7 +17,7 @@ public class Menu : Panel {
             GGame.TransitionGameStart("dpiol");
         }) {Classes = "buttone"});
 
-        buttons.AddChild(new Button("Beginner Info","", () => {
+        buttons.AddChild(new Button("Information","", () => {
             openMenu?.Delete();
             Help a = new();
             openMenu = a;
@@ -125,9 +125,9 @@ public class Menu : Panel {
 
             ///////////
 
-            Panel i5 = new(this, "container");
+            Panel i5 = new(this, "containerb");
 
-            i5.AddChild(new Label() {Text = "Stat and their functional Limits\n\n" +
+            i5.AddChild(new Label() {Text = "\n  Stats and their functional limits\n\n" +
                 "Armor: Damage reduction\n" +
                 "Limits: 0 to 150 (0% to 90% reduction)\n\n" +                  
                 "Speed: How fast goon moves\n" +
@@ -143,7 +143,19 @@ public class Menu : Panel {
                 "Spread: Degree inaccuracy of goon\n" +
                 "Limits: 25 to inf\n\n" +
                 "Reload: Time for goon to reload\n" +
-                "Limits: 0.1 to 4\n\n"
+                "Limits: 0.1 to 4\n",
+                Classes = "labelb"
+            });
+
+            ///////////
+
+            Panel i6 = new(this, "containerb");
+
+            i6.AddChild(new Label() {Text = "  Tips\n\n" +
+                " - Battles in open spaces can be avoided if your careful\n" + 
+                " - Having high damage/range goons is useful\n" +
+                " - You start stronger than your goon team\n",
+                Classes = "labelb"
             });
         }
     }
@@ -153,9 +165,13 @@ public class Menu : Panel {
             Classes = "popup about";
 
             AddChild(new Label() {Text = "Made for the Three Thieves spring 2023 gamejam\n\n" +
+                "It was absolutely difficult, being our first Game Jam.\n" + 
+                "We learned a ton, and will make better games in the future because of it. " +
+                "It was worth it, a wonderful opportunity. Thank you Three Thieves for running this event." +
+                "\n\n" +
                 "-- Made By OBC --\n" + 
-                "Kodi022 - conception, programming, ui\n" + 
-                "Andy - theme, art, modelling"
+                "Kodi022 - conception, programming, ui, sound, music\n" + 
+                "Andy - theme, art, modelling, sound"
             });
         }
     }
