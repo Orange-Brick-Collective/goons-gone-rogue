@@ -56,13 +56,13 @@ public partial class Goon : Pawn {
         RegisterSelf();
 	}
 
-
 	public override void OnKilled() {
-		base.OnKilled();
+        base.OnKilled();
         ClientOnKilled();
         UnregisterSelf();
 
-        if (!Player.Current.InMenu)  {
+        if (!Player.Current.InMenu) {
+
             if (Team != 0) {
                 GGame.Current.Kills += 1;
                 GGame.Current.Score += 50;

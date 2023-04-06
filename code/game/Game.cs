@@ -79,6 +79,11 @@ public partial class GGame : GameManager {
 		}
 	}
 
+	[ConCmd.Server("ggr_kill")]
+	public static void ServerKillCMD() {
+		Player.Current.OnKilled();
+	}
+
 	public void OnIsMusicEnabledChanged() {
 		if (IsMusicEnabled) {
 			exploreSong.SetVolume(0);
@@ -118,13 +123,17 @@ public partial class GGame : GameManager {
 		}
 	}
 
+	// jic 2 enemies die at same time
+	public TimeSince lastFightEnd = 0;
 	public async void FightOverCheck() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
+		if (lastFightEnd < 1) return;
+		lastFightEnd = 0;
 		
 		foreach (Goon goon in goons) {
 			if (goon.Team != 0) return;
 		}
-
+		
 		await GameTask.DelayRealtime(500);
 
 		Score += 250;

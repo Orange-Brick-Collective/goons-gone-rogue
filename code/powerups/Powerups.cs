@@ -15,6 +15,7 @@ public enum Stat {
     Reload
 }
 
+// this is purely for understanding and visualizing the powerup
 public class SelectedStat {
     private static readonly Stat[] NegativeGoodStats = {Stat.Delay, Stat.Spread, Stat.Reload};
 
@@ -96,6 +97,13 @@ public class Powerups {
         new Powerup(
             "",
             "Extra Padding",
+            "Adds 60 max health",
+            null,
+            (p) => p.MaxHealth += 60
+        ),
+        new Powerup(
+            "",
+            "Extra Padding",
             "Adds 80 max health",
             null,
             (p) => p.MaxHealth += 80
@@ -123,10 +131,17 @@ public class Powerups {
         ),
         new Powerup(
             "",
+            "Sprinter",
+            "Moves 80 faster",
+            new SelectedStat[] {new SelectedStat(Stat.Speed, 80)},
+            (p) => p.AddMoveSpeed += 80
+        ),
+        new Powerup(
+            "",
             "Thicker Armor",
-            "Adds 2 armor",
-            new SelectedStat[] {new SelectedStat(Stat.Armor, 2)},
-            (p) => p.Armor += 2
+            "Adds 4 armor",
+            new SelectedStat[] {new SelectedStat(Stat.Armor, 4)},
+            (p) => p.Armor += 4
         ),
 
         // *

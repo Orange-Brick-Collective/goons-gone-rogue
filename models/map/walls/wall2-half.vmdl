@@ -10,22 +10,6 @@
 				children = 
 				[
 					{
-						_class = "RenderPrimitiveBox"
-						name = "box"
-						disabled = true
-						parent_bone = ""
-						material_name = "dev/helper/testgrid.vmat"
-						origin = [ 0.0, 0.0, 0.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						max_u = 1.0
-						max_v = 1.0
-						dimensions = [ 10.0, 10.0, 10.0 ]
-						segments_x = 1
-						segments_y = 1
-						segments_z = 1
-						invert = false
-					},
-					{
 						_class = "RenderMeshFile"
 						name = "residental6nodoor"
 						filename = "models/src/residental6nodoor.dmx"
