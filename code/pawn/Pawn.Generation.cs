@@ -149,7 +149,7 @@ public partial class Pawn : AnimatedEntity {
 
     public float GenerateWeighted() {
         float num = 1;
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             float newNum = Random.Shared.Float(0, 1);
             if (newNum < num) num = newNum;
         }

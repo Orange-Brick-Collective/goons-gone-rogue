@@ -110,11 +110,6 @@ public partial class Player : Pawn {
 		if (Input.Down(InputButton.PrimaryAttack) && Game.IsServer) {
 			FireGun();
 		}
-
-		if (Input.Pressed(InputButton.Slot1) && Game.IsServer) {
-			TraceResult tr = Trace.Ray(Position + HeightOffset, Position + ViewAngles.Forward * 2000).Ignore(this).Run();
-			Position = tr.EndPosition;
-		}
 	}
 
 	public override void FrameSimulate(IClient cl) {

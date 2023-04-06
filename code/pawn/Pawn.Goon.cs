@@ -196,7 +196,7 @@ public partial class Goon : Pawn {
             .WithoutTags("goon", "trigger")
             .Run();
 
-        if (tr.Distance > 500) Position = leader.Position + leader.Rotation.Backward * 50 * Vector3.Up * 20;
+        if (tr.Distance > 500) Position = leader.Position + posInGroup * Vector3.Up * 40;
 
         if (tr.Distance > 20) {
             AILookat(tr.Direction.WithZ(0));

@@ -12,11 +12,6 @@ public class ArenaGen {
         Current = this;
     }
 
-    [ConCmd.Server("gen_arena")]
-    public static async void GenerateLevelCMD() {
-        await Current.GenerateLevel();
-    }
-
     public async System.Threading.Tasks.Task GenerateLevel(int? wallType = null) {
         Game.AssertServer();
         Log.Info("Generating Arena");

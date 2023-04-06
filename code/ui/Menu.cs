@@ -1,3 +1,4 @@
+using Sandbox;
 using Sandbox.UI;
 
 namespace GGame;
@@ -23,7 +24,7 @@ public class Menu : Panel {
             AddChild(a);
         }) {Classes = "buttone"});
 
-        buttons.AddChild(new Button("...","", () => {
+        buttons.AddChild(new Button("Leaderboard","", () => {
             openMenu?.Delete();
             Leaderboard a = new();
             openMenu = a;
@@ -36,11 +37,25 @@ public class Menu : Panel {
             openMenu = a;
             AddChild(a);
         }) {Classes = "buttone"});
+
+        buttons.AddChild(new Button("Toggle music","", () => {
+            ServerToggleMusic();
+        }) {Classes = "buttone"});
+    }
+    [ConCmd.Server]
+    public static void ServerToggleMusic() {
+        GGame.Current.IsMusicEnabled = !GGame.Current.IsMusicEnabled;
     }
 
     public class Help : Panel {
         public Help() {
             Classes = "popup help";
+
+            Panel notice = new(this, "containerb");
+
+            notice.AddChild(new Label() {Text = "You can scroll in this menu",
+                Classes = "labelc"
+            });
 
             ///////////
 
@@ -106,6 +121,29 @@ public class Menu : Panel {
             i4.AddChild(new Label() {Text = "" +
                 "These are powerups. They are most commonly found in dead ends.\n" + 
                 "Pressing e on them will let you give it's power to yourself or a teammate goon."
+            });
+
+            ///////////
+
+            Panel i5 = new(this, "container");
+
+            i5.AddChild(new Label() {Text = "Stat and their functional Limits\n\n" +
+                "Armor: Damage reduction\n" +
+                "Limits: 0 to 150 (0% to 90% reduction)\n\n" +                  
+                "Speed: How fast goon moves\n" +
+                "Limits: 50 to inf\n\n" +
+                "Range: Unit distance goon's bullet reach\n" +
+                "Limits: 100 to inf\n\n" +                 
+                "Damage: Damage goon's bullets do\n" +
+                "Limits: 1 to inf\n\n" +                 
+                "Delay: Time between shooting\n" +
+                "Limits: 0.05 to 1.5\n\n" +
+                "Mag: Magazine size\n" +
+                "Limits: 2 to inf\n\n" +
+                "Spread: Degree inaccuracy of goon\n" +
+                "Limits: 25 to inf\n\n" +
+                "Reload: Time for goon to reload\n" +
+                "Limits: 0.1 to 4\n\n"
             });
         }
     }

@@ -5,8 +5,15 @@ using System.Linq;
 
 namespace GGame;
 
+// This game was written like jank. It was a HUGE learning for me (Kodi022) at many
+// places in and out of programming, and my future projects will definitely 
+// be cleaner as a result. Glad to have been a part of the Game jam.
+
+// https://www.youtube.com/watch?v=PB1TqA8JjiA&list=PL1dFsWeZdLiR4ppHRDlk6wiVDc0bIr9PL
+
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
+	[Net] public Leaderboards Leaderboard {get; set;}
 
 	public Transform ArenaMarker {get; set;}
 	public World currentWorld;
@@ -15,12 +22,14 @@ public partial class GGame : GameManager {
 	public Transform currentPosition;
 	public Angles currentViewAngles;
 
-	// music actually almost gave me a meltdown, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
+	// music actually almost gave me a migraine, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
+	[Net, Change] public bool IsMusicEnabled {get; set;} = true;
 	public Sound exploreSong;
 	public Sound currentSong;
 
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
+	[Net] public int Powerups {get; set;} = 0;
 	[Net] public int DamageDealt {get; set;} = 0;
 	[Net] public int DamageTaken {get; set;} = 0;
 
@@ -28,7 +37,7 @@ public partial class GGame : GameManager {
 	
 	public GGame() {
 		if (Game.IsServer) {
-			_ = new Leaderboards();
+			Leaderboard = new Leaderboards();
 			_ = new WorldGen();
 			_ = new ArenaGen();
 			GenSpawnArena();
@@ -70,6 +79,45 @@ public partial class GGame : GameManager {
 		}
 	}
 
+	public void OnIsMusicEnabledChanged() {
+		if (IsMusicEnabled) {
+			exploreSong.SetVolume(0);
+			currentSong.SetVolume(1);
+			currentSong.Stop();
+			currentSong = PlaySound("music/menu.sound");
+		} else {
+			currentSong.Stop();
+			exploreSong.SetVolume(0);
+			currentSong.SetVolume(0);
+		}
+	}
+
+	[ClientRpc]
+	public void ClientExploreSong() {
+		if (IsMusicEnabled) {
+			currentSong.Stop();
+			exploreSong.SetVolume(1);
+		}
+	}
+
+	[ClientRpc]
+	public void ClientBattleSong() {
+		if (IsMusicEnabled) {
+			currentSong.Stop();
+			currentSong = PlaySound("music/battle.sound");
+			exploreSong.SetVolume(0);
+		}
+	}
+
+	[ClientRpc]
+	public void ClientMenuSong() {
+		if (IsMusicEnabled) {
+			currentSong.Stop();
+			currentSong = PlaySound("music/menu.sound");
+			exploreSong.SetVolume(0);
+		}
+	}
+
 	public async void FightOverCheck() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 		
@@ -107,9 +155,9 @@ public partial class GGame : GameManager {
 		if (password != "dpiol") return;
 
 		if (Player.Current.IsPlaying) return;
-		Player.Current.IsPlaying = true;
-
+		
 		await GGame.Current.TransitionUI();
+		Player.Current.IsPlaying = true;
 
 		await WorldGen.Current.GenerateLevel(8, 6, 0, false);
 		Player.Current.InMenu = false;
@@ -122,12 +170,7 @@ public partial class GGame : GameManager {
 		g2.Init(0, Player.Current);
 		g2.Generate(5);
 
-		GGame.Current.ClientTransitionGameStart();
-	}
-	[ClientRpc]
-	public void ClientTransitionGameStart() {
-		currentSong.Stop();
-		exploreSong.SetVolume(1);
+		GGame.Current.ClientExploreSong();
 	}
 
 	public async void TransitionGameEnd() {
@@ -165,11 +208,13 @@ public partial class GGame : GameManager {
 
 		Score = 0;
 		Kills = 0;
+		Powerups = 0;
 		DamageDealt = 0;
 		DamageTaken = 0;
 	}
 	[ClientRpc]
-	public static void ClientGameEnd() {
+	public void ClientGameEnd() {
+		ClientExploreSong();
 		Hud._hud.RootPanel.AddChild(new GameEndUI());
 	}
 
@@ -183,6 +228,7 @@ public partial class GGame : GameManager {
 		currentPosition = Player.Current.Transform;
 		currentViewAngles = Player.Current.ViewAngles;
 
+		Player.Current.IsPlaying = false;
 		await TransitionUI();
 		
 		await ArenaGen.Current.GenerateLevel();
@@ -191,6 +237,8 @@ public partial class GGame : GameManager {
 		Player.Current.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
 		Player.Current.ViewAngles = new Angles(0, 0, 0);
 		ClientTransitionStartFight();
+		ClientBattleSong();
+		Player.Current.IsPlaying = true;
 		Player.Current.IsInCombat = true;
 		Player.Current.CurrentMag = Player.Current.MagazineSize;
 
@@ -217,8 +265,6 @@ public partial class GGame : GameManager {
 	}
 	[ClientRpc]
 	public void ClientTransitionStartFight() {
-		exploreSong.SetVolume(0);
-		currentSong = Sound.FromScreen("music/battle.sound");
 		Player.Current.ViewAngles = new Angles(0, 0, 0);
 	}
 
@@ -240,11 +286,10 @@ public partial class GGame : GameManager {
 		Player.Current.Transform = currentPosition;
 		Player.Current.ViewAngles = currentViewAngles;
 		ClientTransitionEndFight(currentViewAngles);
+		ClientExploreSong();
 	}
 	[ClientRpc]
 	public void ClientTransitionEndFight(Angles angle) {
-		currentSong.Stop();
-		exploreSong.SetVolume(1);
 		Player.Current.ViewAngles = angle;
 	}
 

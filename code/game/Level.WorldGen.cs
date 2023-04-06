@@ -12,11 +12,6 @@ public class WorldGen {
         Current = this;
     }
 
-    [ConCmd.Server("gen_world")]
-    public static async void GenerateLevelCMD(int? wall = null) {
-        await Current.GenerateLevel(12, 10, 0, false, wall);
-    }
-
     public async System.Threading.Tasks.Task GenerateLevel(int len, int wid, int depth, bool debug, int? wall = null) {
         Game.AssertServer();
         Log.Info("Generating World");
@@ -62,6 +57,7 @@ public class WorldGen {
                 int negX = (int)Math.Clamp(curP.x - i * 0.8f, 0, len);
                 int negY = (int)Math.Clamp(curP.y - i * 0.8f, 0, wid);
 
+                // YEA ITS BAD
                 if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // up
                 if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // up left
                 if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // left
@@ -122,7 +118,7 @@ public class WorldGen {
             }
 
             if (tile is TileStraight) {
-                if (Random.Shared.Float(0, 1) > 0.58f) {
+                if (Random.Shared.Float(0, 1) > 0.5f) {
                     new TileEventFight().Init(tile);
                     continue;
                 }
