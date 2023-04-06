@@ -9,7 +9,7 @@ public class GoonStats : Panel {
     public Panel stats, powerups;
     public Panel fill;
 
-    public Label health, numbers, powerupLabel;
+    public Label health, numbers, name, powerupLabel;
 
     public GoonStats(Pawn parent) {
         StyleSheet.Load("ui/GoonStats.scss");
@@ -22,7 +22,9 @@ public class GoonStats : Panel {
 
         stats = new(this) {Classes = "stats"};
 
+        name = new() {Classes = "name"};
         numbers = new() {Classes = "number"};
+        stats.AddChild(name);
         stats.AddChild(numbers);
 
         bar = new(this) {Classes = "bar"};
@@ -43,10 +45,11 @@ public class GoonStats : Panel {
         }
 
         stats.SetClass("combat", parent.IsInCombat);
-        
+
+        name.SetText(parent.Name);
         if (parent.IsInCombat) {
-            numbers.SetText(parent.Name + $"\n {parent.AmmoString()}");
-            powerupLabel.SetText(""); 
+            numbers.SetText(parent.AmmoString());
+            powerupLabel.SetText("");
 
             if (parent == Player.Current) return;
             parent.healthPanel.WorldScale = 2.5f;

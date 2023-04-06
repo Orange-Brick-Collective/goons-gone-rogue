@@ -71,7 +71,19 @@ Menu {
         }
 
         &.leaderboard {
+            .text {
+                text-align: center;
+                padding-top: 20px;
+                width: 100%;
+                font-size: 60px;
+            }
 
+            .entries {
+                padding: 20px;
+                width: 100%;
+                font-size: 60px;
+                font-family: anonymouspro;
+            }
         }
 
         &.about {

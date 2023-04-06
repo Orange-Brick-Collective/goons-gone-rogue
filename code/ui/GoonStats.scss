@@ -39,7 +39,7 @@ GoonStats {
 
     .stats {
         bottom: 80px;
-        height: 200px;
+        height: 210px;
         line-height: 22px;
         padding: 2px;
         background-color: rgba(black, 0.5);
@@ -51,6 +51,13 @@ GoonStats {
             font-size: 26px;
             color: white;
             font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
+        }
+
+        .name {
+            width: 100%;
+            text-align: center;
+            padding: 3px;
+            font-size: 34px;
         }
     }
 

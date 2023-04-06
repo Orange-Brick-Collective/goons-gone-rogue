@@ -13,7 +13,7 @@ public partial class GGame : GameManager {
 	public Arena currentArena;
 	[Net] public int CurrentDepth {get; set;}
 	public Transform currentPosition;
-	public Angles currentViewangles;
+	public Angles currentViewAngles;
 
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
@@ -24,6 +24,7 @@ public partial class GGame : GameManager {
 	
 	public GGame() {
 		if (Game.IsServer) {
+			_ = new Leaderboards();
 			_ = new WorldGen();
 			_ = new ArenaGen();
 			GenSpawnArena();
@@ -61,8 +62,8 @@ public partial class GGame : GameManager {
 		}
 
 		await GameTask.DelayRealtime(500);
-		Score += 250;
 
+		Score += 250;
 		ClientFightOverCheck();
 	}
 	[ClientRpc]
@@ -81,6 +82,7 @@ public partial class GGame : GameManager {
 			if (ArenaMarker != new Transform(Vector3.Zero, new Rotation(0, 0, 0, 0), 0)) break;
 		}
 
+		await GameTask.DelayRealtime(200);
 		await ArenaGen.Current.GenerateLevel(0);
 	}
 
@@ -119,9 +121,12 @@ public partial class GGame : GameManager {
 
 		ClientGameEnd();
 
-		await ArenaGen.Current.GenerateLevel(WallModels.RandomWall());
-		await GameTask.DelayRealtime(200);
+		Leaderboards.Current.AddScore(Score);
 
+		await ArenaGen.Current.GenerateLevel(WallModels.RandomWall());
+		await GameTask.DelayRealtime(300);
+
+		Player.Current.AppliedPowerups = new Dictionary<string, int>();
 		Player.Current.Transform = ArenaMarker;
 		Player.Current.MaxHealth = 200;
 		Player.Current.Health = 200;
@@ -154,7 +159,7 @@ public partial class GGame : GameManager {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
 		currentPosition = Player.Current.Transform;
-		currentViewangles = Player.Current.ViewAngles;
+		currentViewAngles = Player.Current.ViewAngles;
 
 		await TransitionUI();
 		
@@ -163,11 +168,13 @@ public partial class GGame : GameManager {
 		// tp player and players goons to one side of arena
 		Player.Current.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
 		Player.Current.ViewAngles = new Angles(0, 0, 0);
+		ClientTransitionStartFight();
 		Player.Current.IsInCombat = true;
 		Player.Current.CurrentMag = Player.Current.MagazineSize;
+
 		foreach (Goon goon in goons) {
 			if (goon.Team == 0) {
-				int x = Random.Shared.Int(-650, -500);
+				int x = Random.Shared.Int(-650, -500) + goon.Armor;
 				int y = Random.Shared.Int(-600, 600);
 				goon.Position = ArenaMarker.Position + new Vector3(x, y, 10);
 				goon.IsInCombat = true;
@@ -176,15 +183,19 @@ public partial class GGame : GameManager {
 		}
 
 		// spawn enemies on other side
-		for (int i = 0; i < 1 + Random.Shared.Int(currentWorld.depth + 1); i++) {
-			Goon g = new();
-			g.Init(1);
-			g.Generate(currentWorld.depth);
-			int x = Random.Shared.Int(500, 650);
+		for (int i = 0; i < 1 + Random.Shared.Int(Math.Max(currentWorld.depth - 1, 0), currentWorld.depth); i++) {
+			Goon goon = new();
+			goon.Init(1);
+			goon.Generate(currentWorld.depth);
+			int x = Random.Shared.Int(500, 650) - goon.Armor;
 			int y = Random.Shared.Int(-600, 600);
-			g.Position = ArenaMarker.Position + new Vector3(x, y, 10);
-			g.IsInCombat = true;
+			goon.Position = ArenaMarker.Position + new Vector3(x, y, 10);
+			goon.IsInCombat = true;
 		}
+	}
+	[ClientRpc]
+	public void ClientTransitionStartFight() {
+		Player.Current.ViewAngles = new Angles(0, 0, 0);
 	}
 
 	public async void TransitionEndFight() {
@@ -203,7 +214,12 @@ public partial class GGame : GameManager {
 		}
 
 		Player.Current.Transform = currentPosition;
-		Player.Current.ViewAngles = currentViewangles;
+		Player.Current.ViewAngles = currentViewAngles;
+		ClientTransitionEndFight(currentViewAngles);
+	}
+	[ClientRpc]
+	public void ClientTransitionEndFight(Angles angle) {
+		Player.Current.ViewAngles = angle;
 	}
 
 	public async void TransitionLevel() {
@@ -215,7 +231,12 @@ public partial class GGame : GameManager {
 		CurrentDepth = currentWorld.depth;
 		Player.Current.Transform = GGame.Current.currentWorld.startPos;
 		Player.Current.ViewAngles = new Angles(0, 0, 0);
+		ClientTransitionLevel();
 		Player.Current.InMenu = false;
+	}
+	[ClientRpc]
+	public void ClientTransitionLevel() {
+		Player.Current.ViewAngles = new Angles(0, 0, 0);
 	}
 
 	// fades over 1s

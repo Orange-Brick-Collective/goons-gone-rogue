@@ -45,11 +45,11 @@ public partial class Pawn : AnimatedEntity {
     
     [Net] public float BaseFireRate {get; set;} = 0.3f;
     [Net] public float AddFireRate {get; set;} = 0;
-    public float FireRate => Math.Max(BaseFireRate + AddFireRate, 0.05f);
+    public float FireRate => Math.Clamp(BaseFireRate + AddFireRate, 0.05f, 1.5f);
 
     [Net] public float BaseReloadTime {get; set;} = 2;
     [Net] public float AddReloadTime {get; set;} = 0;
-    public float ReloadTime => Math.Max(BaseReloadTime + AddReloadTime, 0.1f);   
+    public float ReloadTime => Math.Clamp(BaseReloadTime + AddReloadTime, 0.1f, 4);   
 
     [Net] public int BaseMagazineSize {get; set;} = 20;
     [Net] public int AddMagazineSize {get; set;} = 0;
@@ -57,7 +57,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public float BaseDegreeSpread {get; set;} = 2;
     [Net] public float AddDegreeSpread {get; set;} = 0;
-    public float DegreeSpread => Math.Max(BaseDegreeSpread + AddDegreeSpread, 0);
+    public float DegreeSpread => Math.Clamp(BaseDegreeSpread + AddDegreeSpread, 0, 6);
 
     [Net] public float BaseRange {get; set;} = 400;
     [Net] public float AddRange {get; set;} = 0;
@@ -137,9 +137,9 @@ public partial class Pawn : AnimatedEntity {
         Health -= newDamage;
 
         if (Team == 0) {
-            GGame.Current.DamageDealt += (int)info.Damage;
+            GGame.Current.DamageTaken += (int)newDamage;
         } else {
-            GGame.Current.DamageTaken += (int)info.Damage;
+            GGame.Current.DamageDealt += (int)newDamage;
         }   
 
         if (Health <= 0) {
@@ -182,12 +182,11 @@ public partial class Pawn : AnimatedEntity {
     }
 
     public string PawnString() {
-        return $"   {Name}\n" +
-        $"Armor:  {Armor}\n" +
+        return $"Armor:  {Armor}\n" +
         $"Speed:  {BaseMoveSpeed} + {AddMoveSpeed}\n" +
         $"Range:  {BaseRange} + {AddRange:#0}\n" +
         $"Damage: {BaseWeaponDamage} + {AddWeaponDamage}\n" +
-        $"RPM:    {BaseFireRate} + {AddFireRate:#0.00}\n" +
+        $"Delay:  {BaseFireRate} + {AddFireRate:#0.00}\n" +
         $"Mag:    {BaseMagazineSize} + {AddMagazineSize}\n" +
         $"Spread: {BaseDegreeSpread} + {AddDegreeSpread:#0.0}\n" +
         $"Reload: {BaseReloadTime} + {AddReloadTime:#0.0}";
@@ -195,30 +194,6 @@ public partial class Pawn : AnimatedEntity {
 
     public string AmmoString() {
         return $"{CurrentMag} / {MagazineSize}";
-    }
-
-    public void PowerupGlassCannon() {
-        MaxHealth = 25;
-        Health = 25;
-        AddWeaponDamage *= 2;
-    }
-    public void PowerupSpeedyCheesy() {
-        AddFireRate -= 0.08f;
-        AddMoveSpeed += 100;
-        AddRange -= 100;
-        AddDegreeSpread += 0.4f;
-    }
-    public void PowerupTank() {
-        Armor += 25;
-        AddMoveSpeed -= 100;
-        AddRange -= 100;
-    }
-    public void PowerupSniperRounds() {
-        AddWeaponDamage += 14;
-        AddRange += 100;
-        AddDegreeSpread -= 1;
-        AddFireRate += 0.14f;
-        AddMagazineSize -= 15;
     }
 
     public void PowerupLeech(Pawn pawn) {

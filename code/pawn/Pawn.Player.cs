@@ -126,9 +126,16 @@ public partial class Player : Pawn {
 		Vector3 pos = Position;
 		if (!InMenu) {
 			pos.z += 60;
-			pos += Rotation.Right * 25;
-			TraceResult tr = Trace.Ray(pos, pos - (ViewAngles.Forward * 60)).WithoutTags("player", "goon", "trigger").Run();
-			pos = tr.EndPosition - tr.Direction * 15;
+
+			TraceResult trSide = Trace.Ray(pos, pos - (Rotation.Left * 40))
+				.WithoutTags("player", "goon", "trigger")
+				.Run();
+			pos = trSide.EndPosition - trSide.Direction * 15;
+
+			TraceResult trBack = Trace.Ray(pos, pos - (ViewAngles.Forward * 60))
+				.WithoutTags("player", "goon", "trigger")
+				.Run();
+			pos = trBack.EndPosition - trBack.Direction * 15;
 		} else {
 			pos.z += 40;
 			pos -= ViewAngles.Forward * 100;

@@ -122,7 +122,7 @@ public class WorldGen {
             }
 
             if (tile is TileStraight) {
-                if (Random.Shared.Float(0, 1) > 0.44f) {
+                if (Random.Shared.Float(0, 1) > 0.58f) {
                     new TileEventFight().Init(tile);
                     continue;
                 }
