@@ -15,6 +15,10 @@ public partial class GGame : GameManager {
 	public Transform currentPosition;
 	public Angles currentViewAngles;
 
+	// music actually almost gave me a meltdown, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
+	public Sound exploreSong;
+	public Sound currentSong;
+
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
 	[Net] public int DamageDealt {get; set;} = 0;
@@ -47,10 +51,22 @@ public partial class GGame : GameManager {
 
 	public override void ClientJoined(IClient cl) {
 		base.ClientJoined(cl);
-		if (Game.IsServer) {
-			var pawn = new Player();
-			cl.Pawn = pawn;
-			pawn.Transform = ArenaMarker;
+
+		var pawn = new Player();
+		cl.Pawn = pawn;
+		pawn.Transform = ArenaMarker;
+
+		ClientClientJoined();
+	}
+
+	[ClientRpc]
+	public async void ClientClientJoined() {
+		await GameTask.DelayRealtime(200);
+
+		if (Game.IsClient) {
+			exploreSong = PlaySound("music/explore.sound");
+			exploreSong.SetVolume(0);
+			currentSong = PlaySound("music/menu.sound");
 		}
 	}
 
@@ -105,6 +121,13 @@ public partial class GGame : GameManager {
 		Goon g2 = new();
 		g2.Init(0, Player.Current);
 		g2.Generate(5);
+
+		GGame.Current.ClientTransitionGameStart();
+	}
+	[ClientRpc]
+	public void ClientTransitionGameStart() {
+		currentSong.Stop();
+		exploreSong.SetVolume(1);
 	}
 
 	public async void TransitionGameEnd() {
@@ -152,7 +175,6 @@ public partial class GGame : GameManager {
 
 	public async void TransitionLoad() {
 		await TransitionUI();
-
 	}
 
 	public async void TransitionStartFight() {
@@ -195,6 +217,8 @@ public partial class GGame : GameManager {
 	}
 	[ClientRpc]
 	public void ClientTransitionStartFight() {
+		exploreSong.SetVolume(0);
+		currentSong = Sound.FromScreen("music/battle.sound");
 		Player.Current.ViewAngles = new Angles(0, 0, 0);
 	}
 
@@ -219,6 +243,8 @@ public partial class GGame : GameManager {
 	}
 	[ClientRpc]
 	public void ClientTransitionEndFight(Angles angle) {
+		currentSong.Stop();
+		exploreSong.SetVolume(1);
 		Player.Current.ViewAngles = angle;
 	}
 

@@ -1,13 +1,13 @@
 {
   "UI": false,
-  "Volume": "1.00,1.00,0",
+  "Volume": "0.55,0.55,0",
   "Pitch": "0.91,1.06,1",
   "Decibels": 30,
   "SelectionMode": "Forward",
   "Sounds": [
-    "sounds/stepnoise 2023-04-05 1759.vsnd",
-    "sounds/step6.vsnd"
+    "sounds/step1.vsnd",
+    "sounds/step2.vsnd"
   ],
-  "MaximumDistance": 848.93066,
-  "MinimumDistance": 42.446533
+  "MaximumDistance": 236.23267,
+  "MinimumDistance": 11.811633
 }
