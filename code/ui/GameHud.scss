@@ -67,9 +67,15 @@ GameHud {
                     text-align: left;
                     color: white;
                 }
+
+                &.player {
+                    height: 24px;
+                }
+            }
+
+            &.player {
+                height: 22px;
             }
         }
     }
-
-
 }

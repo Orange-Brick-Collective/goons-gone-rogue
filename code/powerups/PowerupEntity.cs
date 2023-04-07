@@ -14,7 +14,7 @@ public partial class PowerupEntity : ModelEntity {
         SetModel("models/powerup.vmdl");
         SetupPhysicsFromModel(PhysicsMotionType.Static);
 
-        PointLightEntity light = new() {
+        _ = new PointLightEntity() {
             Color = new Color(0.4f, 0.4f, 1f),
             Range = 64,
             Brightness = 0.5f,

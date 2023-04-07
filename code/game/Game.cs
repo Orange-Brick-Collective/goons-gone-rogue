@@ -164,7 +164,7 @@ public partial class GGame : GameManager {
 		if (password != "dpiol") return;
 
 		if (Player.Current.IsPlaying) return;
-		
+
 		await GGame.Current.TransitionUI();
 		Player.Current.IsPlaying = true;
 
@@ -174,10 +174,10 @@ public partial class GGame : GameManager {
 
 		Goon g = new();
 		g.Init(0, Player.Current);
-		g.Generate(5);
+		g.Generate(3);
 		Goon g2 = new();
 		g2.Init(0, Player.Current);
-		g2.Generate(5);
+		g2.Generate(3);
 
 		GGame.Current.ClientExploreSong();
 	}

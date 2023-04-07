@@ -43,17 +43,16 @@ public class PowerupUI : Panel {
         Button plrButton = new(player.PawnString(), "") {Classes = "button selected"};
         plrButton.AddEventListener("onclick", () => {Select(plrButton, player);});
         buttons.AddChild(plrButton);
-        
+        plrButton.Click();
+
         // add button for each teammate goon
         foreach (Pawn pawn in GGame.Current.goons) {
-            if (pawn.Team != player.Team) return;
+            if (pawn.Team != 0) return;
 
             Button b = new(pawn.Name, "") {Classes = "button"};
             b.AddEventListener("onclick", () => {Select(b, pawn);});
             buttons.AddChild(b);
         }
-
-        Select(plrButton, player);
     }
 
     private void Select(Button chosenButton, Pawn chosen) {

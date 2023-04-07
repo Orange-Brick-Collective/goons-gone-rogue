@@ -55,51 +55,44 @@ public class Powerups {
         new Powerup(
             "",
             "Heal Up",
-            "Heals 40 health",
+            "Heals 50 health",
             null,
-            (p) => p.Health = Math.Min(p.Health + 40, p.MaxHealth)
+            (p) => p.Health = Math.Min(p.Health + 50, p.MaxHealth)
         ),
         new Powerup(
             "",
             "Heal Up",
-            "Heals 60 health",
+            "Heals 75 health",
             null,
-            (p) => p.Health = Math.Min(p.Health + 60, p.MaxHealth)
+            (p) => p.Health = Math.Min(p.Health + 75, p.MaxHealth)
         ),
         new Powerup(
             "",
             "Big Heal Up",
-            "Heals 100 health",
+            "Heals 120 health",
             null,
-            (p) => p.Health = Math.Min(p.Health + 100, p.MaxHealth)
+            (p) => p.Health = Math.Min(p.Health + 120, p.MaxHealth)
         ),
         new Powerup(
             "",
             "Hotter Bullets",
-            "Adds 4 damage",
-            new SelectedStat[] {new SelectedStat(Stat.Damage, 4)},
-            (p) => p.AddWeaponDamage += 4
+            "Adds 5 damage",
+            new SelectedStat[] {new SelectedStat(Stat.Damage, 5)},
+            (p) => p.AddWeaponDamage += 5
         ),
         new Powerup(
             "",
             "Trigger Happy",
-            "Fires 0.02 seconds faster",
-            new SelectedStat[] {new SelectedStat(Stat.Delay, -0.02f)},
-            (p) => p.AddFireRate -= 0.02f
+            "Fires 0.03 seconds faster",
+            new SelectedStat[] {new SelectedStat(Stat.Delay, -0.03f)},
+            (p) => p.AddFireRate -= 0.03f
         ),
         new Powerup(
             "",
             "Sharper Eyes",
-            "Adds 100 range",
-            new SelectedStat[] {new SelectedStat(Stat.Range, 100)},
-            (p) => p.AddRange += 100
-        ),
-        new Powerup(
-            "",
-            "Extra Padding",
-            "Adds 60 max health",
-            null,
-            (p) => p.MaxHealth += 60
+            "Adds 120 range",
+            new SelectedStat[] {new SelectedStat(Stat.Range, 120)},
+            (p) => p.AddRange += 120
         ),
         new Powerup(
             "",
@@ -110,17 +103,24 @@ public class Powerups {
         ),
         new Powerup(
             "",
+            "Extra Padding",
+            "Adds 120 max health",
+            null,
+            (p) => p.MaxHealth += 120
+        ),
+        new Powerup(
+            "",
             "Accurate",
-            "Adds 0.3 less spread",
-            new SelectedStat[] {new SelectedStat(Stat.Spread, -0.3f)},
-            (p) => p.AddDegreeSpread -= 0.3f
+            "Adds 0.4 less spread",
+            new SelectedStat[] {new SelectedStat(Stat.Spread, -0.4f)},
+            (p) => p.AddDegreeSpread -= 0.4f
         ),
         new Powerup(
             "",
             "Longer Mag",
-            "Adds 6 more bullets to magazine",
-            new SelectedStat[] {new SelectedStat(Stat.Mag, 6)},
-            (p) => p.AddMagazineSize += 6
+            "Adds 8 more bullets to magazine",
+            new SelectedStat[] {new SelectedStat(Stat.Mag, 8)},
+            (p) => p.AddMagazineSize += 8
         ),
         new Powerup(
             "",
@@ -132,16 +132,16 @@ public class Powerups {
         new Powerup(
             "",
             "Sprinter",
-            "Moves 80 faster",
-            new SelectedStat[] {new SelectedStat(Stat.Speed, 80)},
-            (p) => p.AddMoveSpeed += 80
+            "Moves 100 faster",
+            new SelectedStat[] {new SelectedStat(Stat.Speed, 100)},
+            (p) => p.AddMoveSpeed += 100
         ),
         new Powerup(
             "",
             "Thicker Armor",
-            "Adds 4 armor",
-            new SelectedStat[] {new SelectedStat(Stat.Armor, 4)},
-            (p) => p.Armor += 4
+            "Adds 6 armor",
+            new SelectedStat[] {new SelectedStat(Stat.Armor, 6)},
+            (p) => p.Armor += 6
         ),
 
         // *

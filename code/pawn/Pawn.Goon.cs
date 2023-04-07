@@ -51,7 +51,7 @@ public partial class Goon : Pawn {
 	}
 	public override void ClientSpawn() {
 		base.ClientSpawn();
-        if (Team == 0) TeamUI.Add(this);
+        if (Team == 0) TeamUI.Current.Add(this);
 
         RegisterSelf();
 	}

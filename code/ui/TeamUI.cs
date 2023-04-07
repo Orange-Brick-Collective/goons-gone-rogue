@@ -18,13 +18,13 @@ public class TeamUI : Panel {
         foreach(PawnPanel p in pawns) p.SetFill();
     }
 
-    public new static void Add(Goon goon) {
-        PawnPanel a = new(goon);
+    public new void Add(Pawn pawn) {
+        PawnPanel a = new(pawn);
         pawns.Add(a);
         TeamUI.Current.AddChild(a);
     }
-    public static void Remove(Goon goon) {
-        var p = pawns.Where(p => p.goon == goon);
+    public static void Remove(Pawn pawn) {
+        var p = pawns.Where(p => p.pawn == pawn);
         if (p.Any()) {
             foreach(var pp in p) {
                 pawns.Remove(pp);
@@ -37,10 +37,10 @@ public class TeamUI : Panel {
     public class PawnPanel : Panel {
         public Panel bar, fill, health;
         public Label name, healthLabel;
-        public Goon goon;
+        public Pawn pawn;
 
-        public PawnPanel(Goon goon) {
-            this.goon = goon;
+        public PawnPanel(Pawn pawn) {
+            this.pawn = pawn;
 
             bar = new(this) {Classes = "bar"};
             fill = new(bar) {Classes = "barfill"};
@@ -52,12 +52,17 @@ public class TeamUI : Panel {
             bar.AddChild(name);
             healthLabel = new() {Classes = "barhealth"};
             bar.AddChild(healthLabel);
+
+            if (pawn == Player.Current) {
+                bar.AddClass("player");
+                AddClass("player");
+            }
         }
 
         public void SetFill() {
-            fill.Style.Right = Length.Pixels(200 - (goon.Health / goon.MaxHealth * 200));
-            healthLabel.SetText($"{(int)goon.Health} / {(int)goon.MaxHealth}");
-            name.SetText(goon.Name);
+            fill.Style.Right = Length.Pixels(200 - (pawn.Health / pawn.MaxHealth * 200));
+            healthLabel.SetText($"{(int)pawn.Health} / {(int)pawn.MaxHealth}");
+            name.SetText(pawn.Name);
         }
     }
 }
