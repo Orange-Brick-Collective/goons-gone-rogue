@@ -59,20 +59,20 @@ public partial class Pawn : AnimatedEntity {
         Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + " " + 
             PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
 
-        Scale = Random.Shared.Float(0.8f, 1.1f);
+        Scale = Random.Shared.Float(0.68f, 0.92f);
 
         if (Team == 0) {
             RenderColor = Random.Shared.Int(0, 3) switch {
                 1 => new Color(0.3f, 0.3f, 0.5f),
-                2 => new Color(0.1f, 0.4f, 0.4f),   
-                3 => new Color(0.3f, 0.7f, 0.5f),  
+                2 => new Color(0.1f, 0.4f, 0.4f),
+                3 => new Color(0.3f, 0.7f, 0.5f),
                 _ => new Color(0.3f, 0.5f, 0.3f),
             };
         } else {
             RenderColor = Random.Shared.Int(0, 3) switch {
                 1 => new Color(0.5f, 0.3f, 0.3f),
-                2 => new Color(0.5f, 0.4f, 0.3f),   
-                3 => new Color(0.7f, 0.3f, 0.4f),  
+                2 => new Color(0.5f, 0.4f, 0.3f),
+                3 => new Color(0.7f, 0.3f, 0.4f),
                 _ => new Color(0.5f, 0.1f, 0.1f),
             };
         }
