@@ -3,7 +3,7 @@ using Sandbox.UI;
 namespace GGame;
 
 public class GoonStats : Panel {
-    public Pawn parent;
+    public Pawn pawn;
 
     public Panel bar;
     public Panel stats, powerups;
@@ -11,9 +11,9 @@ public class GoonStats : Panel {
 
     public Label health, numbers, name, powerupLabel;
 
-    public GoonStats(Pawn parent) {
+    public GoonStats(Pawn pawn) {
         StyleSheet.Load("ui/GoonStats.scss");
-        this.parent = parent;
+        this.pawn = pawn;
 
         powerups = new(this) {Classes = "stats2"};
 
@@ -35,29 +35,31 @@ public class GoonStats : Panel {
     }
     
     public override void Tick() {
-        bar.Style.Width = parent.MaxHealth;
-        fill.Style.Right = Length.Percent(100 - (parent.Health / parent.MaxHealth * 100));
+        if (pawn is null || !pawn.IsValid) Delete();
 
-        if (parent.MaxHealth < 200) {
-            health.SetText($"{(int)parent.Health}");
+        bar.Style.Width = pawn.MaxHealth;
+        fill.Style.Right = Length.Percent(100 - (pawn.Health / pawn.MaxHealth * 100));
+
+        if (pawn.MaxHealth < 200) {
+            health.SetText($"{(int)pawn.Health}");
         } else {
-            health.SetText($"{(int)parent.Health} / {(int)parent.MaxHealth}");
+            health.SetText($"{(int)pawn.Health} / {(int)pawn.MaxHealth}");
         }
 
-        stats.SetClass("combat", parent.IsInCombat);
+        stats.SetClass("combat", pawn.IsInCombat);
 
-        name.SetText(parent.Name);
-        if (parent.IsInCombat) {
-            numbers.SetText(parent.AmmoString());
+        name.SetText(pawn.Name);
+        if (pawn.IsInCombat) {
+            numbers.SetText(pawn.AmmoString());
             powerupLabel.SetText("");
 
-            if (parent == Player.Current) return;
-            parent.healthPanel.WorldScale = 2.5f;
+            if (pawn == Player.Current) return;
+            pawn.healthPanel.WorldScale = 2.5f;
         } else {
-            numbers.SetText(parent.PawnString());
+            numbers.SetText(pawn.PawnString());
             SetPowerupText();
 
-            parent.healthPanel.WorldScale = 0.8f;
+            pawn.healthPanel.WorldScale = 0.8f;
         }
 
         
@@ -66,7 +68,7 @@ public class GoonStats : Panel {
     public void SetPowerupText() {
         string label = "";
         
-        foreach (var thing in parent.AppliedPowerups) {
+        foreach (var thing in pawn.AppliedPowerups) {
             label += $"{thing.Key}: {thing.Value}\n";
         }
 

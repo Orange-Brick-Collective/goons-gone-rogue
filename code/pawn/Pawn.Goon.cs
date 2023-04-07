@@ -62,7 +62,6 @@ public partial class Goon : Pawn {
         UnregisterSelf();
 
         if (!Player.Current.InMenu) {
-
             if (Team != 0) {
                 GGame.Current.Kills += 1;
                 GGame.Current.Score += 50;
@@ -114,7 +113,7 @@ public partial class Goon : Pawn {
             if (target is null || !target.IsValid()) {
                 AIFindTarget();
             } else {
-                TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+                TraceResult tr = Trace.Ray(Position + HeightOffset * 1.4f, target.Position + target.HeightOffset * 1.5f)
                     .Ignore(this)
                     .WithoutTags($"team{Team}")
                     .Run();
@@ -178,7 +177,7 @@ public partial class Goon : Pawn {
             AIFindTarget();
         }
 
-        TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
+        TraceResult tre = Trace.Ray(Position + HeightOffset * 1.4f, target.Position + target.HeightOffset * 1.5f)
             .EntitiesOnly()
             .WithoutTags($"team{Team}")
             .Run();

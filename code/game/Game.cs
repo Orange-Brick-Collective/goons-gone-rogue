@@ -224,6 +224,7 @@ public partial class GGame : GameManager {
 	[ClientRpc]
 	public void ClientGameEnd() {
 		ClientExploreSong();
+		TeamUI.Current.Clear();
 		Hud._hud.RootPanel.AddChild(new GameEndUI());
 	}
 
@@ -266,6 +267,7 @@ public partial class GGame : GameManager {
 			Goon goon = new();
 			goon.Init(1);
 			goon.Generate(currentWorld.depth);
+			goon.AddWeaponDamage += (int)(currentWorld.depth * 0.5f);
 			int x = Random.Shared.Int(500, 650) - goon.Armor;
 			int y = Random.Shared.Int(-600, 600);
 			goon.Position = ArenaMarker.Position + new Vector3(x, y, 10);
