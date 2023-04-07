@@ -130,7 +130,7 @@ public class Menu : Panel {
 
             i5.AddChild(new Label() {Text = "\n  Stats and their functional limits\n\n" +
                 "Armor: Damage reduction\n" +
-                "Limits: 0 to 150 (0% to 90% reduction)\n\n" +                  
+                "Limits: 0 to 150 (0% to 80% reduction)\n\n" +                  
                 "Speed: How fast goon moves\n" +
                 "Limits: 50 to inf\n\n" +
                 "Range: Unit distance goon's bullet reach\n" +

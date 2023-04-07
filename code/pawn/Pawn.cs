@@ -163,12 +163,12 @@ public partial class Pawn : AnimatedEntity {
     public float GetArmorReduction() {
         // ignore math if we have no armor or are hardcapped
         if (Armor == 0) return 1;
-        if (Armor > 149) return 0.1f;
+        if (Armor > 149) return 0.2f;
 
         // log, offset horizontally for a flatter low range, and reduce vertical back to 0
         float logArmor = (float)Math.Log(Armor + 12) - 2.484f;
-        // map so 150 armor reaches 0.9
-        logArmor *= .343f;
+        // map so 150 armor reaches 0.8
+        logArmor *= .308f;
         // invert, so 0 armor = 1, 150 armor = 0.1
         return 1 - logArmor;  
 	}
