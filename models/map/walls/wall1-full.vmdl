@@ -23,7 +23,17 @@
 						import_filter = 
 						{
 							exclude_by_default = false
-							exception_list = [  ]
+							exception_list = 
+							[
+								"hammermesh_2107",
+								"hammermesh_2105",
+								"hammermesh_2109",
+								"hammermesh_2104",
+								"hammermesh_2103",
+								"hammermesh_2106",
+								"hammermesh_2108",
+								"hammermesh_2110",
+							]
 						}
 					},
 				]

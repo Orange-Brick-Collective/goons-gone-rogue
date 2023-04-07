@@ -41,7 +41,7 @@ public partial class Goon : Pawn {
 
         weapon = new();
         weapon.Init("models/gun.vmdl");
-        weapon.Position = Position + new Vector3(8, -12 * Scale, 32 * Scale);
+        weapon.Position = Position + new Vector3(13, -12 * Scale, 34 * Scale);
         weapon.Rotation = Rotation;
         weapon.RenderColor = new Color(0.8f, 0.8f, 0.8f);
         weapon.Owner = this;
