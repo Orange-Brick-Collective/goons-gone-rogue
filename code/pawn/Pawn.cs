@@ -80,7 +80,7 @@ public partial class Pawn : AnimatedEntity {
             float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
             Vector3 spreadOffset = new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 5;
 
-            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset + spreadOffset)
+            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset * 1.5f + spreadOffset)
                 .WithoutTags($"team{Team}", "trigger")
                 .Run();
 

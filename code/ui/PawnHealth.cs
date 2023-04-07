@@ -19,6 +19,11 @@ public class PawnHealth {
         for (int i = 0; i < goo.Count; i++) {
             if (goo[i] is null || !goo[i].IsValid()) continue;
             
+            if (goo[i].Health < 0) {
+                goo[i].healthPanel?.Delete();
+                return;
+            }
+
 			if (goo[i].healthPanel is null) {
 				WorldPanel e = new();
                 e.Style.JustifyContent = Justify.Center;

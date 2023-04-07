@@ -15,7 +15,14 @@ public class TeamUI : Panel {
     }
 
     public override void Tick() {
-        foreach(PawnPanel p in pawns) p.SetFill();
+        foreach(PawnPanel p in pawns) {
+            if (p.pawn is null || !p.pawn.IsValid) {
+                p.Delete();
+                return;
+            }
+
+            p.SetFill();
+        }
     }
 
     public new void Add(Pawn pawn) {
@@ -32,6 +39,10 @@ public class TeamUI : Panel {
                 break;
             }
         }
+    }
+    public void Clear() {
+        DeleteChildren();
+        pawns = new();
     }
 
     public class PawnPanel : Panel {
