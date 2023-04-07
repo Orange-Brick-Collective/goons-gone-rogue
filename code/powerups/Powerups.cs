@@ -224,7 +224,7 @@ public class Powerups {
         new Powerup(
             "",
             "Thorns",
-            "1/3 chance when hurt to deal half damage back to attacker. Every additional 'Thorns' is another 1/3 chance to return damage",
+            "1/3 chance when hurt to deal damage back to attacker. Every additional 'Thorns' is another 1/3 chance to return damage",
             null,
             (p) => p.HurtActions.Add(p.PowerupThorns)
         ),

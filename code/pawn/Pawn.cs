@@ -210,7 +210,7 @@ public partial class Pawn : AnimatedEntity {
 
     public void PowerupThorns(DamageInfo info) {
         if (Random.Shared.Float(0, 1) < 0.333f) {
-            info.Attacker.TakeDamage(QuickDamageInfo(info.Damage * 0.5f)); 
+            info.Attacker.TakeDamage(QuickDamageInfo(info.Damage)); 
         }
     }
 }

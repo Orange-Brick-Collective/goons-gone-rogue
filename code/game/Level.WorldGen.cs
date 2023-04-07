@@ -112,7 +112,7 @@ public class WorldGen {
             Vector2 e = new(l, w);
             if (e == startP || e == endP) continue;
 
-            if (tile is TileEnd || Random.Shared.Float(0, 1) > 0.99f) {
+            if (tile is TileEnd || Random.Shared.Float(0, 1) > 0.98f) {
                 new TileEventPowerups().Init(tile);
                 continue;
             }

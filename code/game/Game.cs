@@ -127,13 +127,13 @@ public partial class GGame : GameManager {
 	public TimeSince lastFightEnd = 0;
 	public async void FightOverCheck() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
-		if (lastFightEnd < 0.08f) return;
-		lastFightEnd = 0;
-
+		if (lastFightEnd < 0.1f) return;
+		
 		foreach (Goon goon in goons) {
 			if (goon.Team != 0) return;
 		}
-		
+
+		lastFightEnd = 0;
 		await GameTask.DelayRealtime(500);
 
 		Score += 250;
