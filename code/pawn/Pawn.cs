@@ -39,7 +39,7 @@ public partial class Pawn : AnimatedEntity {
     [Net] public int AddMoveSpeed {get; set;} = 0;
     public int MoveSpeed => Math.Max(BaseMoveSpeed + AddMoveSpeed, 50);
 
-    [Net] public int BaseWeaponDamage {get; set;} = 4;
+    [Net] public int BaseWeaponDamage {get; set;} = 3;
     [Net] public int AddWeaponDamage {get; set;} = 0;
     public int WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 1);
     

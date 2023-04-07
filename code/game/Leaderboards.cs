@@ -13,12 +13,12 @@ public partial class Leaderboards : BaseNetworkable {
         if (Current is not null) return;
         Current = this;
 
-        TopScores.Add("P-RANK", 18000);
-        TopScores.Add("S-RANK", 14000);
-        TopScores.Add("A-RANK", 10000);
-        TopScores.Add("B-RANK", 8000);
-        TopScores.Add("C-RANK", 6000);
-        TopScores.Add("D-RANK", 4000);
+        TopScores.Add("P-RANK", 22000);
+        TopScores.Add("S-RANK", 18000);
+        TopScores.Add("A-RANK", 14000);
+        TopScores.Add("B-RANK", 10000);
+        TopScores.Add("C-RANK", 8000);
+        TopScores.Add("D-RANK", 5000);
         TopScores.Add("E-RANK", 2000);
     }
 

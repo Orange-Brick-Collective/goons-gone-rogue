@@ -58,7 +58,7 @@ public partial class Player : Pawn {
 
 		MaxHealth = 200;
 		Health = 200;
-		BaseWeaponDamage = 10;
+		BaseWeaponDamage = 8;
 	}
 	public override void ClientSpawn() {
 		Current = this;

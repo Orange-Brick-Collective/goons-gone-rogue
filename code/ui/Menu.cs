@@ -81,7 +81,7 @@ public class Menu : Panel {
                 "This is a goon's stats. " +
                 "For each stat, the first number is the 'BASE' stat and the added number is the 'ADD' stat. " + 
                 "This is important to know as Powerups (explained below) only effect 'ADD' stats. " + 
-                "In Example, Glass Cannon doubles Add damage, \nso if you had 10 + 4 Damage, \nyou get 10 + 8 damage. " + 
+                "In Example, Glass Cannon increases Add damage, \nso if you had 10 + 4 Damage, \nyou get 10 + 8 damage. " + 
                 "Stats cannot be worse under a functional level, so they cannot become unusable."
             }); 
             ///////////
