@@ -38,6 +38,13 @@
       "VelocityIterations": 8,
       "SoftBodyIterations": 1,
       "SoftBodySubsteps": 1
+    },
+    "Summary": "Roguelike party-builder",
+    "Description": "Made for the Three Thieves gang gamejam.",
+    "Public": true,
+    "ReplaceTags": "roguelike gamejam partybuilder gang",
+    "ControlModes": {
+      "Keyboard": true
     }
   }
 }
