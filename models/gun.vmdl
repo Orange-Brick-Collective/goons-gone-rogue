@@ -12,7 +12,7 @@
 					{
 						_class = "RenderMeshFile"
 						name = "testgun"
-						filename = "models/src/tommygun.fbx"
+						filename = "models/src/tommygun.dmx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 0.6
@@ -25,24 +25,6 @@
 							exclude_by_default = false
 							exception_list = [  ]
 						}
-					},
-				]
-			},
-			{
-				_class = "MaterialGroupList"
-				children = 
-				[
-					{
-						_class = "DefaultMaterialGroup"
-						remaps = 
-						[
-							{
-								from = "cube.042.vmat"
-								to = "materials/dev/primary_white.vmat"
-							},
-						]
-						use_global_default = false
-						global_default_material = ""
 					},
 				]
 			},
