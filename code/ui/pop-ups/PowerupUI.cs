@@ -1,5 +1,6 @@
 using Sandbox;
 using Sandbox.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -71,9 +72,9 @@ public class PowerupUI : Panel {
         this.chosenButton.AddClass("selected");
         this.chosenButton.SetText("  " + chosen.Name + "\n" + chosen.PawnString());
 
-        if (ent.powerup.AffectedStats is null) return;
-        for (int i = 0; i < 8; i++) {
-            List<SelectedStat> a = ent.powerup.AffectedStats.Where(s => (int)s.stat == i).ToList();
+        if (ent.powerup is not PowerupStat powerupStat) return;
+        for (int i = 0; i < Enum.GetNames(typeof(Stat)).Length; i++) {
+            List<SelectedStat> a = powerupStat.AffectedStats.Where(s => (int)s.stat == i).ToList();
             if (a.Any()) {
                 PLabel p = new() {Text = $"{a.First().amount}"};
                 p.Style.Position = PositionMode.Absolute;
@@ -101,7 +102,27 @@ public class PowerupUI : Panel {
         PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);
         if (pawn is null || ent is null) return;
 
-        ent.powerup.Action.Invoke(pawn);
+        if (ent.powerup is PowerupPawnAct powerupAct) powerupAct.Action.Invoke(pawn);
+        else {
+            PowerupStat powerupStat = (PowerupStat)ent.powerup;
+
+            foreach (SelectedStat stat in powerupStat.AffectedStats) {
+                switch (stat.op) {
+                    case Op.Add: {
+
+                        break;
+                    }
+                    case Op.Mult: {
+                        
+                        break;
+                    }
+                    case Op.Set: {
+                        
+                        break;
+                    }
+                }
+            }
+        }
 
         if (ent.powerup.Title != "Heal Up" && ent.powerup.Title != "Big Heal Up") {
             if (pawn.AppliedPowerups.ContainsKey(ent.powerup.Title)) {

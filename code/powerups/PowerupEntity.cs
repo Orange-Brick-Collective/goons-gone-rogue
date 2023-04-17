@@ -8,7 +8,7 @@ public partial class PowerupEntity : ModelEntity {
 
     public PowerupEntity Init(int e) {
         ClientInit(e);
-        powerup = new Powerup(Powerups.GetByIndex(e));
+        powerup = Powerups.GetByIndex(e);
         rotationSpeed = System.Random.Shared.Float(-0.3f, 0.3f);
 
         SetModel("models/powerup.vmdl");

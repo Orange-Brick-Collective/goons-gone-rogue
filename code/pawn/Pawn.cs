@@ -182,14 +182,16 @@ public partial class Pawn : AnimatedEntity {
     }
 
     public string PawnString() {
-        return $"Armor:  {Armor}\n" +
-        $"Speed:  {BaseMoveSpeed} + {AddMoveSpeed}\n" +
-        $"Range:  {BaseRange} + {AddRange:#0}\n" +
-        $"Damage: {BaseWeaponDamage} + {AddWeaponDamage}\n" +
-        $"Delay:  {BaseFireRate} + {AddFireRate:#0.00}\n" +
-        $"Mag:    {BaseMagazineSize} + {AddMagazineSize}\n" +
-        $"Spread: {BaseDegreeSpread} + {AddDegreeSpread:#0.0}\n" +
-        $"Reload: {BaseReloadTime} + {AddReloadTime:#0.0}";
+        return $"MaxHealth:{MaxHealth}\n" +
+        $"Health:  {Health}\n" +
+        $"Armor:   {Armor}\n" +
+        $"Speed:   {BaseMoveSpeed} + {AddMoveSpeed}\n" +
+        $"Range:   {BaseRange} + {AddRange:#0}\n" +
+        $"Damage:  {BaseWeaponDamage} + {AddWeaponDamage}\n" +
+        $"Delay:   {BaseFireRate} + {AddFireRate:#0.00}\n" +
+        $"Mag:     {BaseMagazineSize} + {AddMagazineSize}\n" +
+        $"Spread:  {BaseDegreeSpread} + {AddDegreeSpread:#0.0}\n" +
+        $"Reload:  {BaseReloadTime} + {AddReloadTime:#0.0}";
     }
 
     public string AmmoString() {

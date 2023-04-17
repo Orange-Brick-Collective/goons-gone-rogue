@@ -9,7 +9,10 @@
   "AssetsPath": "",
   "ResourcePaths": [
     "/fonts/*",
-    "/music/*"
+    "/music/*",
+    "/images/*",
+    "/sounds/*",
+    "/shaders/*"
   ],
   "HasCode": true,
   "CodePath": "/code/",

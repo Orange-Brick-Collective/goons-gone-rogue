@@ -1,10 +1,13 @@
 using Sandbox;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GGame;
 
 public enum Stat {
+    MaxHealth,
+    Health,
     Armor,
     Speed,
     Range,
@@ -12,7 +15,13 @@ public enum Stat {
     Delay,
     Mag,
     Spread,
-    Reload
+    Reload,
+}
+
+public enum Op {
+    Add,
+    Mult,
+    Set
 }
 
 // this is purely for understanding and visualizing the powerup
@@ -20,13 +29,15 @@ public class SelectedStat {
     private static readonly Stat[] NegativeGoodStats = {Stat.Delay, Stat.Spread, Stat.Reload};
 
     public Stat stat;
+    public Op op;
     public float amount;
     public bool good;
 
     public SelectedStat() {}
 
-    public SelectedStat(Stat stat, float amount) {
+    public SelectedStat(Stat stat, float amount, Op op = Op.Add) {
         this.stat = stat;
+        this.op = op;
         this.amount = amount;
 
         if (NegativeGoodStats.Contains(stat)) {
@@ -52,109 +63,96 @@ public class Powerups {
         // *
         // * Simple actions
         // *
-        new Powerup(
+        new PowerupStat(
             "",
             "Heal Up",
             "Heals 50 health",
-            null,
-            (p) => p.Health = Math.Min(p.Health + 50, p.MaxHealth)
+            new SelectedStat[] {new SelectedStat(Stat.Health, 50)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Heal Up",
             "Heals 75 health",
-            null,
-            (p) => p.Health = Math.Min(p.Health + 75, p.MaxHealth)
+            new SelectedStat[] {new SelectedStat(Stat.Health, 75)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Big Heal Up",
             "Heals 120 health",
-            null,
-            (p) => p.Health = Math.Min(p.Health + 120, p.MaxHealth)
+            new SelectedStat[] {new SelectedStat(Stat.Health, 120)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Hotter Bullets",
             "Adds 5 damage",
-            new SelectedStat[] {new SelectedStat(Stat.Damage, 5)},
-            (p) => p.AddWeaponDamage += 5
+            new SelectedStat[] {new SelectedStat(Stat.Damage, 5)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Trigger Happy",
             "Fires 0.03 seconds faster",
-            new SelectedStat[] {new SelectedStat(Stat.Delay, -0.03f)},
-            (p) => p.AddFireRate -= 0.03f
+            new SelectedStat[] {new SelectedStat(Stat.Delay, -0.03f)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Sharper Eyes",
             "Adds 120 range",
-            new SelectedStat[] {new SelectedStat(Stat.Range, 120)},
-            (p) => p.AddRange += 120
+            new SelectedStat[] {new SelectedStat(Stat.Range, 120)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Extra Padding",
             "Adds 80 max health",
-            null,
-            (p) => p.MaxHealth += 80
+            new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 80)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Extra Padding",
             "Adds 120 max health",
-            null,
-            (p) => p.MaxHealth += 120
+            new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 120)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Accurate",
             "Adds 0.4 less spread",
-            new SelectedStat[] {new SelectedStat(Stat.Spread, -0.4f)},
-            (p) => p.AddDegreeSpread -= 0.4f
+            new SelectedStat[] {new SelectedStat(Stat.Spread, -0.4f)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Longer Mag",
             "Adds 8 more bullets to magazine",
-            new SelectedStat[] {new SelectedStat(Stat.Mag, 8)},
-            (p) => p.AddMagazineSize += 8
+            new SelectedStat[] {new SelectedStat(Stat.Mag, 8)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Quick Hands",
             "Speeds up reload by 0.4s",
-            new SelectedStat[] {new SelectedStat(Stat.Reload, -0.4f)},
-            (p) => p.AddReloadTime -= 0.4f
+            new SelectedStat[] {new SelectedStat(Stat.Reload, -0.4f)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Sprinter",
             "Moves 100 faster",
-            new SelectedStat[] {new SelectedStat(Stat.Speed, 100)},
-            (p) => p.AddMoveSpeed += 100
+            new SelectedStat[] {new SelectedStat(Stat.Speed, 100)}
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Thicker Armor",
             "Adds 6 armor",
-            new SelectedStat[] {new SelectedStat(Stat.Armor, 6)},
-            (p) => p.Armor += 6
+            new SelectedStat[] {new SelectedStat(Stat.Armor, 6)}
         ),
 
-        // *
-        // * Multi step actions
-        // *
-        new Powerup(
+        new PowerupStat(
             "",
             "Glass Cannon",
             "Adds 16 damage, but sets health and max health to 25",
-            new SelectedStat[] {new SelectedStat(Stat.Damage, 16)},
-            PowerupGlassCannon
+            new SelectedStat[] {
+                new SelectedStat(Stat.Damage, 16),
+                new SelectedStat(Stat.Health, 25, Op.Set),
+                new SelectedStat(Stat.MaxHealth, 25, Op.Set),
+            }
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Speedy Cheesy",
             "Fire 0.04 seconds faster and moves 80 speed faster, but loses 100 range and 0.6 spread",
@@ -163,10 +161,9 @@ public class Powerups {
                 new SelectedStat(Stat.Speed, 80),
                 new SelectedStat(Stat.Range, -100),
                 new SelectedStat(Stat.Spread, 0.6f),
-            },
-            PowerupSpeedyCheesy
+            }
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Tank",
             "Gains 25 armor, but loses 100 range and 150 move speed",
@@ -174,10 +171,9 @@ public class Powerups {
                 new SelectedStat(Stat.Armor, 25),
                 new SelectedStat(Stat.Range, -100),
                 new SelectedStat(Stat.Speed, -150),
-            },
-            PowerupTank
+            }
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Sniper Rounds",
             "Add 10 damage and 100 range, but lose 0.14 firerate and 15 mag",
@@ -186,47 +182,43 @@ public class Powerups {
                 new SelectedStat(Stat.Range, 100),
                 new SelectedStat(Stat.Delay, 0.14f),
                 new SelectedStat(Stat.Mag, -15),
-            },
-            PowerupSniperRounds
+            }
         ),
-        new Powerup(
+        new PowerupStat(
             "",
             "Trigger Happy",
             "Fire 0.06 faster, but lose 0.8 spread",
             new SelectedStat[] {
                 new SelectedStat(Stat.Delay, -0.06f), 
                 new SelectedStat(Stat.Spread, 0.8f),
-            },
-            PowerupTriggerHappy
+            }
         ),
+
         // *
         // * Attack Actions
         // *
-        new Powerup(
+        new PowerupPawnAct(
             "",
             "Leech",
             "1/6 chance every attack to regen one health. Every additional 'Leech' is another 1/6 chance for another one health",
-            null,
-            (p) => p.AttackActions.Add(p.PowerupLeech)
+            (pawn) => pawn.AttackActions.Add(pawn.PowerupLeech)
         ),
-        new Powerup(
+        new PowerupPawnAct(
             "",
             "Critical Hit",
             "1/10 chance every attack to deal an additional hit. Every additional 'Critical Hit' is another 1/10 chance for another hit",
-            null,
-            (p) => p.AttackActions.Add(p.PowerupCriticalHit)
+            (pawn) => pawn.AttackActions.Add(pawn.PowerupCriticalHit)
         ),
 
 
         // *
         // * Hurt Actions
         // *
-        new Powerup(
+        new PowerupPawnAct(
             "",
             "Thorns",
             "1/3 chance when hurt to deal damage back to attacker. Every additional 'Thorns' is another 1/3 chance to return damage",
-            null,
-            (p) => p.HurtActions.Add(p.PowerupThorns)
+            (pawn) => pawn.HurtActions.Add(pawn.PowerupThorns)
         ),
 
         // *
@@ -263,48 +255,54 @@ public class Powerups {
 }
 
 public class Powerup {
-    public virtual string Image {get; set;} = "unset";
-    public virtual string Title {get; set;} = "unset";
-    public virtual string Description {get; set;} = "unset";
-    public virtual Action<Pawn> Action {get; set;} = (p) => {};
-    public SelectedStat[] AffectedStats {get; set;}
+    public virtual string Image {get; set;}
+    public virtual string Title {get; set;}
+    public virtual string Description {get; set;}
 
     public Powerup() {}
-    public Powerup(string image, string title, string desc, SelectedStat[] stat, Action<Pawn> action) {
+}
+
+public class PowerupStat : Powerup {
+    public override string Image {get; set;} = "unset";
+    public override string Title {get; set;} = "unset";
+    public override string Description {get; set;} = "unset";
+    public SelectedStat[] AffectedStats {get; set;}
+
+    public PowerupStat() {}
+    public PowerupStat(string image, string title, string desc, SelectedStat[] stat) {
+        Image = image;
+        Title = title;
+        Description = desc;
+        AffectedStats = stat;
+    }
+}
+
+public class PowerupPawnAct : Powerup {
+    public override string Image {get; set;} = "unset";
+    public override string Title {get; set;} = "unset";
+    public override string Description {get; set;} = "unset";
+    public Action<Pawn> Action {get; set;}
+
+    public PowerupPawnAct() {}
+    public PowerupPawnAct(string image, string title, string desc, Action<Pawn> action) {
         Image = image;
         Title = title;
         Description = desc;
         Action = action;
-        AffectedStats = stat;
-    }
-
-    // kept having problems of Action going null, just a sanity check
-    public Powerup(Powerup copy) {
-        Image = copy.Image;
-        Title = copy.Title;
-        Description = copy.Description;
-        Action = copy.Action;
     }
 }
 
-    // new Powerup(
-    //     "",
-    //     "Leech",
-    //     "1/5 chance every attack to regen one health. Every additional leech is another 1/5 chance for another one health",
-    //     (p) => p.AttackActions.Add(() => {
-    //         if (Random.Shared.Float(0, 1) > 0.8f) {
-    //             p.Health = Math.Min(p.Health + 1, p.MaxHealth);
-    //         }
-    //     })
-    // ),
-    
-    // new Powerup(
-    //     "",
-    //     "Glass Cannon",
-    //     "Sets health to 50 but doubles their non-base damage",
-    //     (p) => {
-    //         p.MaxHealth = 50;
-    //         p.Health = 50;
-    //         p.AddWeaponDamage = p.WeaponDamage * 2;
-    //     }
-    // ),
+// public class PowerupHurtAct : Powerup {
+//     public override string Image {get; set;} = "unset";
+//     public override string Title {get; set;} = "unset";
+//     public override string Description {get; set;} = "unset";
+//     public Action<DamageInfo> Action {get; set;}
+
+//     public PowerupHurtAct() {}
+//     public PowerupHurtAct(string image, string title, string desc, Action<DamageInfo> action) {
+//         Image = image;
+//         Title = title;
+//         Description = desc;
+//         Action = action;
+//     }
+// }
