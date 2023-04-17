@@ -6,30 +6,23 @@ namespace GGame;
 public partial class Player : Pawn {
 	public static Player Current {get; set;}
 
+	public PlayerController controller;
+
 	[Net] public bool IsPlaying {get; set;} = false;
 	[Net, Change] public bool InMenu {get; set;} = true;
 
-	[ClientInput] public Vector3 InputDirection {get; protected set;}
+	[ClientInput] public Vector3 InputDirection {get; set;}
 	[ClientInput] public Angles ViewAngles {get; set;}
 
 	public override void BuildInput() {
-		if (!InMenu) {
-			Angles viewAngles = ViewAngles;
-			viewAngles += Input.AnalogLook;
-			viewAngles.pitch = viewAngles.pitch.Clamp(-72, 68);
-			ViewAngles = viewAngles.Normal;
-		} else {
-			ViewAngles = new Angles(20, Time.Tick * 0.16f, 0);
-		}
-
-		if (!InMenu && IsPlaying) {
-			InputDirection = Input.AnalogMove;
-		}
+		controller?.BuildInput();
 	}
 
 	public override void Spawn() {
 		base.Spawn();
 		Current = this;
+
+		controller = new PlayerMenuController(this);
 
 		Tags.Add("player");
 		Tags.Add("team0");
@@ -71,11 +64,11 @@ public partial class Player : Pawn {
 		switch (ent) {
 			case TileEventFight: {
 				ent.Delete();
-				GGame.Current.TransitionStartFight();
+				GGame.Current.FightStart();
 				break;
 			}
 			case TileEventEnd: {
-				GGame.Current.TransitionLevel();
+				GGame.Current.ChangeLevel();
 				break;
 			}
 		}
@@ -83,10 +76,11 @@ public partial class Player : Pawn {
 
 	public override void OnKilled() {
 		if (InMenu || !IsPlaying) return;
-		GGame.Current.TransitionGameEnd();
+		GGame.Current.GameEnd();
 	}
 
 	public void OnInMenuChanged() {
+		Log.Warning("DIS BITCH CHANGED");
 		if (InMenu) {
 			Hud._hud.RootPanel.AddChild(new Menu());
 		} else{
@@ -140,5 +134,35 @@ public partial class Player : Pawn {
 		Camera.Rotation = ViewAngles.ToRotation();
 
 		Camera.FieldOfView = Screen.CreateVerticalFieldOfView(86);
+	}
+
+	// *
+	// * RPC
+	// *
+	[ClientRpc]
+	public static void FightEndUI() {
+		Hud._hud.RootPanel.AddChild(new FightEndUI());
+	}
+
+	[ClientRpc]
+	public static void SetViewAngles(Angles angle) {
+		Current.ViewAngles = angle;
+	}
+
+	[ClientRpc]
+	public static async void ToAndFromBlack() {
+		Hud._hud.ToBlack();
+		await GameTask.DelayRealtime(1400);
+		Hud._hud.FromBlack();
+	}
+
+	[ClientRpc]
+	public static void ToBlack() {
+		Hud._hud.ToBlack();
+	}
+	
+	[ClientRpc]
+	public static void FromBlack() {
+		Hud._hud.FromBlack();
 	}
 }

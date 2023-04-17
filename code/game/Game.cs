@@ -13,7 +13,6 @@ namespace GGame;
 
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
-	[Net] public Leaderboards Leaderboard {get; set;}
 
 	public Transform ArenaMarker {get; set;}
 	public World currentWorld;
@@ -37,9 +36,10 @@ public partial class GGame : GameManager {
 	
 	public GGame() {
 		if (Game.IsServer) {
-			Leaderboard = new Leaderboards();
+			_ = new Leaderboards();
 			_ = new WorldGen();
 			_ = new ArenaGen();
+			_ = new MusicBox();
 			GenSpawnArena();
 		}
 
@@ -97,31 +97,31 @@ public partial class GGame : GameManager {
 		}
 	}
 
-	[ClientRpc]
-	public void ClientExploreSong() {
-		if (IsMusicEnabled) {
-			currentSong.Stop();
-			exploreSong.SetVolume(1);
-		}
-	}
+	// [ClientRpc]
+	// public void ClientExploreSong() {
+	// 	if (IsMusicEnabled) {
+	// 		currentSong.Stop();
+	// 		exploreSong.SetVolume(1);
+	// 	}
+	// }
 
-	[ClientRpc]
-	public void ClientBattleSong() {
-		if (IsMusicEnabled) {
-			currentSong.Stop();
-			currentSong = PlaySound("music/battle.sound");
-			exploreSong.SetVolume(0);
-		}
-	}
+	// [ClientRpc]
+	// public void ClientBattleSong() {
+	// 	if (IsMusicEnabled) {
+	// 		currentSong.Stop();
+	// 		currentSong = PlaySound("music/battle.sound");
+	// 		exploreSong.SetVolume(0);
+	// 	}
+	// }
 
-	[ClientRpc]
-	public void ClientMenuSong() {
-		if (IsMusicEnabled) {
-			currentSong.Stop();
-			currentSong = PlaySound("music/menu.sound");
-			exploreSong.SetVolume(0);
-		}
-	}
+	// [ClientRpc]
+	// public void ClientMenuSong() {
+	// 	if (IsMusicEnabled) {
+	// 		currentSong.Stop();
+	// 		currentSong = PlaySound("music/menu.sound");
+	// 		exploreSong.SetVolume(0);
+	// 	}
+	// }
 
 	// jic 2 enemies die at same time
 	public TimeSince lastFightEnd = 0;
@@ -137,11 +137,7 @@ public partial class GGame : GameManager {
 		await GameTask.DelayRealtime(500);
 
 		Score += 250;
-		ClientFightOverCheck();
-	}
-	[ClientRpc]
-	public void ClientFightOverCheck() {
-		Hud._hud.RootPanel.AddChild(new FightEndUI());
+		Player.FightEndUI();
 	}
 
 	public async void GenSpawnArena() {
@@ -160,17 +156,18 @@ public partial class GGame : GameManager {
 	}
 
 	[ConCmd.Server] // password just as a safety to deter console foolery
-	public static async void TransitionGameStart(string password) {
+	public static async void GameStart(string password) {
 		if (password != "dpiol") return;
 
 		if (Player.Current.IsPlaying) return;
 
-		await GGame.Current.TransitionUI();
+		await Current.AwaitToAndFromBlack();
 		Player.Current.IsPlaying = true;
 
 		await WorldGen.Current.GenerateLevel(8, 6, 0, false);
 		Player.Current.InMenu = false;
-		Player.Current.Transform = GGame.Current.currentWorld.startPos;
+		Player.Current.controller = new PlayerPlayingController(Player.Current);
+		Player.Current.Transform = Current.currentWorld.startPos;
 
 		Goon g = new();
 		g.Init(0, Player.Current);
@@ -179,15 +176,16 @@ public partial class GGame : GameManager {
 		g2.Init(0, Player.Current);
 		g2.Generate(3);
 
-		GGame.Current.ClientExploreSong();
+		//Current.ClientExploreSong();
+		MusicBox.Current.LerpToLooping();
 	}
 
-	public async void TransitionGameEnd() {
+	public async void GameEnd() {
 		if (!Player.Current.IsPlaying) return;
 
 		Player.Current.IsPlaying = false;
 
-		await ToBlackUI();
+		await AwaitToBlack();
 
 		goons.Clear();
 		foreach (var goon in Entity.All.OfType<Goon>()) {
@@ -223,31 +221,28 @@ public partial class GGame : GameManager {
 	}
 	[ClientRpc]
 	public void ClientGameEnd() {
-		ClientExploreSong();
+		//ClientExploreSong();
+		MusicBox.Current.LerpToLooping();
 		TeamUI.Current.Clear();
 		Hud._hud.RootPanel.AddChild(new GameEndUI());
 	}
 
-	public async void TransitionLoad() {
-		await TransitionUI();
-	}
-
-	public async void TransitionStartFight() {
+	public async void FightStart() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
 		currentPosition = Player.Current.Transform;
 		currentViewAngles = Player.Current.ViewAngles;
 
 		Player.Current.IsPlaying = false;
-		await TransitionUI();
+		await AwaitToAndFromBlack();
 		
 		await ArenaGen.Current.GenerateLevel();
 		
 		// tp player and players goons to one side of arena
 		Player.Current.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
-		Player.Current.ViewAngles = new Angles(0, 0, 0);
-		ClientTransitionStartFight();
-		ClientBattleSong();
+		Player.SetViewAngles(new Angles(0, 0, 0));
+		//ClientBattleSong();
+		MusicBox.Current.LerpToActive("music/battle.sound");
 		Player.Current.IsPlaying = true;
 		Player.Current.IsInCombat = true;
 		Player.Current.CurrentMag = Player.Current.MagazineSize;
@@ -274,15 +269,11 @@ public partial class GGame : GameManager {
 			goon.IsInCombat = true;
 		}
 	}
-	[ClientRpc]
-	public void ClientTransitionStartFight() {
-		Player.Current.ViewAngles = new Angles(0, 0, 0);
-	}
 
-	public async void TransitionEndFight() {
+	public async void FightEnd() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
-		await TransitionUI();
+		await AwaitToAndFromBlack();
 
 		Player.Current.IsInCombat = false;
 		Player.Current.CurrentMag = Player.Current.MagazineSize;
@@ -295,62 +286,41 @@ public partial class GGame : GameManager {
 		}
 
 		Player.Current.Transform = currentPosition;
-		Player.Current.ViewAngles = currentViewAngles;
-		ClientTransitionEndFight(currentViewAngles);
-		ClientExploreSong();
-	}
-	[ClientRpc]
-	public void ClientTransitionEndFight(Angles angle) {
-		Player.Current.ViewAngles = angle;
+		Player.SetViewAngles(currentViewAngles);
+		// ClientExploreSong();
+		MusicBox.Current.LerpToLooping();
 	}
 
-	public async void TransitionLevel() {
-		await TransitionUI();
+	public async void ChangeLevel() {
+		await AwaitToAndFromBlack();
 
 		Score += 500;
 
 		await WorldGen.Current.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
 		CurrentDepth = currentWorld.depth;
 		Player.Current.Transform = GGame.Current.currentWorld.startPos;
-		Player.Current.ViewAngles = new Angles(0, 0, 0);
-		ClientTransitionLevel();
+		Player.SetViewAngles(new Angles(0, 0, 0));
 		Player.Current.InMenu = false;
-	}
-	[ClientRpc]
-	public void ClientTransitionLevel() {
-		Player.Current.ViewAngles = new Angles(0, 0, 0);
 	}
 
 	// fades over 1s
 	// stays black 400ms
 	// unfades last 1s --- also dont mark static as vsc wants
-	public System.Threading.Tasks.Task TransitionUI() {
-		ClientTransitionUI();
+	public System.Threading.Tasks.Task AwaitToAndFromBlack() {
+		Player.ToAndFromBlack();
 		return GameTask.DelayRealtime(1000);
-	}
-	[ClientRpc]
-	public static void ClientTransitionUI() {
-		Hud._hud.ToAndFromBlack();
 	}
 
 	// fades over 1s
 	// stays black --- also dont mark static as vsc wants
-	public System.Threading.Tasks.Task ToBlackUI() {
-		ClientToBlackUI();
+	public System.Threading.Tasks.Task AwaitToBlack() {
+		Player.ToBlack();
 		return GameTask.DelayRealtime(1000);
-	}
-	[ClientRpc]
-	public static void ClientToBlackUI() {
-		Hud._hud.ToBlack();
 	}
 
 	// unfades over 1s --- also dont mark static as vsc wants
-	public System.Threading.Tasks.Task FromBlackUI() {
-		ClientFromBlackUI();
+	public System.Threading.Tasks.Task AwaitFromBlack() {
+		Player.FromBlack();
 		return GameTask.DelayRealtime(1000);
-	}
-	[ClientRpc]
-	public static void ClientFromBlackUI() {
-		Hud._hud.FromBlack();
 	}
 }

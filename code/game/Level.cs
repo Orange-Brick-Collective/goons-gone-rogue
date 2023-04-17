@@ -102,7 +102,7 @@ public class Tile : ModelEntity {
         if (this is TileEmpty) return;
 
         string[] walls = WallModels.GetModels(wallType);
-        Log.Info(walls[0]);
+
         for (int i = 0; i < 4; i++) {
             if (!directions[(i + rot) % 4]) {
                 Transform? p = Model.GetAttachment(attachmentNames[i]);

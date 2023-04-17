@@ -23,13 +23,7 @@ public partial class Hud : HudEntity<RootPanel> {
         epanel = new EPanel();
         RootPanel.AddChild(epanel);
     }
-
-    public async void ToAndFromBlack() {
-        RootPanel.AddClass("loading");
-        await GameTask.DelayRealtime(1400);
-        RootPanel.RemoveClass("loading");
-    }
-
+    
     public void ToBlack() {
         RootPanel.AddClass("loading");
     }

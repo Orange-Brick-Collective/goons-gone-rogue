@@ -15,7 +15,7 @@ public class Menu : Panel {
 
         buttons.AddChild(new Button("Start","", () => {
             TeamUI.Current.Add(Player.Current);
-            GGame.TransitionGameStart("dpiol");
+            GGame.GameStart("dpiol");
         }) {Classes = "buttone"});
 
         buttons.AddChild(new Button("Information","", () => {

@@ -31,6 +31,7 @@ public class GameEndUI : Panel {
             GGame.Current.currentSong = GGame.Current.PlaySound("music/menu.sound");
         }
         
+        Hud._hud.FromBlack();
         ServerBackToMenu("1209825");
         Delete();
     }
@@ -39,6 +40,5 @@ public class GameEndUI : Panel {
         if (password != "1209825") return;
 
         Player.Current.InMenu = true;
-        GGame.Current.FromBlackUI();
     }
 }

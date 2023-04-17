@@ -43,7 +43,7 @@ public class FightEndUI : Panel {
     [ConCmd.Server]
     private static void ServerNothing(string password) {
         if (password != "1249") return;
-        GGame.Current.TransitionEndFight();
+        GGame.Current.FightEnd();
     }
 
     private void Heal() {
@@ -60,7 +60,7 @@ public class FightEndUI : Panel {
 			if (goon.Team == 0) goon.Health = Math.Min(goon.Health + 50, goon.MaxHealth);
 		}
 
-        GGame.Current.TransitionEndFight();
+        GGame.Current.FightEnd();
     }
 
     private void NewPawn() {
@@ -76,6 +76,6 @@ public class FightEndUI : Panel {
         g.Generate(1);
         g.Position = Player.Current.Position + g.posInGroup;
 
-        GGame.Current.TransitionEndFight();
+        GGame.Current.FightEnd();
     }
 }
