@@ -14,7 +14,7 @@ public partial class Player : Pawn {
             .Run();
             
         if (Game.IsClient) {
-            Hud._hud.CrosshairInRange(rangeTrace.Hit);
+            Hud.Current.CrosshairInRange(rangeTrace.Hit);
         }
 
         // for ui
@@ -26,16 +26,16 @@ public partial class Player : Pawn {
         if (useTrace.Hit) {
             switch (useTrace.Entity) {
                 case PowerupEntity: {
-                    if (Game.IsClient) Hud._hud.epanel.AddClass("show");
+                    if (Game.IsClient) Hud.Current.epanel.AddClass("show");
                     break;
                 }
                 default: {
-                    if (Game.IsClient) Hud._hud.epanel.RemoveClass("show");
+                    if (Game.IsClient) Hud.Current.epanel.RemoveClass("show");
                     break;
                 }
             }
         } else {
-            if (Game.IsClient) Hud._hud.epanel.RemoveClass("show");
+            if (Game.IsClient) Hud.Current.epanel.RemoveClass("show");
         }
 
         if (!Input.Pressed(InputButton.Use)) return;
@@ -44,8 +44,8 @@ public partial class Player : Pawn {
         switch (useTrace.Entity) {
             case PowerupEntity powerupEnt: {
                 if (Game.IsClient) {
-                    if (!Hud._hud.RootPanel.ChildrenOfType<PowerupUI>().Any()) {
-                        Hud._hud.RootPanel.AddChild(new PowerupUI(powerupEnt, this));
+                    if (!Hud.Current.RootPanel.ChildrenOfType<PowerupUI>().Any()) {
+                        Hud.Current.RootPanel.AddChild(new PowerupUI(powerupEnt, this));
                     }
                 }
                 break;

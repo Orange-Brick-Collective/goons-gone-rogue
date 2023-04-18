@@ -19,6 +19,15 @@ RootPanel {
     }
 }
 
+FloatingText {
+    label {
+        color: rgb(255, 182, 182);
+        font-weight: 600;
+        font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
+        text-stroke: 2px black;
+    }
+}
+
 .loading {
     z-index: 100000;
     background-color: rgba(black, 1);

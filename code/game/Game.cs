@@ -9,7 +9,9 @@ namespace GGame;
 // places in and out of programming, and my future projects will definitely 
 // be cleaner as a result. Glad to have been a part of the Game jam.
 
-// https://www.youtube.com/watch?v=PB1TqA8JjiA&list=PL1dFsWeZdLiR4ppHRDlk6wiVDc0bIr9PL
+// ps. this has been fixed up post jam
+
+// ost https://www.youtube.com/watch?v=PB1TqA8JjiA&list=PL1dFsWeZdLiR4ppHRDlk6wiVDc0bIr9PL
 
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
@@ -23,8 +25,6 @@ public partial class GGame : GameManager {
 
 	// music actually almost gave me a migraine, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
 	[Net, Change] public bool IsMusicEnabled {get; set;} = true;
-	public Sound exploreSong;
-	public Sound currentSong;
 
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
@@ -70,13 +70,10 @@ public partial class GGame : GameManager {
 
 	[ClientRpc]
 	public async void ClientClientJoined() {
-		await GameTask.DelayRealtime(200);
+		await GameTask.DelayRealtime(2000);
 
-		if (Game.IsClient) {
-			exploreSong = PlaySound("music/explore.sound");
-			exploreSong.SetVolume(0);
-			currentSong = PlaySound("music/menu.sound");
-		}
+		MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
+		MusicBox.Current.LerpToActive("music/menu.sound");
 	}
 
 	[ConCmd.Server("ggr_kill")]
@@ -86,42 +83,13 @@ public partial class GGame : GameManager {
 
 	public void OnIsMusicEnabledChanged() {
 		if (IsMusicEnabled) {
-			exploreSong.SetVolume(0);
-			currentSong.SetVolume(1);
-			currentSong.Stop();
-			currentSong = PlaySound("music/menu.sound");
+			MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
+			MusicBox.Current.LerpToActive("music/menu.sound");
 		} else {
-			currentSong.Stop();
-			exploreSong.SetVolume(0);
-			currentSong.SetVolume(0);
+			MusicBox.Current?.SongLooping.SetVolume(0);
+			MusicBox.Current?.SongActive.SetVolume(0);
 		}
 	}
-
-	// [ClientRpc]
-	// public void ClientExploreSong() {
-	// 	if (IsMusicEnabled) {
-	// 		currentSong.Stop();
-	// 		exploreSong.SetVolume(1);
-	// 	}
-	// }
-
-	// [ClientRpc]
-	// public void ClientBattleSong() {
-	// 	if (IsMusicEnabled) {
-	// 		currentSong.Stop();
-	// 		currentSong = PlaySound("music/battle.sound");
-	// 		exploreSong.SetVolume(0);
-	// 	}
-	// }
-
-	// [ClientRpc]
-	// public void ClientMenuSong() {
-	// 	if (IsMusicEnabled) {
-	// 		currentSong.Stop();
-	// 		currentSong = PlaySound("music/menu.sound");
-	// 		exploreSong.SetVolume(0);
-	// 	}
-	// }
 
 	// jic 2 enemies die at same time
 	public TimeSince lastFightEnd = 0;
@@ -166,7 +134,6 @@ public partial class GGame : GameManager {
 
 		await WorldGen.Current.GenerateLevel(8, 6, 0, false);
 		Player.Current.InMenu = false;
-		Player.Current.controller = new PlayerPlayingController(Player.Current);
 		Player.Current.Transform = Current.currentWorld.startPos;
 
 		Goon g = new();
@@ -224,7 +191,7 @@ public partial class GGame : GameManager {
 		//ClientExploreSong();
 		MusicBox.Current.LerpToLooping();
 		TeamUI.Current.Clear();
-		Hud._hud.RootPanel.AddChild(new GameEndUI());
+		Hud.Current.RootPanel.AddChild(new GameEndUI());
 	}
 
 	public async void FightStart() {

@@ -25,8 +25,10 @@ public class Gun : ModelEntity {
             
             tr.Surface.DoBulletImpact(tr);
 
-            if (owner == Player.Current && tr.Entity is Goon) {
+            if (owner == Player.Current && tr.Entity is Goon goon) {
                 owner.PlaySound("sounds/hitsound.sound");
+
+                Player.FloatingText(tr.EndPosition, damage * goon.ArmorReduction);
             }
 
             react.Invoke();

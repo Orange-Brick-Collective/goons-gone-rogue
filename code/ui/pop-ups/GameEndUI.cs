@@ -27,11 +27,11 @@ public class GameEndUI : Panel {
 
     private void BackToMenu() {
         if (GGame.Current.IsMusicEnabled) {
-            GGame.Current.exploreSong.SetVolume(0);
-            GGame.Current.currentSong = GGame.Current.PlaySound("music/menu.sound");
+			MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
+			MusicBox.Current.LerpToActive("music/menu.sound");
         }
         
-        Hud._hud.FromBlack();
+        Hud.Current.FromBlack();
         ServerBackToMenu("1209825");
         Delete();
     }

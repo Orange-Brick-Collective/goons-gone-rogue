@@ -109,15 +109,25 @@ public class PowerupUI : Panel {
             foreach (SelectedStat stat in powerupStat.AffectedStats) {
                 switch (stat.op) {
                     case Op.Add: {
-
+                        object value = TypeLibrary.GetPropertyValue(pawn, stat.stat.ToString());
+                        if (value is float flo) {
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo + stat.amount);
+                        } else {
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)value + (int)stat.amount);
+                        }
                         break;
                     }
                     case Op.Mult: {
-                        
+                        object value = TypeLibrary.GetPropertyValue(pawn, stat.stat.ToString());
+                        if (value is float flo) {
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo * stat.amount);
+                        } else {
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)value * (int)stat.amount);
+                        }
                         break;
                     }
                     case Op.Set: {
-                        
+                        TypeLibrary.SetProperty(pawn, stat.stat.ToString(), stat.amount);
                         break;
                     }
                 }

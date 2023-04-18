@@ -2,6 +2,7 @@ GoonStats {
     justify-content: center;
     align-items: flex-end;
     width: 10000px;
+    height: 326px;
     color: white;
     
     .bar {
@@ -22,7 +23,7 @@ GoonStats {
         }
     
         .barborder {
-            width: 100.05%;
+            width: 100.5%;
             height: 102%;
             top: -1%;
             position: absolute;
@@ -39,7 +40,7 @@ GoonStats {
 
     .stats {
         bottom: 80px;
-        height: 210px;
+        height: 260px;
         line-height: 22px;
         padding: 2px;
         background-color: rgba(black, 0.5);
@@ -47,7 +48,6 @@ GoonStats {
         color: white;
 
         .number {
-            height: 22px;
             font-size: 26px;
             color: white;
             font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html

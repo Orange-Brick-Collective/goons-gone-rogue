@@ -8,7 +8,7 @@ public partial class Player : Pawn {
 
 	public PlayerController controller;
 
-	[Net] public bool IsPlaying {get; set;} = false;
+	[Net, Change] public bool IsPlaying {get; set;} = false;
 	[Net, Change] public bool InMenu {get; set;} = true;
 
 	[ClientInput] public Vector3 InputDirection {get; set;}
@@ -79,12 +79,18 @@ public partial class Player : Pawn {
 		GGame.Current.GameEnd();
 	}
 
+	public void OnIsPlayingChanged() {
+		if (IsPlaying) {
+			controller = new PlayerPlayingController(this);
+		}
+	}
+
 	public void OnInMenuChanged() {
-		Log.Warning("DIS BITCH CHANGED");
 		if (InMenu) {
-			Hud._hud.RootPanel.AddChild(new Menu());
+			controller = new PlayerMenuController(this);
+			Hud.Current.RootPanel.AddChild(new Menu());
 		} else{
-			foreach (Menu m in Hud._hud.RootPanel.ChildrenOfType<Menu>()) {
+			foreach (Menu m in Hud.Current.RootPanel.ChildrenOfType<Menu>()) {
 				m.Delete();
 			}
 		}
@@ -141,7 +147,7 @@ public partial class Player : Pawn {
 	// *
 	[ClientRpc]
 	public static void FightEndUI() {
-		Hud._hud.RootPanel.AddChild(new FightEndUI());
+		Hud.Current.RootPanel.AddChild(new FightEndUI());
 	}
 
 	[ClientRpc]
@@ -151,18 +157,26 @@ public partial class Player : Pawn {
 
 	[ClientRpc]
 	public static async void ToAndFromBlack() {
-		Hud._hud.ToBlack();
+		Hud.Current.ToBlack();
 		await GameTask.DelayRealtime(1400);
-		Hud._hud.FromBlack();
+		Hud.Current.FromBlack();
 	}
 
 	[ClientRpc]
 	public static void ToBlack() {
-		Hud._hud.ToBlack();
+		Hud.Current.ToBlack();
 	}
 	
 	[ClientRpc]
 	public static void FromBlack() {
-		Hud._hud.FromBlack();
+		Hud.Current.FromBlack();
+	}
+
+	[ClientRpc]
+	public static void FloatingText(Vector3 position, float damage) {
+		Hud.Current.floatingText.Create(position)
+			.WithText($"{damage:#0.00}")
+			.WithLifespan(1)
+			.WithMotion(Vector2.Up, 100, 0, 0);
 	}
 }

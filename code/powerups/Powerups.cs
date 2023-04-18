@@ -9,13 +9,13 @@ public enum Stat {
     MaxHealth,
     Health,
     Armor,
-    Speed,
-    Range,
-    Damage,
-    Delay,
-    Mag,
-    Spread,
-    Reload,
+    AddMoveSpeed,
+    AddRange,
+    AddWeaponDamage,
+    AddFireRate,
+    AddMagazineSize,
+    AddDegreeSpread,
+    AddReloadTime,
 }
 
 public enum Op {
@@ -26,7 +26,7 @@ public enum Op {
 
 // this is purely for understanding and visualizing the powerup
 public class SelectedStat {
-    private static readonly Stat[] NegativeGoodStats = {Stat.Delay, Stat.Spread, Stat.Reload};
+    private static readonly Stat[] NegativeGoodStats = {Stat.AddFireRate, Stat.AddDegreeSpread, Stat.AddReloadTime};
 
     public Stat stat;
     public Op op;
@@ -85,19 +85,19 @@ public class Powerups {
             "",
             "Hotter Bullets",
             "Adds 5 damage",
-            new SelectedStat[] {new SelectedStat(Stat.Damage, 5)}
+            new SelectedStat[] {new SelectedStat(Stat.AddWeaponDamage, 5)}
         ),
         new PowerupStat(
             "",
             "Trigger Happy",
             "Fires 0.03 seconds faster",
-            new SelectedStat[] {new SelectedStat(Stat.Delay, -0.03f)}
+            new SelectedStat[] {new SelectedStat(Stat.AddFireRate, -0.03f)}
         ),
         new PowerupStat(
             "",
             "Sharper Eyes",
             "Adds 120 range",
-            new SelectedStat[] {new SelectedStat(Stat.Range, 120)}
+            new SelectedStat[] {new SelectedStat(Stat.AddRange, 120)}
         ),
         new PowerupStat(
             "",
@@ -115,25 +115,25 @@ public class Powerups {
             "",
             "Accurate",
             "Adds 0.4 less spread",
-            new SelectedStat[] {new SelectedStat(Stat.Spread, -0.4f)}
+            new SelectedStat[] {new SelectedStat(Stat.AddDegreeSpread, -0.4f)}
         ),
         new PowerupStat(
             "",
             "Longer Mag",
             "Adds 8 more bullets to magazine",
-            new SelectedStat[] {new SelectedStat(Stat.Mag, 8)}
+            new SelectedStat[] {new SelectedStat(Stat.AddMagazineSize, 8)}
         ),
         new PowerupStat(
             "",
             "Quick Hands",
             "Speeds up reload by 0.4s",
-            new SelectedStat[] {new SelectedStat(Stat.Reload, -0.4f)}
+            new SelectedStat[] {new SelectedStat(Stat.AddReloadTime, -0.4f)}
         ),
         new PowerupStat(
             "",
             "Sprinter",
             "Moves 100 faster",
-            new SelectedStat[] {new SelectedStat(Stat.Speed, 100)}
+            new SelectedStat[] {new SelectedStat(Stat.AddMoveSpeed, 100)}
         ),
         new PowerupStat(
             "",
@@ -147,7 +147,7 @@ public class Powerups {
             "Glass Cannon",
             "Adds 16 damage, but sets health and max health to 25",
             new SelectedStat[] {
-                new SelectedStat(Stat.Damage, 16),
+                new SelectedStat(Stat.AddWeaponDamage, 16),
                 new SelectedStat(Stat.Health, 25, Op.Set),
                 new SelectedStat(Stat.MaxHealth, 25, Op.Set),
             }
@@ -157,10 +157,10 @@ public class Powerups {
             "Speedy Cheesy",
             "Fire 0.04 seconds faster and moves 80 speed faster, but loses 100 range and 0.6 spread",
             new SelectedStat[] {
-                new SelectedStat(Stat.Delay, -0.04f), 
-                new SelectedStat(Stat.Speed, 80),
-                new SelectedStat(Stat.Range, -100),
-                new SelectedStat(Stat.Spread, 0.6f),
+                new SelectedStat(Stat.AddFireRate, -0.04f), 
+                new SelectedStat(Stat.AddMoveSpeed, 80),
+                new SelectedStat(Stat.AddRange, -100),
+                new SelectedStat(Stat.AddDegreeSpread, 0.6f),
             }
         ),
         new PowerupStat(
@@ -169,8 +169,8 @@ public class Powerups {
             "Gains 25 armor, but loses 100 range and 150 move speed",
             new SelectedStat[] {
                 new SelectedStat(Stat.Armor, 25),
-                new SelectedStat(Stat.Range, -100),
-                new SelectedStat(Stat.Speed, -150),
+                new SelectedStat(Stat.AddRange, -100),
+                new SelectedStat(Stat.AddMoveSpeed, -150),
             }
         ),
         new PowerupStat(
@@ -178,10 +178,10 @@ public class Powerups {
             "Sniper Rounds",
             "Add 10 damage and 100 range, but lose 0.14 firerate and 15 mag",
             new SelectedStat[] {
-                new SelectedStat(Stat.Damage, 10),
-                new SelectedStat(Stat.Range, 100),
-                new SelectedStat(Stat.Delay, 0.14f),
-                new SelectedStat(Stat.Mag, -15),
+                new SelectedStat(Stat.AddWeaponDamage, 10),
+                new SelectedStat(Stat.AddRange, 100),
+                new SelectedStat(Stat.AddFireRate, 0.14f),
+                new SelectedStat(Stat.AddMagazineSize, -15),
             }
         ),
         new PowerupStat(
@@ -189,8 +189,8 @@ public class Powerups {
             "Trigger Happy",
             "Fire 0.06 faster, but lose 0.8 spread",
             new SelectedStat[] {
-                new SelectedStat(Stat.Delay, -0.06f), 
-                new SelectedStat(Stat.Spread, 0.8f),
+                new SelectedStat(Stat.AddFireRate, -0.06f), 
+                new SelectedStat(Stat.AddDegreeSpread, 0.8f),
             }
         ),
 

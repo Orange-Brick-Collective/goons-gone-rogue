@@ -4,18 +4,22 @@ using Sandbox.UI;
 namespace GGame;
 
 public partial class Hud : HudEntity<RootPanel> {
-    public static Hud _hud;
+    public static Hud Current;
+    public FloatingText floatingText;
     public EPanel epanel;
     public Crosshair crosshair;
 
     public Hud() {
-        if (_hud is not null) return;
-        _hud = this;
+        if (Current is not null) return;
+        Current = this;
         
         RootPanel.StyleSheet.Load("ui/Hud.scss");
-
+        
         crosshair = new Crosshair();
         RootPanel.AddChild(crosshair);
+        
+        floatingText = new FloatingText();
+        RootPanel.AddChild(floatingText);
 
         RootPanel.AddChild(new GameHud());
         RootPanel.AddChild(new Menu());
