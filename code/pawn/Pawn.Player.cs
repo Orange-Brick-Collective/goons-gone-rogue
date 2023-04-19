@@ -22,8 +22,6 @@ public partial class Player : Pawn {
 		base.Spawn();
 		Current = this;
 
-		controller = new PlayerMenuController(this);
-
 		Tags.Add("player");
 		Tags.Add("team0");
 		Name = "Player";
@@ -47,7 +45,9 @@ public partial class Player : Pawn {
 			_ = new ModelEntity(hats[random], this);
 		}
 
-		RenderColor = new Color(0.5f, 0.5f, 0.5f);
+		RenderColor = new Color(0.6f, 0.6f, 0.6f);
+
+		controller = new PlayerMenuController(this);
 
 		MaxHealth = 200;
 		Health = 200;
@@ -55,6 +55,7 @@ public partial class Player : Pawn {
 	}
 	public override void ClientSpawn() {
 		Current = this;
+		controller = new PlayerMenuController(this);
 		base.ClientSpawn();
 	}
 

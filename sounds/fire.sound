@@ -1,9 +1,9 @@
 {
   "UI": false,
-  "Volume": "0.49,0.49,0",
-  "Pitch": "1.15,1.25,1",
+  "Volume": "0.50,0.50,0",
+  "Pitch": "0.98,1.03,1",
   "Decibels": 70,
-  "SelectionMode": "RandomExclusive",
+  "SelectionMode": "Random",
   "Sounds": [
     "sounds/fire1new.vsnd",
     "sounds/fire2.vsnd"

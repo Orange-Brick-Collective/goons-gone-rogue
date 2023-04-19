@@ -34,11 +34,12 @@ public class MusicBox : BaseNetworkable {
         SongActive.SetVolume(volume);
 
         for (int i = 0; i < 20; i++) {
-            Log.Info(volume);
             volume = MathX.Lerp(volume, 1, lerpSpeed);
             SongActive.SetVolume(volume);
             await GameTask.DelayRealtime(25);
         }
+
+        SongActive.SetVolume(1);
     }
 
     public async void LerpToLooping() {
@@ -58,6 +59,8 @@ public class MusicBox : BaseNetworkable {
             SongLooping.SetVolume(volume);
             await GameTask.DelayRealtime(25);
         }
+
+        SongLooping.SetVolume(1);
     }
 }
 

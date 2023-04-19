@@ -26,11 +26,6 @@ public class GameEndUI : Panel {
     }
 
     private void BackToMenu() {
-        if (GGame.Current.IsMusicEnabled) {
-			MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
-			MusicBox.Current.LerpToActive("music/menu.sound");
-        }
-        
         Hud.Current.FromBlack();
         ServerBackToMenu("1209825");
         Delete();
@@ -38,6 +33,10 @@ public class GameEndUI : Panel {
     [ConCmd.Server]
     private static void ServerBackToMenu(string password) {
         if (password != "1209825") return;
+
+        if (GGame.Current.IsMusicEnabled) {
+			MusicBox.Current.LerpToActive("music/menu.sound");
+        }
 
         Player.Current.InMenu = true;
     }

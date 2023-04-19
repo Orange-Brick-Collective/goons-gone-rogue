@@ -13,6 +13,20 @@ namespace GGame;
 
 // ost https://www.youtube.com/watch?v=PB1TqA8JjiA&list=PL1dFsWeZdLiR4ppHRDlk6wiVDc0bIr9PL
 
+
+// TODO
+// fix spread
+// edit worldgen
+// ai control of some sort
+// boss fight
+// swarm fight (many weak enemies)
+// money and shop
+// fight start action
+// tick action
+// fix spread to be circular
+// rewrite ai shooting to copy players fire code
+// rewrite goon generation to use ticket system correctly
+
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
 
@@ -65,11 +79,9 @@ public partial class GGame : GameManager {
 		cl.Pawn = pawn;
 		pawn.Transform = ArenaMarker;
 
+		MusicBox.Current.LerpToActive("music/menu.sound");
 		MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
 		MusicBox.Current.SongLooping.SetVolume(0);
-		MusicBox.Current.LerpToActive("music/menu.sound");
-
-		pawn.controller = new PlayerMenuController(pawn);
 	}
 
 	[ConCmd.Server("ggr_kill")]
@@ -109,7 +121,7 @@ public partial class GGame : GameManager {
 
 	public async void GenSpawnArena() {
 		while (true) {
-			await GameTask.DelayRealtime(100);
+			await GameTask.DelayRealtime(200);
 
 			try {
 				ArenaMarker = Entity.All.OfType<ArenaMarker>().First().Transform;

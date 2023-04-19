@@ -14,7 +14,7 @@ public partial class Player : Pawn {
             .Run();
             
         if (Game.IsClient) {
-            Hud.Current.CrosshairInRange(rangeTrace.Hit);
+            Hud.Current.crosshair.InRange(rangeTrace.Hit, DegreeSpread);
         }
 
         // for ui

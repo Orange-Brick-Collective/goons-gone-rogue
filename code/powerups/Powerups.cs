@@ -71,15 +71,9 @@ public class Powerups {
         ),
         new PowerupStat(
             "",
-            "Heal Up",
-            "Heals 75 health",
-            new SelectedStat[] {new SelectedStat(Stat.Health, 75)}
-        ),
-        new PowerupStat(
-            "",
             "Big Heal Up",
-            "Heals 120 health",
-            new SelectedStat[] {new SelectedStat(Stat.Health, 120)}
+            "Heals 80 health",
+            new SelectedStat[] {new SelectedStat(Stat.Health, 80)}
         ),
         new PowerupStat(
             "",
@@ -102,14 +96,14 @@ public class Powerups {
         new PowerupStat(
             "",
             "Extra Padding",
-            "Adds 80 max health",
-            new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 80)}
+            "Adds 60 max health",
+            new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 60)}
         ),
         new PowerupStat(
             "",
             "Extra Padding",
-            "Adds 120 max health",
-            new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 120)}
+            "Adds 100 max health",
+            new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 100)}
         ),
         new PowerupStat(
             "",
@@ -225,33 +219,6 @@ public class Powerups {
         // * Attack Actions
         // *
     };
-
-    public static void PowerupGlassCannon(Pawn pawn) {
-        pawn.MaxHealth = 25;
-        pawn.Health = 25;
-        pawn.AddWeaponDamage += 16;
-    }
-    public static void PowerupSpeedyCheesy(Pawn pawn) {
-        pawn.AddFireRate -= 0.04f;
-        pawn.AddMoveSpeed += 80;
-        pawn.AddRange -= 100;
-        pawn.AddDegreeSpread += 0.6f;
-    }
-    public static void PowerupTank(Pawn pawn) {
-        pawn.Armor += 25;
-        pawn.AddMoveSpeed -= 100;
-        pawn.AddRange -= 100;
-    } 
-    public static void PowerupSniperRounds(Pawn pawn) {
-        pawn.AddWeaponDamage += 10;
-        pawn.AddRange += 100;
-        pawn.AddFireRate += 0.14f;
-        pawn.AddMagazineSize -= 15;
-    }
-    public static void PowerupTriggerHappy(Pawn pawn) {
-        pawn.AddFireRate -= 0.06f;
-        pawn.AddDegreeSpread += 0.8f;
-    }
 }
 
 public class Powerup {

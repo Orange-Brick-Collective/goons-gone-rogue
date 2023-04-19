@@ -4,6 +4,7 @@ GameEndUI {
     height: 600px;
     justify-content: center;
     top: 260px;
+    z-index: 10000;
 
     .content {
         justify-content: space-between;

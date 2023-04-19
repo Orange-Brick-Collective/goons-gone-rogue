@@ -51,7 +51,7 @@ public partial class Pawn : AnimatedEntity {
     [Net] public float AddReloadTime {get; set;} = 0;
     public float ReloadTime => Math.Clamp(BaseReloadTime + AddReloadTime, 0.1f, 4);   
 
-    [Net] public int BaseMagazineSize {get; set;} = 20;
+    [Net] public int BaseMagazineSize {get; set;} = 14;
     [Net] public int AddMagazineSize {get; set;} = 0;
     public int MagazineSize => Math.Max(BaseMagazineSize + AddMagazineSize, 2);
 
@@ -98,6 +98,7 @@ public partial class Pawn : AnimatedEntity {
             }
         } 
     }
+
     public void FireGun() {
         if (weapon is null) return;
 
@@ -112,7 +113,7 @@ public partial class Pawn : AnimatedEntity {
             float spreadVert = Random.Shared.Float(-DegreeSpread, DegreeSpread);
             float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
 
-            Vector3 dir = Camera.Rotation.Forward + new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 0.015f;
+            Vector3 dir = Camera.Rotation.Forward + (new Vector3(0, spreadHoriz, spreadVert) * Camera.Rotation) * 0.015f;
             TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + dir * (Range + 50))
                 .WithoutTags($"team{Team}", "trigger")
                 .Run();

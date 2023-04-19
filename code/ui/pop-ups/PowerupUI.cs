@@ -73,12 +73,24 @@ public class PowerupUI : Panel {
         this.chosenButton.SetText("  " + chosen.Name + "\n" + chosen.PawnString());
 
         if (ent.powerup is not PowerupStat powerupStat) return;
+
         for (int i = 0; i < Enum.GetNames(typeof(Stat)).Length; i++) {
             List<SelectedStat> a = powerupStat.AffectedStats.Where(s => (int)s.stat == i).ToList();
+            
             if (a.Any()) {
-                PLabel p = new() {Text = $"{a.First().amount}"};
+                SelectedStat stat = a.First();
+
+                PLabel p = new() {Text = $"{stat.amount}"};
                 p.Style.Position = PositionMode.Absolute;
-                p.Style.FontColor = a.First().good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
+
+                Color textColor;
+                if (stat.op == Op.Set) {
+                    textColor = new Color(0.7f, 0, 0);
+                } else {
+                    textColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
+                }
+
+                p.Style.FontColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
                 p.Style.Top = Length.Pixels(i * 16 + 17);
                 p.Style.Left = Length.Pixels(250);
                 this.chosenButton.AddChild(p);
@@ -134,7 +146,10 @@ public class PowerupUI : Panel {
             }
         }
 
-        if (ent.powerup.Title != "Heal Up" && ent.powerup.Title != "Big Heal Up") {
+        if (ent.powerup.Title == "Heal Up" || ent.powerup.Title == "Big Heal Up") {
+            pawn.Health = Math.Min(pawn.Health + 50, pawn.MaxHealth);
+
+        } else {
             if (pawn.AppliedPowerups.ContainsKey(ent.powerup.Title)) {
                 pawn.AppliedPowerups[ent.powerup.Title] += 1;
             } else {
