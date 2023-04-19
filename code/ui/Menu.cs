@@ -6,7 +6,6 @@ namespace GGame;
 public class Menu : Panel {
     public Panel openMenu;
 
-
     public Menu() {
         StyleSheet.Load("ui/Menu.scss");
 
@@ -43,9 +42,11 @@ public class Menu : Panel {
             ServerToggleMusic();
         }) {Classes = "buttone"});
     }
+
     [ConCmd.Server]
     public static void ServerToggleMusic() {
         GGame.Current.IsMusicEnabled = !GGame.Current.IsMusicEnabled;
+        GGame.Current.OnIsMusicEnabledChanged();
     }
 
     public class Help : Panel {

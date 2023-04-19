@@ -27,7 +27,7 @@ public class PawnHealth {
 			if (goo[i].healthPanel is null) {
 				WorldPanel e = new();
                 e.Style.JustifyContent = Justify.Center;
-                e.PanelBounds = new Rect(-4000, -600, 8000, 600);
+                e.PanelBounds = new Rect(-4000, -800, 8000, 800);
                 e.WorldScale = 0.8f;
 				e.AddChild(new GoonStats(goo[i]));
 				goo[i].healthPanel = e;
@@ -40,7 +40,7 @@ public class PawnHealth {
         if (Player.Current.healthPanel is null) {
             WorldPanel e = new();
             e.Style.JustifyContent = Justify.Center;
-            e.PanelBounds = new Rect(-4000, -600, 8000, 600);
+            e.PanelBounds = new Rect(-4000, -800, 8000, 800);
             e.WorldScale = 0.8f;
 
             GoonStats stats = new(Player.Current);

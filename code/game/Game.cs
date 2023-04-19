@@ -24,7 +24,7 @@ public partial class GGame : GameManager {
 	public Angles currentViewAngles;
 
 	// music actually almost gave me a migraine, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
-	[Net, Change] public bool IsMusicEnabled {get; set;} = true;
+	public bool IsMusicEnabled {get; set;} = true;
 
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
@@ -65,15 +65,11 @@ public partial class GGame : GameManager {
 		cl.Pawn = pawn;
 		pawn.Transform = ArenaMarker;
 
-		ClientClientJoined();
-	}
-
-	[ClientRpc]
-	public async void ClientClientJoined() {
-		await GameTask.DelayRealtime(2000);
-
 		MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
+		MusicBox.Current.SongLooping.SetVolume(0);
 		MusicBox.Current.LerpToActive("music/menu.sound");
+
+		pawn.controller = new PlayerMenuController(pawn);
 	}
 
 	[ConCmd.Server("ggr_kill")]
@@ -82,6 +78,9 @@ public partial class GGame : GameManager {
 	}
 
 	public void OnIsMusicEnabledChanged() {
+		Log.Info("change");
+		if (Game.IsClient) return;
+
 		if (IsMusicEnabled) {
 			MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
 			MusicBox.Current.LerpToActive("music/menu.sound");
@@ -129,6 +128,7 @@ public partial class GGame : GameManager {
 
 		if (Player.Current.IsPlaying) return;
 
+		MusicBox.Current.LerpToLooping();
 		await Current.AwaitToAndFromBlack();
 		Player.Current.IsPlaying = true;
 
@@ -142,9 +142,6 @@ public partial class GGame : GameManager {
 		Goon g2 = new();
 		g2.Init(0, Player.Current);
 		g2.Generate(3);
-
-		//Current.ClientExploreSong();
-		MusicBox.Current.LerpToLooping();
 	}
 
 	public async void GameEnd() {
@@ -160,6 +157,7 @@ public partial class GGame : GameManager {
 		}
 
 		ClientGameEnd();
+		MusicBox.Current.LerpToLooping();
 
 		Leaderboards.Current.AddScore(Score);
 
@@ -188,8 +186,6 @@ public partial class GGame : GameManager {
 	}
 	[ClientRpc]
 	public void ClientGameEnd() {
-		//ClientExploreSong();
-		MusicBox.Current.LerpToLooping();
 		TeamUI.Current.Clear();
 		Hud.Current.RootPanel.AddChild(new GameEndUI());
 	}
@@ -201,6 +197,7 @@ public partial class GGame : GameManager {
 		currentViewAngles = Player.Current.ViewAngles;
 
 		Player.Current.IsPlaying = false;
+		MusicBox.Current.LerpToActive("music/battle.sound");
 		await AwaitToAndFromBlack();
 		
 		await ArenaGen.Current.GenerateLevel();
@@ -208,8 +205,8 @@ public partial class GGame : GameManager {
 		// tp player and players goons to one side of arena
 		Player.Current.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
 		Player.SetViewAngles(new Angles(0, 0, 0));
-		//ClientBattleSong();
-		MusicBox.Current.LerpToActive("music/battle.sound");
+
+		
 		Player.Current.IsPlaying = true;
 		Player.Current.IsInCombat = true;
 		Player.Current.CurrentMag = Player.Current.MagazineSize;
@@ -240,6 +237,7 @@ public partial class GGame : GameManager {
 	public async void FightEnd() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
+		MusicBox.Current.LerpToLooping();
 		await AwaitToAndFromBlack();
 
 		Player.Current.IsInCombat = false;
@@ -253,9 +251,7 @@ public partial class GGame : GameManager {
 		}
 
 		Player.Current.Transform = currentPosition;
-		Player.SetViewAngles(currentViewAngles);
-		// ClientExploreSong();
-		MusicBox.Current.LerpToLooping();
+		Player.SetViewAngles(currentViewAngles);		
 	}
 
 	public async void ChangeLevel() {

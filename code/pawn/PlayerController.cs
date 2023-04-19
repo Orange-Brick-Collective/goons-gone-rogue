@@ -3,24 +3,23 @@ using Sandbox;
 namespace GGame;
 
 public class PlayerController {
+    public Player player;
+
     public virtual void BuildInput() {}
 }
 
 public class PlayerMenuController : PlayerController {
-    public Player player;
-
     public PlayerMenuController(Player player) {
         this.player = player;
     }
 
     public override void BuildInput() {
         player.ViewAngles = new Angles(20, Time.Tick * 0.16f, 0);
+        player.InputDirection = new(0, 0, 0);
     }
 }
 
 public class PlayerPlayingController : PlayerController {
-    public Player player;
-
     public PlayerPlayingController(Player player) {
         this.player = player;
     }

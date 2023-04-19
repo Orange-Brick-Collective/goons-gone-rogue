@@ -29,8 +29,8 @@ public partial class Pawn : AnimatedEntity {
     [Net] public bool IsInCombat {get; set;} = false;
     [Net] public int Team {get; set;} = 0;
 
-    [Net, Change] public float MaxHealth {get; set;} = 100;
-    [Net, Change] public new float Health {get; set;} = 100;
+    [Net] public float MaxHealth {get; set;} = 100;
+    [Net] public new float Health {get; set;} = 100;
 
     [Net] public int Armor {get; set;} = 0;
     public float ArmorReduction => GetArmorReduction();
@@ -64,15 +64,6 @@ public partial class Pawn : AnimatedEntity {
     public float Range => Math.Max(BaseRange + AddRange, 100);
 
     [Net] public int CurrentMag {get; set;} = 20;
-
-    public void OnMaxHealthChanged() {
-        MaxHealth = Math.Max(MaxHealth, 10);
-        Health = Math.Min(Health, MaxHealth);
-    }
-
-    public void OnHealthChanged() {
-        Health = Math.Min(Health, MaxHealth);
-    }
 
     public void FireGun(Pawn target) {
         if (weapon is null) return;
