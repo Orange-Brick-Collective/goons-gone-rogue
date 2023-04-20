@@ -5,73 +5,90 @@ namespace GGame;
 public class GoonStats : Panel {
     public Pawn pawn;
 
-    public Panel bar;
-    public Panel stats, powerups;
-    public Panel fill;
+    public Panel healthBar, healthBarFill;
+    public Label healthNum;
+    
+    public Panel stat, statNumbers;
+    public Label statNameLabel, statIconsLabel, statNumberLabel, statOtherNumberLabel;
 
-    public Label health, numbers, name, powerupLabel;
+    public Panel powerups;
+    public Label powerupsText;
 
     public GoonStats(Pawn pawn) {
         StyleSheet.Load("ui/GoonStats.scss");
         this.pawn = pawn;
 
-        powerups = new(this) {Classes = "stats2"};
+        powerups = new(this) {Classes = "powerups"};
+        powerupsText = new() {Classes = "powerupstext"};
+        powerups.AddChild(powerupsText);
 
-        powerupLabel = new() {Classes = "number"};
-        powerups.AddChild(powerupLabel);
+        stat = new(this) {Classes = "stats"};
 
-        stats = new(this) {Classes = "stats"};
+        statNameLabel = new() {Classes = "statnamelabel"};
+        stat.AddChild(statNameLabel);
 
-        name = new() {Classes = "name"};
-        numbers = new() {Classes = "number"};
-        stats.AddChild(name);
-        stats.AddChild(numbers);
+        statNumbers = new(stat) {Classes = "statnumbers"};
 
-        bar = new(this) {Classes = "bar"};
-        fill = new(bar) {Classes = "barfill"};
-        _ = new Panel(bar) {Classes = "barborder"};
-        health = new() {Classes = "barhealth"};
-        bar.AddChild(health);
+        statIconsLabel = new() {Classes = "staticonlabel"};
+        statNumbers.AddChild(statIconsLabel);
+        statNumberLabel = new() {Classes = "statnumberlabel"};
+        statNumbers.AddChild(statNumberLabel);
+        statOtherNumberLabel = new() {Classes = "statothernumberlabel"};
+        statNumbers.AddChild(statOtherNumberLabel);
+
+        healthBar = new(this) {Classes = "healthbar"};
+        healthBarFill = new(healthBar) {Classes = "healthbarfill"};
+        _ = new Panel(healthBar) {Classes = "healthbarborder"};
+        healthNum = new() {Classes = "healthbarhealth"};
+        healthBar.AddChild(healthNum);
     }
     
     public override void Tick() {
         if (pawn is null || !pawn.IsValid) Delete();
 
-        bar.Style.Width = pawn.MaxHealth;
-        fill.Style.Right = Length.Percent(100 - (pawn.Health / pawn.MaxHealth * 100));
+        healthBar.Style.Width = pawn.MaxHealth;
+        healthBarFill.Style.Right = Length.Percent(100 - (pawn.Health / pawn.MaxHealth * 100));
 
         if (pawn.MaxHealth < 200) {
-            health.SetText($"{(int)pawn.Health}");
+            healthNum.SetText($"{(int)pawn.Health}");
         } else {
-            health.SetText($"{(int)pawn.Health} / {(int)pawn.MaxHealth}");
+            healthNum.SetText($"{(int)pawn.Health} / {(int)pawn.MaxHealth}");
         }
 
-        stats.SetClass("combat", pawn.IsInCombat);
+        stat.SetClass("combat", pawn.IsInCombat);
 
-        name.SetText(pawn.Name);
+        statNameLabel.SetText(pawn.Name);
+
         if (pawn.IsInCombat) {
-            numbers.SetText(pawn.AmmoString());
-            powerupLabel.SetText("");
+            statIconsLabel.SetText("");
+            statNumberLabel.SetText(pawn.AmmoString());
+            statOtherNumberLabel.SetText("");
+            powerupsText.SetText("");
 
-            if (pawn == Player.Current) return;
-            pawn.healthPanel.WorldScale = 2.5f;
+            if (pawn == Player.Current) {
+                pawn.healthPanel.WorldScale = 1;
+            } else {
+                pawn.healthPanel.WorldScale = 2.5f;
+            }   
         } else {
-            numbers.SetText(pawn.PawnString());
-            SetPowerupText();
+            string[] s = pawn.PawnStrings();
+
+            statIconsLabel.SetText(s[0]);
+            statNumberLabel.SetText(s[1]);
+            statOtherNumberLabel.SetText(s[2]);
+            powerupsText.SetText(PowerupText());
 
             pawn.healthPanel.WorldScale = 0.8f;
         }
-
-        
     }
 
-    public void SetPowerupText() {
-        string label = "";
+    public string PowerupText() {
+        string str = "";
         
         foreach (var thing in pawn.AppliedPowerups) {
-            label += $"{thing.Key}: {thing.Value}\n";
+            str += $"{thing.Key}: {thing.Value}\n";
         }
 
-        powerupLabel.SetText(label); 
+        return str;
     }
 }

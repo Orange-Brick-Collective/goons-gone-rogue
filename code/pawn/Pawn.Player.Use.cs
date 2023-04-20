@@ -38,7 +38,7 @@ public partial class Player : Pawn {
             if (Game.IsClient) Hud.Current.epanel.RemoveClass("show");
         }
 
-        if (!Input.Pressed(InputButton.Use)) return;
+        if (!Input.Pressed("use")) return;
 
         // for using
         switch (useTrace.Entity) {

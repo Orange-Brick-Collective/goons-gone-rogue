@@ -44,7 +44,7 @@ public class PawnHealth {
             e.WorldScale = 0.8f;
 
             GoonStats stats = new(Player.Current);
-            stats.stats.Style.BackgroundColor = new Color(0, 0, 0, 0.8f);
+            stats.stat.Style.BackgroundColor = new Color(0, 0, 0, 0.8f);
             e.AddChild(stats);
             
             Player.Current.healthPanel = e;
@@ -57,7 +57,7 @@ public class PawnHealth {
             }
 
             Player.Current.healthPanel.Rotation = Rotation.FromYaw(Player.Current.Rotation.Yaw() + 180);
-            Player.Current.healthPanel.Position = Player.Current.Position + Vector3.Up * 25 + Player.Current.Rotation.Backward * 3.2f;
+            Player.Current.healthPanel.Position = Player.Current.Position + Vector3.Up * 20 + Player.Current.Rotation.Backward * 3.2f;
         }
     }
 }

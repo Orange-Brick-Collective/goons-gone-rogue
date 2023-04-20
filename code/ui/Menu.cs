@@ -14,7 +14,7 @@ public class Menu : Panel {
 
         buttons.AddChild(new Button("Start","", () => {
             TeamUI.Current.Add(Player.Current);
-            GGame.GameStart("dpiol");
+            ServerGameStart("dpiol");
         }) {Classes = "buttone"});
 
         buttons.AddChild(new Button("Information","", () => {
@@ -41,6 +41,12 @@ public class Menu : Panel {
         buttons.AddChild(new Button("Toggle music","", () => {
             ServerToggleMusic();
         }) {Classes = "buttone"});
+    }
+
+    [ConCmd.Server]
+    public static void ServerGameStart(string password) {
+        if (password != "dpiol") return;
+        GGame.Current.GameStart();
     }
 
     [ConCmd.Server]

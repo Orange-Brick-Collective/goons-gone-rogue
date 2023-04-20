@@ -108,7 +108,7 @@ public partial class Player : Pawn {
 		SimulateMovement();
 		SimulateUse();
 
-		if (Input.Down(InputButton.PrimaryAttack) && Game.IsServer) {
+		if (Input.Down("attack1") && Game.IsServer) {
 			FireGun();
 		}
 	}

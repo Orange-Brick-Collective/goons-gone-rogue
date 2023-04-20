@@ -181,24 +181,6 @@ public partial class Pawn : AnimatedEntity {
             Weapon = weapon,
         };
     }
-
-    public string PawnString() {
-        return $"MaxHP: {MaxHealth:#0}\n" +
-        $"HP:    {Health:#0}\n" +
-        $"Armor: {Armor}\n" +
-        $"Speed: {BaseMoveSpeed} + {AddMoveSpeed}\n" +
-        $"Range: {BaseRange} + {AddRange:#0}\n" +
-        $"Damage:{BaseWeaponDamage} + {AddWeaponDamage}\n" +
-        $"Delay: {BaseFireRate} + {AddFireRate:#0.00}\n" +
-        $"Mag:   {BaseMagazineSize} + {AddMagazineSize}\n" +
-        $"Spread:{BaseDegreeSpread} + {AddDegreeSpread:#0.0}\n" +
-        $"Reload:{BaseReloadTime} + {AddReloadTime:#0.0}";
-    }
-
-    public string AmmoString() {
-        return $"{CurrentMag} / {MagazineSize}";
-    }
-
     public void PowerupLeech(Pawn pawn) {
         if (Random.Shared.Float(0, 1) < 0.166f) {
             Health = Math.Min(Health + 1, MaxHealth);
@@ -215,5 +197,59 @@ public partial class Pawn : AnimatedEntity {
         if (Random.Shared.Float(0, 1) < 0.333f) {
             info.Attacker.TakeDamage(QuickDamageInfo(info.Damage)); 
         }
+    }
+
+    public string[] PawnStrings() {
+        return new string[] {
+        $"favorite_border\n" +
+        $"favorite\n" +
+        $"shield\n" +
+        $"directions_run\n" +
+        $"crop_square\n" +
+        $"crop_square\n" +
+        $"crop_square\n" +
+        $"crop_square\n" +
+        $"crop_square\n" +
+        $"crop_square"
+        ,
+        $"{MaxHealth:#0}\n" +
+        $"{Health:#0}\n" +
+        $"{Armor}\n" +
+        $"{MoveSpeed}\n" +
+        $"{Range:#0}\n" +
+        $"{WeaponDamage}\n" +
+        $"{FireRate:#0.00}\n" +
+        $"{MagazineSize}\n" +
+        $"{DegreeSpread:#0.0}\n" +
+        $"{ReloadTime:#0.0}"
+        ,
+        $"\n" +
+        $"\n" +
+        $"\n" +
+        $"({BaseMoveSpeed} + {AddMoveSpeed})\n" +
+        $"({BaseRange:#0} + {AddRange:#0})\n" +
+        $"({BaseWeaponDamage} + {AddWeaponDamage})\n" +
+        $"({BaseFireRate:#0.00} + {AddFireRate:#0.00})\n" +
+        $"({BaseMagazineSize} + {AddMagazineSize})\n" +
+        $"({BaseDegreeSpread:#0.0} + {AddDegreeSpread:#0.0})\n" +
+        $"({BaseReloadTime:#0.0} + {AddReloadTime:#0.0})"
+        };
+    }
+
+    public string PawnStringSingle() {
+        return $"MaxHP: {MaxHealth:#0}\n" +
+        $"HP:    {Health:#0}\n" +
+        $"Armor: {Armor}\n" +
+        $"Speed: {MoveSpeed} ({BaseMoveSpeed} + {AddMoveSpeed})\n" +
+        $"Range: {Range:#0} ({BaseRange:#0} + {AddRange:#0})\n" +
+        $"Damage:{WeaponDamage} ({BaseWeaponDamage} + {AddWeaponDamage})\n" +
+        $"Delay: {FireRate:#0.00} ({BaseFireRate:#0.00} + {AddFireRate:#0.00})\n" +
+        $"Mag:   {MagazineSize} ({BaseMagazineSize} + {AddMagazineSize})\n" +
+        $"Spread:{DegreeSpread:#0.0} ({BaseDegreeSpread:#0.0} + {AddDegreeSpread:#0.0})\n" +
+        $"Reload:{ReloadTime:#0.0} ({BaseReloadTime:#0.0} + {AddReloadTime:#0.0})";
+    }
+
+    public string AmmoString() {
+        return $"{CurrentMag} / {MagazineSize}";
     }
 }

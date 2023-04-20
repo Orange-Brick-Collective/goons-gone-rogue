@@ -58,11 +58,14 @@ public partial class Pawn : AnimatedEntity {
     };
 
     public void Generate(float depth) {
-        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + " " + 
+        //name
+        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + 
+            " " + 
             PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
 
         Scale = Random.Shared.Float(0.68f, 0.92f);
 
+        // color
         if (Team == 0) {
             RenderColor = Random.Shared.Int(0, 3) switch {
                 1 => new Color(0.3f, 0.3f, 0.5f),
@@ -79,27 +82,19 @@ public partial class Pawn : AnimatedEntity {
             };
         }
         
+        // hat
 		int random = Random.Shared.Int(hats.Length);
 		if (random != hats.Length) {
 			_ = new ModelEntity(hats[random], this);
 		}
 
-
-        // outift
-
-        // hat
-
         // other accessory
 
         // * tickets
-        // 2 ticket per health
-        // 4 ticket per armor
-        // 1 ticket per movespeed
-        // 5 ticket per weapondamage
-        // 5 ticket per -0.02 firerate
-        // 5 ticket per -0.1 reloadtime
-        // 2 ticket per magazinesize
-        // 3 ticket per -0.1 degreespread
+        // 1 ticket per health              4 ticket per armor
+        // 1 ticket per movespeed           5 ticket per weapondamage
+        // 5 ticket per -0.02 firerate      5 ticket per -0.1 reloadtime
+        // 2 ticket per magazinesize        3 ticket per -0.1 degreespread
         // 1 ticket per 2 range
         float maxValue = 25 * (1 + (depth * 0.2f));
 
@@ -109,7 +104,7 @@ public partial class Pawn : AnimatedEntity {
 
             switch (i) {
                 case 0: {
-                    MaxHealth += change * 0.5f;
+                    MaxHealth += change;
                     Health = MaxHealth;
                     break;
                 }
@@ -151,7 +146,7 @@ public partial class Pawn : AnimatedEntity {
 
     public float GenerateWeighted() {
         float num = 1;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             float newNum = Random.Shared.Float(0, 1);
             if (newNum < num) num = newNum;
         }

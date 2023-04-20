@@ -18,7 +18,7 @@ namespace GGame;
 // fix spread
 // edit worldgen
 // ai control of some sort
-// boss fight
+// boss fight (big scale)
 // swarm fight (many weak enemies)
 // money and shop
 // fight start action
@@ -134,13 +134,10 @@ public partial class GGame : GameManager {
 		await ArenaGen.Current.GenerateLevel(0);
 	}
 
-	[ConCmd.Server] // password just as a safety to deter console foolery
-	public static async void GameStart(string password) {
-		if (password != "dpiol") return;
-
+	public async void GameStart() {
 		if (Player.Current.IsPlaying) return;
 
-		MusicBox.Current.LerpToLooping();
+		if (IsMusicEnabled) MusicBox.Current.LerpToLooping();
 		await Current.AwaitToAndFromBlack();
 		Player.Current.IsPlaying = true;
 
@@ -169,7 +166,7 @@ public partial class GGame : GameManager {
 		}
 
 		ClientGameEnd();
-		MusicBox.Current.LerpToLooping();
+		if (IsMusicEnabled) MusicBox.Current.LerpToLooping();
 
 		Leaderboards.Current.AddScore(Score);
 
@@ -209,7 +206,7 @@ public partial class GGame : GameManager {
 		currentViewAngles = Player.Current.ViewAngles;
 
 		Player.Current.IsPlaying = false;
-		MusicBox.Current.LerpToActive("music/battle.sound");
+		if (IsMusicEnabled) MusicBox.Current.LerpToActive("music/battle.sound");
 		await AwaitToAndFromBlack();
 		
 		await ArenaGen.Current.GenerateLevel();
@@ -249,7 +246,7 @@ public partial class GGame : GameManager {
 	public async void FightEnd() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
-		MusicBox.Current.LerpToLooping();
+		if (IsMusicEnabled) MusicBox.Current.LerpToLooping();
 		await AwaitToAndFromBlack();
 
 		Player.Current.IsInCombat = false;
