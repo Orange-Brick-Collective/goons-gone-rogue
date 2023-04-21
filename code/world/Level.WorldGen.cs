@@ -4,6 +4,14 @@ using System.Collections.Generic;
 
 namespace GGame;
 
+public class World {
+    public int length = 12, width = 6;
+    public int depth = 0;
+    public int wallType = 0;
+    public List<List<Tile>> tiles;
+    public Transform startPos, endPos;
+}
+
 public class WorldGen {
     public static WorldGen Current {get; set;}
     
@@ -192,8 +200,10 @@ public class WorldGen {
         }
     }
 
-    private static void GenerateRoads(World lvl, List<List<bool>> gridRoads, int len, int wid) {
+    private static async void GenerateRoads(World lvl, List<List<bool>> gridRoads, int len, int wid) {
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
+            await GameTask.DelayRealtime(10); // theory to fix missing walls
+            
             if (gridRoads[l][w]) {
                 bool[] dir = {false, false, false, false};
                 int connected = 0;

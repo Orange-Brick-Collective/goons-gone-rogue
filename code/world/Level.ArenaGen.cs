@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace GGame;
 
+public class Arena {
+    public int wallType = 0;
+}
+
 public class ArenaGen {
     public static ArenaGen Current {get; set;}
 
@@ -43,6 +47,8 @@ public class ArenaGen {
                 } else {
                     arenaPos = new Vector3((j * 512) - 512, dirY, 0);
                 }
+
+                await GameTask.DelayRealtime(10); // theory to fix missing walls
 
                 ModelEntity ent = new() {
                     Position = pos.Position + arenaPos,
