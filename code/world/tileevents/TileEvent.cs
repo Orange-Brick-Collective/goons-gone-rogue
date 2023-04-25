@@ -1,4 +1,5 @@
 using Sandbox;
+using System;
 
 namespace GGame;
 
@@ -20,5 +21,9 @@ public class TileEvent : ModelEntity {
         Parent = parentTile;
         Position = parentTile.Position;
         Rotation = parentTile.Rotation;
+    }
+
+    public virtual async void Trigger() {
+        await GameTask.DelayRealtime(1);
     }
 }

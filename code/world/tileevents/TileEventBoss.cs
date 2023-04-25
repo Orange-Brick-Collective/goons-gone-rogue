@@ -3,10 +3,10 @@ using System;
 
 namespace GGame;
 
-public class TileEventFight : TileEvent {
-    public override string ModelStr {get; set;} = "models/map/enemyevent.vmdl";
+public class TileEventBoss : TileEvent {
+    public override string ModelStr {get; set;} = "models/map/bossevent.vmdl";
 
-    public TileEventFight() {
+    public TileEventBoss() {
         RenderColor = new Color(0.5f, 0.3f, 0.3f);
     }
 
@@ -43,17 +43,20 @@ public class TileEventFight : TileEvent {
 			}
 		}
 
-		// spawn enemies on other side
-		for (int i = 0; i < 1 + gam.currentWorld.depth; i++) {
-			Goon goon = new();
-			goon.Init(1);
-			goon.Generate(gam.currentWorld.depth);
-			goon.AddWeaponDamage += (int)(gam.currentWorld.depth * 0.5f);
-			int x = Random.Shared.Int(500, 650) - goon.Armor;
-			int y = Random.Shared.Int(-600, 600);
-			goon.Position = gam.ArenaMarker.Position + new Vector3(x, y, 10);
-			goon.IsInCombat = true;
-		}
+		// spawn boss on other side
+        Goon goone = new();
+        goone.Init(1);
+        goone.Generate(gam.currentWorld.depth + 12);
+
+        goone.Scale = 1.5f + gam.currentWorld.depth * 0.1f;
+        goone.SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 76));
+        goone.MaxHealth += gam.currentWorld.depth * 25;
+        goone.Health += gam.currentWorld.depth * 25;
+
+        int xx = Random.Shared.Int(500, 650);
+        int yy = Random.Shared.Int(-600, 600);
+        goone.Position = gam.ArenaMarker.Position + new Vector3(xx, yy, 10);
+        goone.IsInCombat = true;
 
         Delete();
     }

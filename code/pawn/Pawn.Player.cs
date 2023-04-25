@@ -49,6 +49,7 @@ public partial class Player : Pawn {
 
 		controller = new PlayerMenuController(this);
 
+		Team = 0;
 		MaxHealth = 200;
 		Health = 200;
 		BaseWeaponDamage = 8;
@@ -62,16 +63,8 @@ public partial class Player : Pawn {
 	public override void StartTouch(Entity ent) {
 		if (!Game.IsServer) return;
 
-		switch (ent) {
-			case TileEventFight: {
-				ent.Delete();
-				GGame.Current.FightStart();
-				break;
-			}
-			case TileEventEnd: {
-				GGame.Current.ChangeLevel();
-				break;
-			}
+		if (ent is TileEvent Tevent) {
+			Tevent.Trigger();
 		}
 	}
 

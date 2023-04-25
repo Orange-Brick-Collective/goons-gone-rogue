@@ -10,10 +10,9 @@ public partial class Pawn : AnimatedEntity {
     };
 
     public string[] PawnNames = new[] {
-        "Arduino",
         "Adriano",
         "Alfredo",
-        "Bill",
+        "Bob",
         "Bianci",
         "Bernardo",
         "Cesare",
@@ -64,6 +63,7 @@ public partial class Pawn : AnimatedEntity {
             PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
 
         Scale = Random.Shared.Float(0.68f, 0.92f);
+        SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 76));
 
         // color
         if (Team == 0) {

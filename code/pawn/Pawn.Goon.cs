@@ -19,6 +19,7 @@ public partial class Goon : Pawn {
 
     public Player leader;
     public Pawn target;
+    public Entity traceEntity;
     public Vector3 posInGroup = Vector3.Zero;
 
     public bool renderPath = false;
@@ -95,11 +96,25 @@ public partial class Goon : Pawn {
 
     public void RegisterSelf() {
         GGame.Current.goons.Add(this);
-        tickCycle = GGame.Current.goons.Count % 50;
+        tickCycle = Random.Shared.Int(0, 50);
     }
     
     public void UnregisterSelf() {
         GGame.Current.goons.Remove(this);
+    }
+
+    // *
+    // * Isnt spawn stuff
+    // *
+
+    public bool TargetInRange() {
+        TraceResult tr = Trace.Ray(Position + HeightOffset * 1.4f, target.Position + target.HeightOffset * 1.5f)
+            .Ignore(this)
+            .WithoutTags($"team{Team}", "trigger")
+            .Run();
+        traceEntity = tr.Entity;
+
+        return Vector3.DistanceBetween(Position, target.Position) > Range;
     }
 
     // *
@@ -113,17 +128,11 @@ public partial class Goon : Pawn {
             if (target is null || !target.IsValid()) {
                 AIFindTarget();
             } else {
-                TraceResult tr = Trace.Ray(Position + HeightOffset * 1.4f, target.Position + target.HeightOffset * 1.5f)
-                    .Ignore(this)
-                    .WithoutTags($"team{Team}")
-                    .Run();
-
-                if (Vector3.DistanceBetween(Position, target.Position) > Range || tr.Entity is not Pawn) {
+                if (TargetInRange() || traceEntity is not Pawn) {
                     AIEngage();
                 } else {
                     AIFire();
                 }
-                
             }
         } else {
             if (leader is null) return;
@@ -134,7 +143,7 @@ public partial class Goon : Pawn {
     private void AIFindTarget() {
         State = GoonState.FindingTarget;
 
-        IEnumerable<Entity> e = Entity.FindInSphere(Position, 1500)
+        IEnumerable<Entity> e = Entity.FindInSphere(Position, 2000)
             .OfType<Pawn>()
             .Where(g => g.Team != Team)
             .OrderBy(g => Vector3.DistanceBetween(Position, g.Position));
@@ -152,7 +161,7 @@ public partial class Goon : Pawn {
 
         TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
             .EntitiesOnly()
-            .WithoutTags($"team{Team}")
+            .WithoutTags($"team{Team}", "trigger")
             .Run();
         AILookat(tre.Direction.WithZ(0));
 
@@ -177,9 +186,9 @@ public partial class Goon : Pawn {
             AIFindTarget();
         }
 
-        TraceResult tre = Trace.Ray(Position + HeightOffset * 1.4f, target.Position + target.HeightOffset * 1.5f)
+        TraceResult tre = Trace.Ray(Position + HeightOffset * 1.6f, target.Position + target.HeightOffset * 1.6f)
             .EntitiesOnly()
-            .WithoutTags($"team{Team}")
+            .WithoutTags($"team{Team}", "trigger")
             .Run();
         AILookat(tre.Direction.WithZ(0));
 

@@ -20,7 +20,7 @@ public class WorldGen {
         Current = this;
     }
 
-    public async System.Threading.Tasks.Task GenerateLevel(int len, int wid, int depth, bool debug, int? wall = null) {
+    public async System.Threading.Tasks.Task GenerateWorld(int len, int wid, int depth, bool debug, int? wall = null) {
         Game.AssertServer();
         Log.Info("Generating World");
 
@@ -66,14 +66,14 @@ public class WorldGen {
                 int negY = (int)Math.Clamp(curP.y - i * 0.8f, 0, wid);
 
                 // YEA ITS BAD
-                if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // up
-                if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // up left
-                if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // left
-                if (gridRoads[negX][dirY]) nearestP = new(negX, dirY); // down left
-                if (gridRoads[negX][curY]) nearestP = new(negX, curY); // down
-                if (gridRoads[negX][negY]) nearestP = new(negX, negY); // down right
-                if (gridRoads[curX][negY]) nearestP = new(curX, negY); // right
-                if (gridRoads[dirX][negY]) nearestP = new(dirX, negY); // up right
+                if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // N
+                if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // NE
+                if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // E
+                if (gridRoads[negX][dirY]) nearestP = new(negX, dirY); // SE
+                if (gridRoads[negX][curY]) nearestP = new(negX, curY); // S
+                if (gridRoads[negX][negY]) nearestP = new(negX, negY); // SW
+                if (gridRoads[curX][negY]) nearestP = new(curX, negY); // W
+                if (gridRoads[dirX][negY]) nearestP = new(dirX, negY); // NW
 
                 if (nearestP != new Vector2(len * 0.5f, wid * 0.5f)) break;
             }
@@ -84,7 +84,7 @@ public class WorldGen {
         // *
         // * road stage
         // *
-        GenerateRoads(lvl, gridRoads, len, wid);
+        await GenerateRoads(lvl, gridRoads, len, wid);
 
         if (debug) {
             DebugOverlay.Sphere(startP * 512, 100, Color.White, 16, false);
@@ -95,8 +95,6 @@ public class WorldGen {
         foreach (Entity ent in Entity.All) {
             if (ent is TileEmpty) ent.Delete();
         }
-
-        await GameTask.DelayRealtime(100);
 
         // *
         // * walls stage
@@ -110,6 +108,7 @@ public class WorldGen {
         // *
         new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
         lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
+        
         new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
         lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
 
@@ -126,8 +125,14 @@ public class WorldGen {
             }
 
             if (tile is TileStraight) {
-                if (Random.Shared.Float(0, 1) > 0.5f) {
-                    new TileEventFight().Init(tile);
+                if (Random.Shared.Float(0, 1) > 0.54f) {
+                    if (Random.Shared.Float(0, 1) > 0.9f) {
+                        new TileEventFight().Init(tile);
+                    } else if (Random.Shared.Float(0, 1) > 0.1f) {
+                        new TileEventSwarm().Init(tile);
+                    } else {
+                        new TileEventBoss().Init(tile);
+                    }
                     continue;
                 }
             } else {
@@ -136,7 +141,6 @@ public class WorldGen {
                     continue;
                 }
             }
-
         }
 
         // *
@@ -200,9 +204,9 @@ public class WorldGen {
         }
     }
 
-    private static async void GenerateRoads(World lvl, List<List<bool>> gridRoads, int len, int wid) {
+    private static async System.Threading.Tasks.Task GenerateRoads(World lvl, List<List<bool>> gridRoads, int len, int wid) {
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            await GameTask.DelayRealtime(10); // theory to fix missing walls
+            await GameTask.DelayRealtime(1); // sanity check to fix missing walls
             
             if (gridRoads[l][w]) {
                 bool[] dir = {false, false, false, false};
@@ -210,11 +214,11 @@ public class WorldGen {
 
                 if (l + 1 <= len && gridRoads[l + 1][w]) dir[0] = true;
                 if (w + 1 <= wid && gridRoads[l][w + 1]) dir[1] = true;
-                if (l - 1 >= 0   && gridRoads[l - 1][w]) dir[2] = true;
-                if (w - 1 >= 0   && gridRoads[l][w - 1]) dir[3] = true;
+                if (l - 1 >= 0 && gridRoads[l - 1][w]) dir[2] = true;
+                if (w - 1 >= 0 && gridRoads[l][w - 1]) dir[3] = true;
                 foreach (bool e in dir) if (e) connected += 1;
 
-                // ignore rotation numbers, the model vs them doesnt make much sense
+                // ignore rotation numbers, the model withm them doesnt make much sense
                 switch (connected) {
                     case 1: {
                         for (int i = 0; i < 4; i++) {
@@ -252,6 +256,7 @@ public class WorldGen {
                 }
             }
         }
+        return;
     }
 
     private static Vector2 MakeVec2(Vector3 vec) {

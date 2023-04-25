@@ -16,7 +16,7 @@ public class ArenaGen {
         Current = this;
     }
 
-    public async System.Threading.Tasks.Task GenerateLevel(int? wallType = null) {
+    public async System.Threading.Tasks.Task GenerateArena(int? wallType = null) {
         Game.AssertServer();
         Log.Info("Generating Arena");
 
@@ -32,6 +32,8 @@ public class ArenaGen {
         Transform pos = GGame.Current.ArenaMarker;
 
         for (int i = 0; i < 4; i++) {
+            await GameTask.DelayRealtime(10); // theory to fix missing walls
+
             int dirX = 0, dirY = 0;
 
             if (i == 0) dirX = 746;
@@ -47,8 +49,6 @@ public class ArenaGen {
                 } else {
                     arenaPos = new Vector3((j * 512) - 512, dirY, 0);
                 }
-
-                await GameTask.DelayRealtime(10); // theory to fix missing walls
 
                 ModelEntity ent = new() {
                     Position = pos.Position + arenaPos,

@@ -131,7 +131,7 @@ public partial class GGame : GameManager {
 		}
 
 		await GameTask.DelayRealtime(200);
-		await ArenaGen.Current.GenerateLevel(0);
+		await ArenaGen.Current.GenerateArena(0);
 	}
 
 	public async void GameStart() {
@@ -141,7 +141,7 @@ public partial class GGame : GameManager {
 		await Current.AwaitToAndFromBlack();
 		Player.Current.IsPlaying = true;
 
-		await WorldGen.Current.GenerateLevel(8, 6, 0, false);
+		await WorldGen.Current.GenerateWorld(8, 6, 0, false);
 		Player.Current.InMenu = false;
 		Player.Current.Transform = Current.currentWorld.startPos;
 
@@ -170,7 +170,7 @@ public partial class GGame : GameManager {
 
 		Leaderboards.Current.AddScore(Score);
 
-		await ArenaGen.Current.GenerateLevel(WallModels.RandomWall());
+		await ArenaGen.Current.GenerateArena(WallModels.RandomWall());
 		await GameTask.DelayRealtime(300);
 
 		Player.Current.AppliedPowerups = new Dictionary<string, int>();
@@ -199,50 +199,6 @@ public partial class GGame : GameManager {
 		Hud.Current.RootPanel.AddChild(new GameEndUI());
 	}
 
-	public async void FightStart() {
-		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
-
-		currentPosition = Player.Current.Transform;
-		currentViewAngles = Player.Current.ViewAngles;
-
-		Player.Current.IsPlaying = false;
-		if (IsMusicEnabled) MusicBox.Current.LerpToActive("music/battle.sound");
-		await AwaitToAndFromBlack();
-		
-		await ArenaGen.Current.GenerateLevel();
-		
-		// tp player and players goons to one side of arena
-		Player.Current.Transform = ArenaMarker.WithPosition(ArenaMarker.Position + new Vector3(-450, 0, 10));
-		Player.SetViewAngles(new Angles(0, 0, 0));
-
-		
-		Player.Current.IsPlaying = true;
-		Player.Current.IsInCombat = true;
-		Player.Current.CurrentMag = Player.Current.MagazineSize;
-
-		foreach (Goon goon in goons) {
-			if (goon.Team == 0) {
-				int x = Random.Shared.Int(-650, -500) + goon.Armor;
-				int y = Random.Shared.Int(-600, 600);
-				goon.Position = ArenaMarker.Position + new Vector3(x, y, 10);
-				goon.IsInCombat = true;
-				goon.CurrentMag = goon.MagazineSize;
-			}
-		}
-
-		// spawn enemies on other side
-		for (int i = 0; i < 1 + Random.Shared.Int(Math.Max(currentWorld.depth - 1, 0), currentWorld.depth); i++) {
-			Goon goon = new();
-			goon.Init(1);
-			goon.Generate(currentWorld.depth);
-			goon.AddWeaponDamage += (int)(currentWorld.depth * 0.5f);
-			int x = Random.Shared.Int(500, 650) - goon.Armor;
-			int y = Random.Shared.Int(-600, 600);
-			goon.Position = ArenaMarker.Position + new Vector3(x, y, 10);
-			goon.IsInCombat = true;
-		}
-	}
-
 	public async void FightEnd() {
 		if (Player.Current.InMenu || !Player.Current.IsPlaying) return;
 
@@ -261,18 +217,6 @@ public partial class GGame : GameManager {
 
 		Player.Current.Transform = currentPosition;
 		Player.SetViewAngles(currentViewAngles);		
-	}
-
-	public async void ChangeLevel() {
-		await AwaitToAndFromBlack();
-
-		Score += 500;
-
-		await WorldGen.Current.GenerateLevel(currentWorld.length + 1, currentWorld.width + 1, currentWorld.depth + 1, false);
-		CurrentDepth = currentWorld.depth;
-		Player.Current.Transform = GGame.Current.currentWorld.startPos;
-		Player.SetViewAngles(new Angles(0, 0, 0));
-		Player.Current.InMenu = false;
 	}
 
 	// fades over 1s

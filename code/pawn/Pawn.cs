@@ -80,7 +80,7 @@ public partial class Pawn : AnimatedEntity {
             float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
             Vector3 spreadOffset = new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 5;
 
-            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset * 1.5f + spreadOffset)
+            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset * 1.6f + spreadOffset)
                 .WithoutTags($"team{Team}", "trigger")
                 .Run();
 
@@ -130,7 +130,7 @@ public partial class Pawn : AnimatedEntity {
             if (CurrentMag < 1) {
                 reload = 0;
             }
-        } 
+        }
     }
 
     public override void TakeDamage(DamageInfo info) {
@@ -139,6 +139,10 @@ public partial class Pawn : AnimatedEntity {
 
         if (Team == 0) {
             GGame.Current.DamageTaken += (int)newDamage;
+
+            if (this == Player.Current) {
+                Player.FloatingText(Player.Current.Position + HeightOffset, info.Damage);
+            }
         } else {
             GGame.Current.DamageDealt += (int)newDamage;
         }   
@@ -205,12 +209,12 @@ public partial class Pawn : AnimatedEntity {
         $"favorite\n" +
         $"shield\n" +
         $"directions_run\n" +
-        $"crop_square\n" +
-        $"crop_square\n" +
-        $"crop_square\n" +
-        $"crop_square\n" +
-        $"crop_square\n" +
-        $"crop_square"
+        $"rss_feed\n" +
+        $"electric_bolt\n" +
+        $"fast_forward\n" +
+        $"expand\n" +
+        $"all_out\n" +
+        $"schedule"
         ,
         $"{MaxHealth:#0}\n" +
         $"{Health:#0}\n" +
