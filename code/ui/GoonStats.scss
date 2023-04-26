@@ -4,7 +4,7 @@ GoonStats {
     width: 10000px;
     height: 420px;
     color: white;
-    
+
     .healthbar {
         bottom: 26px;
         position: absolute;
@@ -44,12 +44,13 @@ GoonStats {
         line-height: 22px;
         padding: 2px;
         background-color: rgba(black, 0.4);
+        border: 5px black;
+        border-radius: 5px;
         flex-direction: column;
         color: white;
 
-
         .statnamelabel {
-            margin-top: -2px;
+            margin-top: -3px;
             width: 100%;
             text-align: center;
             line-height: 29px;
@@ -58,7 +59,7 @@ GoonStats {
 
         .staticonlabel {
             font-size: 28px;
-            line-height: 24px;
+            line-height: 22px;
             padding-right: 4px;
             color: white;
             font-family: MaterialIcons;
@@ -66,7 +67,7 @@ GoonStats {
 
         .statnumberlabel {
             font-size: 26px;
-            line-height: 25.9px;
+            line-height: 24.9px;
             padding-right: 6px;
             color: white;
             font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
@@ -74,7 +75,7 @@ GoonStats {
 
         .statothernumberlabel {
             font-size: 26px;
-            line-height: 25.9px;
+            line-height: 24.9px;
             color: white;
             font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
         }

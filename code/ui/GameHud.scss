@@ -5,15 +5,23 @@ GameHud {
     flex-grow: 1;
     margin: 20px;
     background-color: rgba(black, 0.5);
+    border-radius: 2px;
     border: 4px black;
     padding: 10px;
+    font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
 
-    .points {
+    .score {
         margin-top: -8px;
-        font-size: 40px;
+        font-size: 36px;
     }
 
     .depth {
+        font-size: 20px;
+        margin-top: -6px;
+        margin-bottom: 4px;
+    }
+    
+    .money {
         font-size: 20px;
         margin-top: -6px;
         margin-bottom: 4px;
@@ -25,14 +33,14 @@ GameHud {
 
         PawnPanel {
             width: 200px;
-            height: 16px;
+            height: 22px;
 
             .bar {
                 position: absolute;
                 overflow: hidden;
                 justify-content: center;
                 width: 100%;
-                height: 18px;
+                height: 24px;
                 background-color: rgba(black, 0.4);
         
                 .barfill {
@@ -51,7 +59,7 @@ GameHud {
         
                 .barhealth {
                     position: absolute;
-                    padding-right: 3px;
+                    padding-right: 1px;
                     width: 100%;
                     font-size: 17px;
                     text-align: right;
@@ -61,20 +69,22 @@ GameHud {
                 .barname {
                     position: absolute;
                     padding-left: 3px;
-                    padding-top: 3px;
-                    width: 100%;
+                    left: 0px;
+                    width: 57%;
+                    bottom: 3px;
+                    line-height: 8px;
                     font-size: 12px;
                     text-align: left;
                     color: white;
                 }
 
                 &.player {
-                    height: 24px;
+                    height: 28px;
                 }
             }
 
             &.player {
-                height: 22px;
+                height: 26px;
             }
         }
     }

@@ -23,7 +23,7 @@ public class FightEndUI : Panel {
         right = new(ui) {Classes = "right"};
         buttons = new(right) {Classes = "buttonlist"};
 
-        Button healButton = new("Heal team for 50", "") {Classes = "button"};
+        Button healButton = new("Heal everyone 50", "") {Classes = "button"};
         healButton.AddEventListener("onclick", Heal);
         buttons.AddChild(healButton);
 
@@ -31,21 +31,15 @@ public class FightEndUI : Panel {
         newPawnButton.AddEventListener("onclick", NewPawn);
         buttons.AddChild(newPawnButton);
 
+        Button moneyButton = new("100 Bucks", "") {Classes = "button"};
+        moneyButton.AddEventListener("onclick", Money);
+        buttons.AddChild(moneyButton);
+
         Button nothingButton = new("Nothing", "") {Classes = "button"};
         nothingButton.AddEventListener("onclick", Nothing);
         buttons.AddChild(nothingButton);
     }
     
-    private void Nothing() {
-        ServerNothing("1249");
-        Delete();
-    }
-    [ConCmd.Server]
-    private static void ServerNothing(string password) {
-        if (password != "1249") return;
-        GGame.Current.FightEnd();
-    }
-
     private void Heal() {
         ServerHeal("1247");
         Delete();
@@ -76,6 +70,29 @@ public class FightEndUI : Panel {
         g.Generate(1);
         g.Position = Player.Current.Position + g.posInGroup;
 
+        GGame.Current.FightEnd();
+    }
+
+    private void Money() {
+        ServerMoney("12452");
+        Delete();
+    }
+    [ConCmd.Server]
+    private static void ServerMoney(string password) {
+        if (password != "12452") return;
+
+        GGame.Current.Money += 100;
+
+        GGame.Current.FightEnd();
+    }
+
+    private void Nothing() {
+        ServerNothing("1249");
+        Delete();
+    }
+    [ConCmd.Server]
+    private static void ServerNothing(string password) {
+        if (password != "1249") return;
         GGame.Current.FightEnd();
     }
 }

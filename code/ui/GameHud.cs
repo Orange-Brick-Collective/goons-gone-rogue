@@ -4,15 +4,17 @@ using Sandbox.UI;
 namespace GGame;
 
 public class GameHud : Panel {
-    public Label points, depth;
+    public Label score, depth, money;
 
     public GameHud() {
         StyleSheet.Load("ui/GameHud.scss");
         
-        points = new() {Classes = "points"};
-        AddChild(points);
+        score = new() {Classes = "score"};
+        AddChild(score);
         depth = new() {Classes = "depth"};
         AddChild(depth);
+        money = new() {Classes = "money"};
+        AddChild(money);
 
         AddChild(new TeamUI());
     }
@@ -25,7 +27,8 @@ public class GameHud : Panel {
             Style.Opacity = 1;
         }
 
-        points.SetText($"Points: {GGame.Current.Score}");
+        score.SetText($"Score: {GGame.Current.Score}");
         depth.SetText($"Depth: {GGame.Current.CurrentDepth}");
+        money.SetText($"Money: {GGame.Current.Money}");
     }
 }

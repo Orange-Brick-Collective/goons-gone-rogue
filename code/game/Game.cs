@@ -29,6 +29,7 @@ namespace GGame;
 
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
+	[Net] public Leaderboards Leaderboard {get; set;}
 
 	public Transform ArenaMarker {get; set;}
 	public World currentWorld;
@@ -40,6 +41,8 @@ public partial class GGame : GameManager {
 	// music actually almost gave me a migraine, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
 	public bool IsMusicEnabled {get; set;} = true;
 
+	[Net] public int Money {get; set;} = 0;
+
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
 	[Net] public int Powerups {get; set;} = 0;
@@ -50,7 +53,7 @@ public partial class GGame : GameManager {
 	
 	public GGame() {
 		if (Game.IsServer) {
-			_ = new Leaderboards();
+			Leaderboard = new Leaderboards();
 			_ = new WorldGen();
 			_ = new ArenaGen();
 			_ = new MusicBox();
@@ -116,6 +119,7 @@ public partial class GGame : GameManager {
 		await GameTask.DelayRealtime(500);
 
 		Score += 250;
+		Money += 250;
 		Player.FightEndUI();
 	}
 
@@ -168,7 +172,7 @@ public partial class GGame : GameManager {
 		ClientGameEnd();
 		if (IsMusicEnabled) MusicBox.Current.LerpToLooping();
 
-		Leaderboards.Current.AddScore(Score);
+		Leaderboard.AddScore(Score);
 
 		await ArenaGen.Current.GenerateArena(WallModels.RandomWall());
 		await GameTask.DelayRealtime(300);
@@ -187,6 +191,7 @@ public partial class GGame : GameManager {
 		Player.Current.AddRange = 0;
 		Player.Current.CurrentMag = 20;
 
+		Money = 0;
 		Score = 0;
 		Kills = 0;
 		Powerups = 0;

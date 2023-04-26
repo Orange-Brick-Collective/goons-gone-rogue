@@ -191,7 +191,7 @@ public class Menu : Panel {
             AddChild(new Label() {Classes = "text", Text = "Leaderboards"});
 
             string scores = "";
-            foreach (var item in Leaderboards.Current.TopScores) {
+            foreach (var item in GGame.Current.Leaderboard.TopScores) {
                 scores += $"{item.Key} --- {item.Value}\n";
             }
 
