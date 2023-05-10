@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace GGame;
 
 public class World {
-    public int length = 12, width = 6;
+    public int length = 10, width = 6;
     public int depth = 0;
     public int wallType = 0;
     public List<List<Tile>> tiles;
@@ -39,20 +39,19 @@ public class WorldGen {
         len -= 1;
         wid -= 1;
 
-        // *
         // * grid stage
-        // *
         Vector2 startP = new(0, Random.Shared.Int(0, wid));
         Vector2 endP = new(len, Random.Shared.Int(0, wid));
         List<Vector2> branchP = MakeBranches(lvl, len, wid, startP, endP);
         List<List<bool>> gridRoads = FillGridEmpty(len + 1, wid + 1);
 
-        MarkRoad(gridRoads, startP, endP, len, wid, debug);
-
-        if (debug) {
-            for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-                DebugOverlay.Sphere(new Vector3(l * 512, w * 512, 0), 60, gridRoads[l][w] ? Color.Green : Color.Red, 16, false);
-            }
+        if (IsBossDepth(depth)) {
+            startP = new(0, 2);
+            endP = new(8, 2);
+            MarkRoad(gridRoads, startP, endP, len, wid, false, debug);
+            branchP = new List<Vector2>() {new(8, 1), new(8, 3), new(6, 1), new(6, 3)};
+        } else {
+            MarkRoad(gridRoads, startP, endP, len, wid, true, debug);
         }
 
         foreach (Vector2 curP in branchP) {
@@ -65,7 +64,7 @@ public class WorldGen {
                 int negX = (int)Math.Clamp(curP.x - i * 0.8f, 0, len);
                 int negY = (int)Math.Clamp(curP.y - i * 0.8f, 0, wid);
 
-                // YEA ITS BAD
+                // YEA ITS BAD, can be improved but idc rn
                 if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // N
                 if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // NE
                 if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // E
@@ -81,9 +80,13 @@ public class WorldGen {
             MarkRoad(gridRoads, curP, nearestP, len, wid, debug);
         }
 
-        // *
+        if (debug) {
+            for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
+                DebugOverlay.Sphere(new Vector3(l * 512, w * 512, 0), 60, gridRoads[l][w] ? Color.Green : Color.Red, 16, false);
+            }
+        }
+
         // * road stage
-        // *
         await GenerateRoads(lvl, gridRoads, len, wid);
 
         if (debug) {
@@ -96,21 +99,20 @@ public class WorldGen {
             if (ent is TileEmpty) ent.Delete();
         }
 
-        // *
+
         // * walls stage
-        // *
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
             lvl.tiles[l][w].MakeWalls(lvl.wallType);
         }
 
-        // *
         // * events stage
-        // *
         new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
         lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
         
         new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
         lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
+
+        if (IsBossDepth(depth)) new TileEventBoss().Init(lvl.tiles[4][2]);
 
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
             Tile tile = lvl.tiles[l][w];
@@ -119,45 +121,56 @@ public class WorldGen {
             Vector2 e = new(l, w);
             if (e == startP || e == endP) continue;
 
-            if (tile is TileEnd || Random.Shared.Float(0, 1) > 0.98f) {
+            if (tile is TileEnd || GreaterThan(97.6f)) {
                 new TileEventPowerups().Init(tile);
                 continue;
             }
 
+            if (IsBossDepth(depth)) continue;
+
             if (tile is TileStraight) {
-                if (Random.Shared.Float(0, 1) > 0.54f) {
-                    if (Random.Shared.Float(0, 1) > 0.9f) {
+                if (GreaterThan(54)) {
+                    if (GreaterThan(90)) {
                         new TileEventFight().Init(tile);
-                    } else if (Random.Shared.Float(0, 1) > 0.1f) {
-                        new TileEventSwarm().Init(tile);
                     } else {
-                        new TileEventBoss().Init(tile);
+                        new TileEventSwarm().Init(tile);
                     }
                     continue;
                 }
             } else {
-                if (Random.Shared.Float(0, 1) > 0.82f) {
+                if (GreaterThan(82)) {
                     new TileEventFight().Init(tile);
                     continue;
                 }
             }
+
+            // if (tile is TileT && GreaterThan(97)) {
+            //     new TileEventShop().Init(tile);
+            //     continue;
+            // }
         }
 
-        // *
         // * props stage
-        // *
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            if (Random.Shared.Float(0, 1) > 0.6f) {
+            if (GreaterThan(60)) {
                 lvl.tiles[l][w].MakeLamp();
             }
         }
-        
 
         GGame.Current.currentWorld = lvl;
         return;
     }
 
-    private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool debug = false) {
+    private static bool IsBossDepth(int depth) {
+        if (depth != 0 && depth % 5 == 0) return true;
+        else return false;
+    }
+
+    private static bool GreaterThan(float percent) {
+        return percent < Random.Shared.Float(0, 100);
+    }
+
+    private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool detour, bool debug = false) {
         bool making = true;
         int i = 0, lastDetour = 1;
         Vector2 curP = startP;

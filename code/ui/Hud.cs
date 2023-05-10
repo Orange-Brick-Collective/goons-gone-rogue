@@ -7,7 +7,7 @@ public partial class Hud : HudEntity<RootPanel> {
     public static Hud Current;
     public Panel loadingPanel;
     public FloatingText floatingText;
-    public EPanel epanel;
+    public UsePopupPanel usePopupPanel;
     public Crosshair crosshair;
 
     public Hud() {
@@ -27,8 +27,8 @@ public partial class Hud : HudEntity<RootPanel> {
         RootPanel.AddChild(new GameHud());
         RootPanel.AddChild(new Menu());
         
-        epanel = new EPanel();
-        RootPanel.AddChild(epanel);
+        usePopupPanel = new UsePopupPanel();
+        RootPanel.AddChild(usePopupPanel);
     }
     
     public void ToBlack() {

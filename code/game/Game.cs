@@ -5,31 +5,30 @@ using System.Linq;
 
 namespace GGame;
 
-// This game was written like jank. It was a HUGE learning for me (Kodi022) at many
+// This game was written like jank (during the jam). It was a HUGE learning for me (Kodi022) at many
 // places in and out of programming, and my future projects will definitely 
-// be cleaner as a result. Glad to have been a part of the Game jam.
+// be cleaner as a result.
 
-// ps. this has been fixed up post jam
+// most code has been reworked post jam
 
 // ost https://www.youtube.com/watch?v=PB1TqA8JjiA&list=PL1dFsWeZdLiR4ppHRDlk6wiVDc0bIr9PL
 
+//////////////
 
-// TODO
+// to maybe do
 // fix spread
 // edit worldgen
 // ai control of some sort
-// boss fight (big scale)
-// swarm fight (many weak enemies)
+// balance boss fight
+// balance swarm fight
 // money and shop
 // fight start action
 // tick action
 // fix spread to be circular
 // rewrite ai shooting to copy players fire code
-// rewrite goon generation to use ticket system correctly
 
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
-	[Net] public Leaderboards Leaderboard {get; set;}
 
 	public Transform ArenaMarker {get; set;}
 	public World currentWorld;
@@ -46,14 +45,14 @@ public partial class GGame : GameManager {
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
 	[Net] public int Powerups {get; set;} = 0;
-	[Net] public int DamageDealt {get; set;} = 0;
-	[Net] public int DamageTaken {get; set;} = 0;
+	[Net] public float DamageDealt {get; set;} = 0;
+	[Net] public float DamageTaken {get; set;} = 0;
 
 	public List<Goon> goons = new();
 	
 	public GGame() {
 		if (Game.IsServer) {
-			Leaderboard = new Leaderboards();
+			_ = new Leaderboards();
 			_ = new WorldGen();
 			_ = new ArenaGen();
 			_ = new MusicBox();
@@ -93,7 +92,6 @@ public partial class GGame : GameManager {
 	}
 
 	public void OnIsMusicEnabledChanged() {
-		Log.Info("change");
 		if (Game.IsClient) return;
 
 		if (IsMusicEnabled) {
@@ -151,10 +149,10 @@ public partial class GGame : GameManager {
 
 		Goon g = new();
 		g.Init(0, Player.Current);
-		g.Generate(3);
+		g.Generate(3, Pawn.GoonType.Normal);
 		Goon g2 = new();
 		g2.Init(0, Player.Current);
-		g2.Generate(3);
+		g2.Generate(3, Pawn.GoonType.Normal);
 	}
 
 	public async void GameEnd() {
@@ -172,7 +170,7 @@ public partial class GGame : GameManager {
 		ClientGameEnd();
 		if (IsMusicEnabled) MusicBox.Current.LerpToLooping();
 
-		Leaderboard.AddScore(Score);
+		Leaderboards.Current.AddScore(Score);
 
 		await ArenaGen.Current.GenerateArena(WallModels.RandomWall());
 		await GameTask.DelayRealtime(300);

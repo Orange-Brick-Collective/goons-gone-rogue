@@ -138,13 +138,13 @@ public partial class Pawn : AnimatedEntity {
         Health -= newDamage;
 
         if (Team == 0) {
-            GGame.Current.DamageTaken += (int)newDamage;
+            GGame.Current.DamageTaken += newDamage;
 
             if (this == Player.Current) {
                 Player.FloatingText(Player.Current.Position + HeightOffset, info.Damage);
             }
         } else {
-            GGame.Current.DamageDealt += (int)newDamage;
+            GGame.Current.DamageDealt += newDamage;
         }   
 
         if (Health <= 0) {
@@ -254,6 +254,6 @@ public partial class Pawn : AnimatedEntity {
     }
 
     public string AmmoString() {
-        return $"{CurrentMag} / {MagazineSize}";
+        return $"{CurrentMag}/{MagazineSize}";
     }
 }

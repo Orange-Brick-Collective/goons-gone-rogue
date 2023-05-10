@@ -4,6 +4,13 @@ using System;
 namespace GGame;
 
 public partial class Pawn : AnimatedEntity {
+    public enum GoonType {
+        Normal,
+        Melee,
+        Swarm,
+        Boss,
+    }
+
     public string[] hats = new[] {
         "models/hats/hat1.vmdl",
         "models/hats/hat2.vmdl",
@@ -56,11 +63,8 @@ public partial class Pawn : AnimatedEntity {
         "Zello",
     };
 
-    public void Generate(float depth) {
-        //name
-        Name = PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)] + 
-            " " + 
-            PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)];
+    public void Generate(float depth, GoonType type) {
+        Name = $"{PawnNames[Random.Shared.Int(0, PawnNames.Length - 1)]} {PawnSurnames[Random.Shared.Int(0, PawnSurnames.Length - 1)]}";
 
         Scale = Random.Shared.Float(0.68f, 0.92f);
         SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 76));
@@ -92,15 +96,32 @@ public partial class Pawn : AnimatedEntity {
 
         // * tickets
         // 1 ticket per health              4 ticket per armor
-        // 1 ticket per movespeed           5 ticket per weapondamage
+        // 1 ticket per movespeed           6 ticket per weapondamage
         // 5 ticket per -0.02 firerate      5 ticket per -0.1 reloadtime
         // 2 ticket per magazinesize        3 ticket per -0.1 degreespread
         // 1 ticket per 2 range
-        float maxValue = 25 * (1 + (depth * 0.2f));
+        
+        float baseTicket = 25;
+        if (type is GoonType.Swarm) {
+            baseTicket = 10;
+            Scale = Random.Shared.Float(0.64f, 0.72f);
+			BaseWeaponDamage = 1;
+			MaxHealth -= 50;
+			Health -= 50;
+        } else if (type is GoonType.Boss) {
+            baseTicket = 60;
+            Scale = Random.Shared.Float(2.2f, 2.6f);
+            BaseWeaponDamage = 2;
+            BaseFireRate = 0.18f;
+            MaxHealth += 300;
+            Health += 300;
+        }
+
+        float maxTicket = baseTicket * (1 + (depth * 0.2f));
 
         for (int i = 0; i < 9; i++) {
             float weighted = GenerateWeighted();
-            float change = maxValue * weighted;
+            float change = maxTicket * weighted;
 
             switch (i) {
                 case 0: {
@@ -117,7 +138,7 @@ public partial class Pawn : AnimatedEntity {
                     break;
                 }
                 case 3: {
-                    AddWeaponDamage += (int)(change * 0.2f);
+                    AddWeaponDamage += (int)(change * 0.16f);
                     break;
                 }
                 case 4: {

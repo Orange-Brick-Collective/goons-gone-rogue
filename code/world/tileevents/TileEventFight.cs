@@ -47,7 +47,7 @@ public class TileEventFight : TileEvent {
 		for (int i = 0; i < 1 + gam.currentWorld.depth; i++) {
 			Goon goon = new();
 			goon.Init(1);
-			goon.Generate(gam.currentWorld.depth);
+			goon.Generate(gam.currentWorld.depth, Pawn.GoonType.Normal);
 			goon.AddWeaponDamage += (int)(gam.currentWorld.depth * 0.5f);
 			int x = Random.Shared.Int(500, 650) - goon.Armor;
 			int y = Random.Shared.Int(-600, 600);

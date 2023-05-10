@@ -12,7 +12,7 @@ public class PawnHealth {
         Event.Register(this);
     }
 
-    [Event.Client.Frame]
+    [GameEvent.Client.Frame]
     public void Frame() {
         var goo = GGame.Current.goons;
         

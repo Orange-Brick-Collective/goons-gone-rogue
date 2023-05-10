@@ -6,8 +6,8 @@ using System.Linq;
 
 namespace GGame;
 
-public class PowerupUI : Panel {
-    public PowerupEntity ent;
+public class ShopUI : Panel {
+    public ShopEntity ent;
     public Pawn player;
 
     public Pawn chosen;
@@ -15,8 +15,8 @@ public class PowerupUI : Panel {
 
     public Panel left, right, buttons;
 
-    public PowerupUI(PowerupEntity ent, Pawn player) {
-        StyleSheet.Load("ui/pop-ups/PowerupUI.scss");
+    public ShopUI(ShopEntity ent, Pawn player) {
+        StyleSheet.Load("ui/pop-ups/ShopUI.scss");
         this.ent = ent;
         this.player = player;
 
@@ -25,8 +25,8 @@ public class PowerupUI : Panel {
         left = new(ui) {Classes = "left"};
         left.AddChild(new Button("Close", "", () => {Delete();}) {Classes = "button"});
         left.AddChild(new Image() {Classes = ""});
-        left.AddChild(new Label() {Classes = "title", Text = ent.powerup.Title});
-        left.AddChild(new Label() {Classes = "description", Text = ent.powerup.Description});
+        //left.AddChild(new Label() {Classes = "title", Text = ent.powerup.Title});
+        //left.AddChild(new Label() {Classes = "description", Text = ent.powerup.Description});
 
         ////////
         ////////
@@ -71,32 +71,6 @@ public class PowerupUI : Panel {
 
         this.chosenButton.AddClass("selected");
         this.chosenButton.SetText("  " + chosen.Name + "\n" + chosen.PawnStringSingle());
-
-        if (ent.powerup is not PowerupStat powerupStat) return;
-
-        for (int i = 0; i < Enum.GetNames(typeof(Stat)).Length; i++) {
-            List<SelectedStat> a = powerupStat.AffectedStats.Where(s => (int)s.stat == i).ToList();
-            
-            if (a.Any()) {
-                SelectedStat stat = a.First();
-
-                PLabel p = new();
-                p.Style.Position = PositionMode.Absolute;
-
-                Color textColor;
-                if (stat.op == Op.Set) {
-                    textColor = new Color(0.7f, 0, 0);
-                } else {
-                    textColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
-                    p.Text = stat.amount > 0 ? $"+{stat.amount}" : $"{stat.amount}";
-                }
-
-                p.Style.FontColor = textColor;
-                p.Style.Top = Length.Pixels(i * 16 + 17);
-                p.Style.Left = Length.Pixels(275);
-                this.chosenButton.AddChild(p);
-            }
-        }
     }
 
     // idk what P means i just need a special type to easily find/remove

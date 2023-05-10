@@ -1,8 +1,9 @@
+using System.Linq;
 using Sandbox;
 
 namespace GGame;
 
-public partial class PowerupEntity : ModelEntity {
+public partial class PowerupEntity : ModelEntity, IUse {
     public Powerup powerup;
     public float rotationSpeed;
 
@@ -30,8 +31,21 @@ public partial class PowerupEntity : ModelEntity {
         powerup = Powerups.GetByIndex(e);
     }
 
-    [Event.Tick.Server]
+    [GameEvent.Tick.Server]
     private void Tick() {
         Rotation = Rotation.FromYaw(Time.Tick * rotationSpeed);
     }
+
+	public bool OnUse(Entity user) {
+        if (Game.IsServer) return true;
+
+        if (!Hud.Current.RootPanel.ChildrenOfType<PowerupUI>().Any()) {
+            Hud.Current.RootPanel.AddChild(new PowerupUI(this, (Player)user));
+        }
+        return true;
+	}
+
+	public bool IsUsable(Entity user) {
+		return true;
+	}
 }

@@ -94,6 +94,7 @@
           "GroupName": "Actions"
         }
       ]
-    }
+    },
+    "HttpAllowList": null
   }
 }

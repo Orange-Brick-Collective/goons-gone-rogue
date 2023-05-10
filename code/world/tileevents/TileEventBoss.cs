@@ -46,12 +46,7 @@ public class TileEventBoss : TileEvent {
 		// spawn boss on other side
         Goon goone = new();
         goone.Init(1);
-        goone.Generate(gam.currentWorld.depth + 12);
-
-        goone.Scale = 1.5f + gam.currentWorld.depth * 0.1f;
-        goone.SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 76));
-        goone.MaxHealth += gam.currentWorld.depth * 25;
-        goone.Health += gam.currentWorld.depth * 25;
+        goone.Generate(gam.currentWorld.depth + 12, Pawn.GoonType.Boss);
 
         int xx = Random.Shared.Int(500, 650);
         int yy = Random.Shared.Int(-600, 600);

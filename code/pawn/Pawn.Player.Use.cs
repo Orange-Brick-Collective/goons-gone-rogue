@@ -23,33 +23,13 @@ public partial class Player : Pawn {
             .WithoutTags("team0", "trigger")
             .Run();
 
-        if (useTrace.Hit) {
-            switch (useTrace.Entity) {
-                case PowerupEntity: {
-                    if (Game.IsClient) Hud.Current.epanel.AddClass("show");
-                    break;
-                }
-                default: {
-                    if (Game.IsClient) Hud.Current.epanel.RemoveClass("show");
-                    break;
-                }
-            }
+        if (useTrace.Hit && useTrace.Entity is IUse eg) {
+            if (Game.IsClient) Hud.Current.usePopupPanel.AddClass("show");
         } else {
-            if (Game.IsClient) Hud.Current.epanel.RemoveClass("show");
+            if (Game.IsClient) Hud.Current.usePopupPanel.RemoveClass("show");
+            return;
         }
 
-        if (!Input.Pressed("use")) return;
-
-        // for using
-        switch (useTrace.Entity) {
-            case PowerupEntity powerupEnt: {
-                if (Game.IsClient) {
-                    if (!Hud.Current.RootPanel.ChildrenOfType<PowerupUI>().Any()) {
-                        Hud.Current.RootPanel.AddChild(new PowerupUI(powerupEnt, this));
-                    }
-                }
-                break;
-            }
-        } 
+        if (Input.Pressed("use")) eg.OnUse(this);     
     }
 }

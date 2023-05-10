@@ -13,7 +13,7 @@ GoonStats {
         width: 100%;
         height: 50px;
         background-color: rgba(black, 0.6);
-        border-radius: 20px;
+        border-radius: 22px;
 
         .healthbarfill {
             width: 100%;
@@ -27,8 +27,8 @@ GoonStats {
             height: 102%;
             top: -1%;
             position: absolute;
-            border: 7px rgb(0, 0, 0);
-            border-radius: 18px;
+            border: 6px rgb(0, 0, 0);
+            border-radius: 20px;
         }
 
         .healthbarhealth {
@@ -40,7 +40,7 @@ GoonStats {
 
     .stats {
         bottom: 80px;
-        height: 296px;
+        height: 290px;
         line-height: 22px;
         padding: 2px;
         background-color: rgba(black, 0.4);
@@ -52,8 +52,9 @@ GoonStats {
         .statnamelabel {
             margin-top: -3px;
             width: 100%;
+            height: 30px;
             text-align: center;
-            line-height: 29px;
+            line-height: 28px;
             font-size: 34px;
         }
 
@@ -102,6 +103,6 @@ GoonStats {
     }
 
     .combat {
-        height: 50px;
+        height: 66px;
     }
 }

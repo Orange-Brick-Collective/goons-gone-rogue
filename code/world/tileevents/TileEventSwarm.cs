@@ -44,15 +44,10 @@ public class TileEventSwarm : TileEvent {
 		}
 
 		// spawn enemies on other side
-		for (int i = 0; i < 2 + gam.currentWorld.depth * 2; i++) {
+		for (int i = 0; i < 2 + (gam.currentWorld.depth + 2) * 2; i++) {
 			Goon goon = new();
 			goon.Init(1);
-			goon.Generate(Math.Max(0, gam.currentWorld.depth - 2));
-			goon.Scale = Random.Shared.Float(0.64f, 0.72f);
-			goon.SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 76));
-			goon.BaseWeaponDamage = 1;
-			goon.MaxHealth -= 50;
-			goon.Health -= 50;
+			goon.Generate(gam.currentWorld.depth, Pawn.GoonType.Swarm);
 			int x = Random.Shared.Int(500, 650) - goon.Armor;
 			int y = Random.Shared.Int(-600, 600);
 			goon.Position = gam.ArenaMarker.Position + new Vector3(x, y, 10);

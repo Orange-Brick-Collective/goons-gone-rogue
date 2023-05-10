@@ -67,7 +67,7 @@ public class FightEndUI : Panel {
 
         Goon g = new();
         g.Init(0, Player.Current);
-        g.Generate(1);
+        g.Generate(1, Pawn.GoonType.Normal);
         g.Position = Player.Current.Position + g.posInGroup;
 
         GGame.Current.FightEnd();

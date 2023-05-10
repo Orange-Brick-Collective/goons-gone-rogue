@@ -149,33 +149,32 @@ public class Powerups {
         new PowerupStat(
             "",
             "Speedy Cheesy",
-            "Fire 0.04 seconds faster and moves 80 speed faster, but loses 100 range and 0.6 spread",
+            "Fire 0.04 seconds faster and moves 80 speed faster, but loses and 0.6 spread",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddFireRate, -0.04f), 
                 new SelectedStat(Stat.AddMoveSpeed, 80),
-                new SelectedStat(Stat.AddRange, -100),
                 new SelectedStat(Stat.AddDegreeSpread, 0.6f),
             }
         ),
         new PowerupStat(
             "",
             "Tank",
-            "Gains 25 armor, but loses 100 range and 150 move speed",
+            "Gains 25 armor, but loses 100 range and 100 move speed",
             new SelectedStat[] {
                 new SelectedStat(Stat.Armor, 25),
                 new SelectedStat(Stat.AddRange, -100),
-                new SelectedStat(Stat.AddMoveSpeed, -150),
+                new SelectedStat(Stat.AddMoveSpeed, -100),
             }
         ),
         new PowerupStat(
             "",
             "Sniper Rounds",
-            "Add 10 damage and 100 range, but lose 0.14 firerate and 15 mag",
+            "Add 10 damage and 100 range, but lose 0.14 firerate and 8 mag",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddWeaponDamage, 10),
                 new SelectedStat(Stat.AddRange, 100),
                 new SelectedStat(Stat.AddFireRate, 0.14f),
-                new SelectedStat(Stat.AddMagazineSize, -15),
+                new SelectedStat(Stat.AddMagazineSize, -8),
             }
         ),
         new PowerupStat(
