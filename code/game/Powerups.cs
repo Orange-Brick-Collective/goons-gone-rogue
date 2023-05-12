@@ -113,13 +113,13 @@ public class Powerups {
         new PowerupStat(
             "/images/icons/mag.png",
             "Longer Mag",
-            "Snached this even larger drum mag!",
+            "Got this even larger drum mag",
             new SelectedStat[] {new SelectedStat(Stat.AddMagazineSize, 8)}
         ),
         new PowerupStat(
             "/images/icons/hand.png",
             "Quick Hands",
-            "Tactical reloads really work!",
+            "Tactical reloads really work",
             new SelectedStat[] {new SelectedStat(Stat.AddReloadTime, -0.4f)}
         ),
         new PowerupStat(
@@ -204,7 +204,6 @@ public class Powerups {
             "1/10 chance every attack to deal an additional hit. Every additional 'Critical Hit' is another 1/10 chance for another hit",
             (pawn) => pawn.AttackActions.Add(pawn.PowerupCriticalHit)
         ),
-
 
         // *
         // * hurt actions

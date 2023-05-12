@@ -21,7 +21,7 @@ public class TileEventShop : TileEvent {
 
         _ = new ShopEntity() {
             Parent = this,
-            Position = Position + new Vector3(-128, 0, 48) * Rotation,
+            Position = Position + new Vector3(0, 0, 48) * Rotation,
         }.Init();
     }
 }

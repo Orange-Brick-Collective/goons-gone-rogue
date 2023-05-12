@@ -9,7 +9,7 @@ public partial class ShopEntity : ModelEntity, IUse {
     public List<Powerup> powerups = new();
 
     public ShopEntity Init() {
-        Scale = 1.4f;
+        Scale = 1.5f;
 
         List<int> ints = new();
         for (int i = 0; i < System.Random.Shared.Int(3, 6); i++) {
@@ -17,7 +17,14 @@ public partial class ShopEntity : ModelEntity, IUse {
         }
 
         foreach (int num in ints) {
-            powerups.Add(Powerups.GetByIndex(num));
+            Powerup p = Powerups.GetByIndex(num);
+
+            if (p is PowerupStat statPow) foreach (SelectedStat s in statPow.AffectedStats) {
+                if (s.good) {s.amount *= 2; Log.Info("a");}
+                Log.Info("b");
+            }
+            
+            powerups.Add(p);
         }
         ClientInit(ints.ToArray());
 

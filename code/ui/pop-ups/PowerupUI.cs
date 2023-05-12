@@ -24,7 +24,7 @@ public class PowerupUI : Panel {
 
         left = new(ui) {Classes = "left"};
         left.AddChild(new Button("Close", "", () => {Delete();}) {Classes = "button"});
-        left.AddChild(new Image() {Classes = ""});
+        left.AddChild(new Image() {Classes = "image", Texture = Texture.Load(FileSystem.Mounted, ent.powerup.Image)});
         left.AddChild(new Label() {Classes = "title", Text = ent.powerup.Title});
         left.AddChild(new Label() {Classes = "description", Text = ent.powerup.Description});
 

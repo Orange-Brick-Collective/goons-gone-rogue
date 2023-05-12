@@ -1,11 +1,13 @@
 using System.Linq;
 using Sandbox;
+using Sandbox.UI;
 
 namespace GGame;
 
 public partial class PowerupEntity : ModelEntity, IUse {
     public Powerup powerup;
     public float rotationSpeed;
+    public WorldPanel panel;
 
     public PowerupEntity Init(int e) {
         ClientInit(e);
@@ -29,11 +31,28 @@ public partial class PowerupEntity : ModelEntity, IUse {
     [ClientRpc] // required
     public void ClientInit(int e) {
         powerup = Powerups.GetByIndex(e);
+
+        panel = new WorldPanel() {
+            Transform = this.Transform,
+            PanelBounds = new Rect(-12, -12, 24, 24),
+            WorldScale = 14,
+        };
+        panel.StyleSheet.Add(StyleSheet.FromFile("ui/PowerupEntityImage.scss"));
+
+        panel.AddChild(new Image() {
+            Texture = Texture.Load(FileSystem.Mounted, powerup.Image),
+            Classes = "",
+        });
     }
 
     [GameEvent.Tick.Server]
     private void Tick() {
         Rotation = Rotation.FromYaw(Time.Tick * rotationSpeed);
+    }
+
+    [GameEvent.Tick.Client]
+    private void ClientTick() {
+        panel.Rotation = Rotation;
     }
 
 	public bool OnUse(Entity user) {
@@ -48,4 +67,14 @@ public partial class PowerupEntity : ModelEntity, IUse {
 	public bool IsUsable(Entity user) {
 		return true;
 	}
+
+    protected override void OnDestroy() {
+        ClientOnDestroy();
+        base.OnDestroy();
+    }
+
+    [ClientRpc]
+    private void ClientOnDestroy() {
+        panel?.Delete();
+    }
 }

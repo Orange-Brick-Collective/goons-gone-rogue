@@ -12,7 +12,7 @@ public class ShopUI : Panel {
 
     public Powerup selectedPowerup;
     public Pawn chosen;
-    public Button selectedButton, selectedPowerupButton;
+    public Button selectedButton, selectedPowerupButton, confirmButton;
     public Label title, description;
     public Panel left, right, buttons, powerupButtons;
 
@@ -39,7 +39,9 @@ public class ShopUI : Panel {
 
         right = new(ui) {Classes = "right"};
         buttons = new(right) {Classes = "buttonlist"};
-        right.AddChild(new Button("Confirm", "", Confirm) {Classes = "button confirmbutton"});
+
+        confirmButton = new Button("Buy ___ for $1000", "", Confirm) {Classes = "button confirmbutton"};
+        right.AddChild(confirmButton);
 
         Init();
     }
@@ -67,10 +69,6 @@ public class ShopUI : Panel {
             b.AddChild(new Image() {Classes = "image", Texture = Texture.Load(FileSystem.Mounted, powerup.Image)});
             b.AddEventListener("onclick", () => {SelectPowerup(b, powerup);});
             powerupButtons.AddChild(b);
-
-            // if (selectedPowerupButton is null) {
-            //     SelectPowerup(b, powerup);
-            // }
         }
     }
 
@@ -127,6 +125,7 @@ public class ShopUI : Panel {
         description.SetText(selectedPowerup.Description);
         title.SetText(selectedPowerup.Title);
 
+        confirmButton.SetText($"Buy {selectedPowerup.Title} for $1000");
         Select(selectedButton, chosen);
     }
 
@@ -134,6 +133,9 @@ public class ShopUI : Panel {
     public class PLabel : Label {}
 
     private void Confirm() {
+        if (selectedPowerup is null) return;
+        if (GGame.Current.Money < 1000) return;
+
         ServerConfirm("12466", ent.NetworkIdent, ent.powerups.IndexOf(selectedPowerup), chosen.NetworkIdent);
         Delete();
     }
@@ -141,10 +143,13 @@ public class ShopUI : Panel {
     [ConCmd.Server]
     private static void ServerConfirm(string password, int netIdent, int selectedPowerup, int pawnNetIdent) {
         if (password != "12466") return;
+        if (GGame.Current.Money < 1000) return;
 
         Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
         ShopEntity ent = Entity.FindByIndex<ShopEntity>(netIdent);
         if (pawn is null || ent is null) return;
+
+        GGame.Current.Money -= 1000;
 
         Powerup powerup = ent.powerups[selectedPowerup];
 
@@ -194,6 +199,7 @@ public class ShopUI : Panel {
             GGame.Current.Score += 20;
         }
 
-        ent.Delete();
+        if (ent.powerups.Count == 0) ent.Delete();
+        else ent.powerups.RemoveAt(selectedPowerup);
     }
 }

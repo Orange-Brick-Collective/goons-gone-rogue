@@ -32,10 +32,10 @@ ShopUI {
         }
 
         .title {
-            padding-top: 4px;
+            padding-top: 2px;
             text-align: center;
             font-size: 21px;
-            height: 14%;
+            height: 8%;
         }
 
         .buttonlist {
@@ -43,12 +43,13 @@ ShopUI {
             background-color: rgb(148, 148, 148);
             overflow: scroll;
             flex-shrink: 0;
-            height: 55%;
+            height: 50%;
         }
 
         .description {
             font-size: 18px;
             margin: 2px;
+            height: 24%;
         }
     }
 
@@ -66,14 +67,7 @@ ShopUI {
             margin: 0px 0px 10px 0px;
             flex-shrink: 0;
             height: 91%;
-        }    .buttonlist {
-            flex-direction: column;
-            background-color: rgb(148, 148, 148);
-            overflow: scroll;
-            margin: 0px 0px 10px 0px;
-            flex-shrink: 0;
-            height: 91%;
-        }
+        }    
 
         .confirmbutton {
             flex-shrink: 0;
@@ -81,11 +75,14 @@ ShopUI {
             border: 1px black;
             background-color: rgb(195, 202, 207);
             font-size: 15px;
-            margin: 0px 50px 0px 50px;
         }
     }
 
-
+    .image {
+        margin-left: 4px;
+        width: 17px;
+        aspect-ratio: 1;
+    }
 
     .button {
         flex-shrink: 0;
