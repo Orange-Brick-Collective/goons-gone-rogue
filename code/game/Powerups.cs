@@ -51,7 +51,6 @@ public class SelectedStat {
 }
 
 public class Powerups {
-    public static Powerup GetRandom => list[Random.Shared.Int(0, list.Length - 1)];
     public static int GetRandomIndex => Random.Shared.Int(0, list.Length - 1);
 
     public static Powerup GetByIndex(int index) {
@@ -61,85 +60,88 @@ public class Powerups {
     // ! actions with ';' break even
     public static readonly Powerup[] list = new Powerup[] {
         // *
-        // * Simple actions
+        // * simple actions
         // *
         new PowerupStat(
-            "",
+            "/images/icons/plus.png",
             "Heal Up",
-            "Heals 50 health",
+            "Delicious milkshake",
             new SelectedStat[] {new SelectedStat(Stat.Health, 50)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/plus.png",
             "Big Heal Up",
-            "Heals 80 health",
+            "Big meat dinner brings you back",
             new SelectedStat[] {new SelectedStat(Stat.Health, 80)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/bullet.png",
             "Hotter Bullets",
-            "Adds 5 damage",
+            "Got these bullets that have extra powder",
             new SelectedStat[] {new SelectedStat(Stat.AddWeaponDamage, 5)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/trigger.png",
             "Trigger Happy",
-            "Fires 0.03 seconds faster",
+            "Training to pull the trigger quicker",
             new SelectedStat[] {new SelectedStat(Stat.AddFireRate, -0.03f)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/eye.png",
             "Sharper Eyes",
-            "Adds 120 range",
+            "Glasses really help you see",
             new SelectedStat[] {new SelectedStat(Stat.AddRange, 120)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/plus_up.png",
             "Extra Padding",
-            "Adds 60 max health",
+            "A bit of working out helps a lot",
             new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 60)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/plus_up.png",
             "Extra Padding",
-            "Adds 100 max health",
+            "Taking one of these pills make you feel better than ever",
             new SelectedStat[] {new SelectedStat(Stat.MaxHealth, 100)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/target.png",
             "Accurate",
-            "Adds 0.4 less spread",
+            "Who knew holding your hands still helped",
             new SelectedStat[] {new SelectedStat(Stat.AddDegreeSpread, -0.4f)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/mag.png",
             "Longer Mag",
-            "Adds 8 more bullets to magazine",
+            "Snached this even larger drum mag!",
             new SelectedStat[] {new SelectedStat(Stat.AddMagazineSize, 8)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/hand.png",
             "Quick Hands",
-            "Speeds up reload by 0.4s",
+            "Tactical reloads really work!",
             new SelectedStat[] {new SelectedStat(Stat.AddReloadTime, -0.4f)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/",
             "Sprinter",
-            "Moves 100 faster",
+            "Could be training, could be gamer shoes",
             new SelectedStat[] {new SelectedStat(Stat.AddMoveSpeed, 100)}
         ),
         new PowerupStat(
-            "",
+            "/images/icons/",
             "Thicker Armor",
-            "Adds 6 armor",
+            "An extra plate can't hurt",
             new SelectedStat[] {new SelectedStat(Stat.Armor, 6)}
         ),
 
+        // *
+        // * combo simple actions
+        // *
         new PowerupStat(
-            "",
+            "/images/icons/glass.png",
             "Glass Cannon",
-            "Adds 16 damage, but sets health and max health to 25",
+            "Hit strong, get hit strong",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddWeaponDamage, 16),
                 new SelectedStat(Stat.Health, 25, Op.Set),
@@ -147,9 +149,9 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "",
+            "/images/icons/",
             "Speedy Cheesy",
-            "Fire 0.04 seconds faster and moves 80 speed faster, but loses and 0.6 spread",
+            "With great speed comes imprecision",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddFireRate, -0.04f), 
                 new SelectedStat(Stat.AddMoveSpeed, 80),
@@ -157,9 +159,9 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "",
+            "/images/icons/",
             "Tank",
-            "Gains 25 armor, but loses 100 range and 100 move speed",
+            "Slow and steady",
             new SelectedStat[] {
                 new SelectedStat(Stat.Armor, 25),
                 new SelectedStat(Stat.AddRange, -100),
@@ -167,9 +169,9 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "",
+            "/images/icons/",
             "Sniper Rounds",
-            "Add 10 damage and 100 range, but lose 0.14 firerate and 8 mag",
+            "These bigger rounds pack a punch, but you cant use as many",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddWeaponDamage, 10),
                 new SelectedStat(Stat.AddRange, 100),
@@ -178,9 +180,9 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "",
+            "/images/icons/",
             "Trigger Happy",
-            "Fire 0.06 faster, but lose 0.8 spread",
+            "Spray all day",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddFireRate, -0.06f), 
                 new SelectedStat(Stat.AddDegreeSpread, 0.8f),
@@ -188,16 +190,16 @@ public class Powerups {
         ),
 
         // *
-        // * Attack Actions
+        // * attack actions
         // *
         new PowerupPawnAct(
-            "",
+            "/images/icons/",
             "Leech",
             "1/6 chance every attack to regen one health. Every additional 'Leech' is another 1/6 chance for another one health",
             (pawn) => pawn.AttackActions.Add(pawn.PowerupLeech)
         ),
         new PowerupPawnAct(
-            "",
+            "/images/icons/",
             "Critical Hit",
             "1/10 chance every attack to deal an additional hit. Every additional 'Critical Hit' is another 1/10 chance for another hit",
             (pawn) => pawn.AttackActions.Add(pawn.PowerupCriticalHit)
@@ -205,17 +207,17 @@ public class Powerups {
 
 
         // *
-        // * Hurt Actions
+        // * hurt actions
         // *
         new PowerupPawnAct(
-            "",
+            "/images/icons/",
             "Thorns",
             "1/3 chance when hurt to deal damage back to attacker. Every additional 'Thorns' is another 1/3 chance to return damage",
             (pawn) => pawn.HurtActions.Add(pawn.PowerupThorns)
         ),
 
         // *
-        // * Attack Actions
+        // * something Actions
         // *
     };
 }

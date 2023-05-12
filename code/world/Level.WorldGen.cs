@@ -144,10 +144,10 @@ public class WorldGen {
                 }
             }
 
-            // if (tile is TileT && GreaterThan(97)) {
-            //     new TileEventShop().Init(tile);
-            //     continue;
-            // }
+            if (tile is TileT && GreaterThan(10)) {
+                new TileEventShop().Init(tile);
+                continue;
+            }
         }
 
         // * props stage

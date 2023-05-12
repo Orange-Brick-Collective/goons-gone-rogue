@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Sandbox;
 
@@ -5,10 +6,21 @@ namespace GGame;
 
 public partial class ShopEntity : ModelEntity, IUse {
     public float rotationSpeed;
+    public List<Powerup> powerups = new();
 
     public ShopEntity Init() {
         Scale = 1.4f;
-        ClientInit();
+
+        List<int> ints = new();
+        for (int i = 0; i < System.Random.Shared.Int(3, 6); i++) {
+            ints.Add(Powerups.GetRandomIndex);
+        }
+
+        foreach (int num in ints) {
+            powerups.Add(Powerups.GetByIndex(num));
+        }
+        ClientInit(ints.ToArray());
+
         rotationSpeed = System.Random.Shared.Float(-0.3f, 0.3f);
 
         SetModel("models/powerup.vmdl");
@@ -26,8 +38,10 @@ public partial class ShopEntity : ModelEntity, IUse {
     }
 
     [ClientRpc] // required
-    public void ClientInit() {
-
+    public void ClientInit(int[] ints) {
+        foreach (int num in ints) {
+            powerups.Add(Powerups.GetByIndex(num));
+        }
     }
 
     [GameEvent.Tick.Server]
@@ -36,8 +50,10 @@ public partial class ShopEntity : ModelEntity, IUse {
     }
 
 	public bool OnUse(Entity user) {
+        if (Game.IsServer) return true;
+
         if (!Hud.Current.RootPanel.ChildrenOfType<ShopUI>().Any()) {
-            Hud.Current.RootPanel.AddChild(new ShopUI(this, (Player)user));
+            Hud.Current.RootPanel.AddChild(new ShopUI(this, (Pawn)user));
         }
         return true;
 	}

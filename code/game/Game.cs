@@ -95,7 +95,8 @@ public partial class GGame : GameManager {
 		if (Game.IsClient) return;
 
 		if (IsMusicEnabled) {
-			MusicBox.Current.SongLooping = Sound.FromScreen("music/explore.sound");
+			MusicBox.Current?.SongActive.SetVolume(1);
+			MusicBox.Current?.SongActive.Stop();
 			MusicBox.Current.LerpToActive("music/menu.sound");
 		} else {
 			MusicBox.Current?.SongLooping.SetVolume(0);

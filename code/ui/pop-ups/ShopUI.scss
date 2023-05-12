@@ -1,4 +1,4 @@
-PowerupUI {
+ShopUI {
     position: absolute;
     pointer-events: all;
     width: 100%;
@@ -17,19 +17,38 @@ PowerupUI {
     .left {
         border-right: 1px;
         border-color: black;
+        justify-content: space-between;
         width: 50%;
         flex-direction: column;
         padding: 6px;
 
-        .title {
+        .text {
             padding-top: 4px;
             padding-bottom: 4px;
             text-align: center;
             font-size: 24px;
+            border-bottom: 1px black;
+            height: 10%;
+        }
+
+        .title {
+            padding-top: 4px;
+            text-align: center;
+            font-size: 21px;
+            height: 14%;
+        }
+
+        .buttonlist {
+            flex-direction: column;
+            background-color: rgb(148, 148, 148);
+            overflow: scroll;
+            flex-shrink: 0;
+            height: 55%;
         }
 
         .description {
             font-size: 18px;
+            margin: 2px;
         }
     }
 
@@ -41,6 +60,13 @@ PowerupUI {
         padding: 6px;
 
         .buttonlist {
+            flex-direction: column;
+            background-color: rgb(148, 148, 148);
+            overflow: scroll;
+            margin: 0px 0px 10px 0px;
+            flex-shrink: 0;
+            height: 91%;
+        }    .buttonlist {
             flex-direction: column;
             background-color: rgb(148, 148, 148);
             overflow: scroll;
@@ -59,6 +85,8 @@ PowerupUI {
         }
     }
 
+
+
     .button {
         flex-shrink: 0;
         height: 24px;
@@ -73,6 +101,10 @@ PowerupUI {
             border-color: rgb(240, 66, 66);
             height: 180px;
             line-height: 16px;
+        }
+
+        &.powerupselected {
+            border-color: rgb(240, 66, 66);
         }
 
         &:hover {

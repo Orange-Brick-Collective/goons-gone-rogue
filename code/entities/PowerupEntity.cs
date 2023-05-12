@@ -40,7 +40,7 @@ public partial class PowerupEntity : ModelEntity, IUse {
         if (Game.IsServer) return true;
 
         if (!Hud.Current.RootPanel.ChildrenOfType<PowerupUI>().Any()) {
-            Hud.Current.RootPanel.AddChild(new PowerupUI(this, (Player)user));
+            Hud.Current.RootPanel.AddChild(new PowerupUI(this, (Pawn)user));
         }
         return true;
 	}

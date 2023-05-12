@@ -44,7 +44,7 @@ public class TileEventSwarm : TileEvent {
 		}
 
 		// spawn enemies on other side
-		for (int i = 0; i < 2 + (gam.currentWorld.depth + 2) * 2; i++) {
+		for (int i = 0; i < 2 + (gam.currentWorld.depth + 1) * 2; i++) {
 			Goon goon = new();
 			goon.Init(1);
 			goon.Generate(gam.currentWorld.depth, Pawn.GoonType.Swarm);

@@ -105,9 +105,10 @@ public partial class Pawn : AnimatedEntity {
         if (type is GoonType.Swarm) {
             baseTicket = 10;
             Scale = Random.Shared.Float(0.64f, 0.72f);
-			BaseWeaponDamage = 1;
-			MaxHealth -= 50;
-			Health -= 50;
+			BaseWeaponDamage = 0.4f;
+			MaxHealth -= 65;
+			Health -= 65;
+            BaseRange -= 60;
         } else if (type is GoonType.Boss) {
             baseTicket = 60;
             Scale = Random.Shared.Float(2.2f, 2.6f);

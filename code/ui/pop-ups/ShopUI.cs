@@ -10,10 +10,11 @@ public class ShopUI : Panel {
     public ShopEntity ent;
     public Pawn player;
 
+    public Powerup selectedPowerup;
     public Pawn chosen;
-    public Button chosenButton;
-
-    public Panel left, right, buttons;
+    public Button selectedButton, selectedPowerupButton;
+    public Label title, description;
+    public Panel left, right, buttons, powerupButtons;
 
     public ShopUI(ShopEntity ent, Pawn player) {
         StyleSheet.Load("ui/pop-ups/ShopUI.scss");
@@ -24,9 +25,14 @@ public class ShopUI : Panel {
 
         left = new(ui) {Classes = "left"};
         left.AddChild(new Button("Close", "", () => {Delete();}) {Classes = "button"});
-        left.AddChild(new Image() {Classes = ""});
-        //left.AddChild(new Label() {Classes = "title", Text = ent.powerup.Title});
-        //left.AddChild(new Label() {Classes = "description", Text = ent.powerup.Description});
+        left.AddChild(new Label() {Classes = "text", Text = "What're ya buyin"});
+        title = new Label() {Classes = "title", Text = ""};
+        left.AddChild(title);
+        description = new Label() {Classes = "description", Text = ""};
+        left.AddChild(description);
+
+        powerupButtons = new(right) {Classes = "buttonlist"};
+        left.AddChild(powerupButtons);
 
         ////////
         ////////
@@ -54,81 +60,134 @@ public class ShopUI : Panel {
             b.AddEventListener("onclick", () => {Select(b, pawn);});
             buttons.AddChild(b);
         }
+
+        // add button for each powerup
+        foreach (Powerup powerup in ent.powerups) {
+            Button b = new(powerup.Title, "") {Classes = "button"};
+            b.AddChild(new Image() {Classes = "image", Texture = Texture.Load(FileSystem.Mounted, powerup.Image)});
+            b.AddEventListener("onclick", () => {SelectPowerup(b, powerup);});
+            powerupButtons.AddChild(b);
+
+            // if (selectedPowerupButton is null) {
+            //     SelectPowerup(b, powerup);
+            // }
+        }
     }
 
-    private void Select(Button chosenButton, Pawn chosen) {
-        if (this.chosenButton is not null) {
-            foreach(Label lb in this.chosenButton.ChildrenOfType<PLabel>()) {
+    private void Select(Button selectedButton, Pawn chosen) {
+        if (this.selectedButton is not null) {
+            foreach(Label lb in this.selectedButton.ChildrenOfType<PLabel>()) {
                 lb.Delete();
             }
-
-            this.chosenButton.RemoveClass("selected");
-            this.chosenButton.SetText(this.chosen.Name);
         }
 
-        this.chosenButton = chosenButton;
+        this.selectedButton?.RemoveClass("selected");
+        this.selectedButton?.SetText(this.chosen.Name);
+
+        this.selectedButton = selectedButton;
         this.chosen = chosen;
 
-        this.chosenButton.AddClass("selected");
-        this.chosenButton.SetText("  " + chosen.Name + "\n" + chosen.PawnStringSingle());
+        this.selectedButton?.AddClass("selected");
+        this.selectedButton?.SetText("  " + chosen.Name + "\n" + chosen.PawnStringSingle());
+
+        if (selectedPowerup is not PowerupStat powerupStat) return;
+
+        for (int i = 0; i < Enum.GetNames(typeof(Stat)).Length; i++) {
+            List<SelectedStat> a = powerupStat.AffectedStats.Where(s => (int)s.stat == i).ToList();
+            
+            if (a.Any()) {
+                SelectedStat stat = a.First();
+
+                PLabel p = new();
+                p.Style.Position = PositionMode.Absolute;
+
+                Color textColor;
+                if (stat.op == Op.Set) {
+                    textColor = new Color(0.7f, 0, 0);
+                } else {
+                    textColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
+                    p.Text = stat.amount > 0 ? $"+{stat.amount}" : $"{stat.amount}";
+                }
+
+                p.Style.FontColor = textColor;
+                p.Style.Top = Length.Pixels(i * 16 + 17);
+                p.Style.Left = Length.Pixels(275);
+                this.selectedButton.AddChild(p);
+            }
+        }
+    }
+
+    private void SelectPowerup(Button selectedPowerupButton, Powerup powerup) {
+        this.selectedPowerupButton?.RemoveClass("powerupselected");
+
+        this.selectedPowerupButton = selectedPowerupButton;
+        this.selectedPowerupButton.AddClass("powerupselected");
+        selectedPowerup = powerup;
+
+        description.SetText(selectedPowerup.Description);
+        title.SetText(selectedPowerup.Title);
+
+        Select(selectedButton, chosen);
     }
 
     // idk what P means i just need a special type to easily find/remove
     public class PLabel : Label {}
 
     private void Confirm() {
-        ServerConfirm("124", ent.NetworkIdent, chosen.NetworkIdent);
+        ServerConfirm("12466", ent.NetworkIdent, ent.powerups.IndexOf(selectedPowerup), chosen.NetworkIdent);
         Delete();
     }
     
     [ConCmd.Server]
-    private static void ServerConfirm(string password, int netIdent, int pawnNetIdent) {
-        if (password != "124") return;
+    private static void ServerConfirm(string password, int netIdent, int selectedPowerup, int pawnNetIdent) {
+        if (password != "12466") return;
 
         Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
-        PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);
+        ShopEntity ent = Entity.FindByIndex<ShopEntity>(netIdent);
         if (pawn is null || ent is null) return;
 
-        if (ent.powerup is PowerupPawnAct powerupAct) powerupAct.Action.Invoke(pawn);
-        else {
-            PowerupStat powerupStat = (PowerupStat)ent.powerup;
+        Powerup powerup = ent.powerups[selectedPowerup];
 
-            foreach (SelectedStat stat in powerupStat.AffectedStats) {
-                switch (stat.op) {
+        if (powerup is PowerupPawnAct powerupAct) powerupAct.Action.Invoke(pawn);
+        else {
+            PowerupStat powerupStat = (PowerupStat)powerup;
+
+            foreach (SelectedStat selected in powerupStat.AffectedStats) {
+                switch (selected.op) {
                     case Op.Add: {
-                        object value = TypeLibrary.GetPropertyValue(pawn, stat.stat.ToString());
+                        object value = TypeLibrary.GetPropertyValue(pawn, selected.stat.ToString());
                         if (value is float flo) {
-                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo + stat.amount);
+                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), flo + selected.amount);
                         } else {
-                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)value + (int)stat.amount);
+                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), (int)value + (int)selected.amount);
                         }
                         break;
                     }
                     case Op.Mult: {
-                        object value = TypeLibrary.GetPropertyValue(pawn, stat.stat.ToString());
+                        object value = TypeLibrary.GetPropertyValue(pawn, selected.stat.ToString());
                         if (value is float flo) {
-                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo * stat.amount);
+                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), flo * selected.amount);
                         } else {
-                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)value * (int)stat.amount);
+                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), (int)value * (int)selected.amount);
                         }
                         break;
                     }
                     case Op.Set: {
-                        TypeLibrary.SetProperty(pawn, stat.stat.ToString(), stat.amount);
+                        TypeLibrary.SetProperty(pawn, selected.stat.ToString(), selected.amount);
                         break;
                     }
                 }
             }
         }
 
-        if (ent.powerup.Title == "Heal Up" || ent.powerup.Title == "Big Heal Up") {
+        if (powerup.Title == "Heal Up" || powerup.Title == "Big Heal Up") {
             pawn.Health = Math.Min(pawn.Health + 50, pawn.MaxHealth);
 
         } else {
-            if (pawn.AppliedPowerups.ContainsKey(ent.powerup.Title)) {
-                pawn.AppliedPowerups[ent.powerup.Title] += 1;
+            if (pawn.AppliedPowerups.ContainsKey(powerup.Title)) {
+                pawn.AppliedPowerups[powerup.Title] += 1;
             } else {
-                pawn.AppliedPowerups.Add(ent.powerup.Title, 1);
+                pawn.AppliedPowerups.Add(powerup.Title, 1);
             }
 
             GGame.Current.Powerups += 1;

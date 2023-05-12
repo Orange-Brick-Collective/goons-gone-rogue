@@ -39,9 +39,9 @@ public partial class Pawn : AnimatedEntity {
     [Net] public int AddMoveSpeed {get; set;} = 0;
     public int MoveSpeed => Math.Max(BaseMoveSpeed + AddMoveSpeed, 50);
 
-    [Net] public int BaseWeaponDamage {get; set;} = 3;
-    [Net] public int AddWeaponDamage {get; set;} = 0;
-    public int WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 1);
+    [Net] public float BaseWeaponDamage {get; set;} = 3;
+    [Net] public float AddWeaponDamage {get; set;} = 0;
+    public float WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 1);
     
     [Net] public float BaseFireRate {get; set;} = 0.3f;
     [Net] public float AddFireRate {get; set;} = 0;
@@ -55,7 +55,7 @@ public partial class Pawn : AnimatedEntity {
     [Net] public int AddMagazineSize {get; set;} = 0;
     public int MagazineSize => Math.Max(BaseMagazineSize + AddMagazineSize, 2);
 
-    [Net] public float BaseDegreeSpread {get; set;} = 2;
+    [Net] public float BaseDegreeSpread {get; set;} = 3;
     [Net] public float AddDegreeSpread {get; set;} = 0;
     public float DegreeSpread => Math.Clamp(BaseDegreeSpread + AddDegreeSpread, 0, 6);
 

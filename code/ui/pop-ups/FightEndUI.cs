@@ -31,13 +31,9 @@ public class FightEndUI : Panel {
         newPawnButton.AddEventListener("onclick", NewPawn);
         buttons.AddChild(newPawnButton);
 
-        Button moneyButton = new("100 Bucks", "") {Classes = "button"};
+        Button moneyButton = new("200 Bucks", "") {Classes = "button"};
         moneyButton.AddEventListener("onclick", Money);
         buttons.AddChild(moneyButton);
-
-        Button nothingButton = new("Nothing", "") {Classes = "button"};
-        nothingButton.AddEventListener("onclick", Nothing);
-        buttons.AddChild(nothingButton);
     }
     
     private void Heal() {
@@ -67,7 +63,7 @@ public class FightEndUI : Panel {
 
         Goon g = new();
         g.Init(0, Player.Current);
-        g.Generate(1, Pawn.GoonType.Normal);
+        g.Generate(3, Pawn.GoonType.Normal);
         g.Position = Player.Current.Position + g.posInGroup;
 
         GGame.Current.FightEnd();
@@ -81,18 +77,8 @@ public class FightEndUI : Panel {
     private static void ServerMoney(string password) {
         if (password != "12452") return;
 
-        GGame.Current.Money += 100;
+        GGame.Current.Money += 200;
 
-        GGame.Current.FightEnd();
-    }
-
-    private void Nothing() {
-        ServerNothing("1249");
-        Delete();
-    }
-    [ConCmd.Server]
-    private static void ServerNothing(string password) {
-        if (password != "1249") return;
         GGame.Current.FightEnd();
     }
 }
