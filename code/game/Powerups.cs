@@ -180,7 +180,7 @@ public class Powerups {
         ),
         new PowerupStat(
             "/images/icons/",
-            "Trigger Happy",
+            "Squeeze those triggers",
             "Spray all day",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddFireRate, -0.06f), 

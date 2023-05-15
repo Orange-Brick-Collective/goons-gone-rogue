@@ -104,13 +104,13 @@ public class PowerupUI : Panel {
     public class PLabel : Label {}
 
     private void Confirm() {
-        ServerConfirm("124", ent.NetworkIdent, chosen.NetworkIdent);
+        ServerPowerupConfirm("1241568", ent.NetworkIdent, chosen.NetworkIdent);
         Delete();
     }
     
     [ConCmd.Server]
-    private static void ServerConfirm(string password, int netIdent, int pawnNetIdent) {
-        if (password != "124") return;
+    private static void ServerPowerupConfirm(string password, int netIdent, int pawnNetIdent) {
+        if (password != "1241568") return;
 
         Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
         PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);

@@ -17,9 +17,7 @@ public partial class ShopEntity : ModelEntity, IUse {
         }
 
         foreach (int num in ints) {
-            Powerup p = Powerups.GetByIndex(num);
-            UpgradePowerup(ref p);
-            powerups.Add(p);
+            powerups.Add(Powerups.GetByIndex(num));
         }
         ClientInit(ints.ToArray());
 
@@ -42,22 +40,11 @@ public partial class ShopEntity : ModelEntity, IUse {
     [ClientRpc] // required
     public void ClientInit(int[] ints) {
         foreach (int num in ints) {
-            Powerup p = Powerups.GetByIndex(num);
-            UpgradePowerup(ref p);
-            powerups.Add(p);
+            powerups.Add(Powerups.GetByIndex(num));
         }
     }
 
-    private static void UpgradePowerup(ref Powerup p) {
-        if (p is PowerupStat statPow) {
-            foreach (SelectedStat s in statPow.AffectedStats) {
-                if (s.good) {
-                    if (s.op == Op.Add) s.amount *= 2;
-                    if (s.op == Op.Mult) s.amount *= 1.333f;
-                }
-            }
-        }
-    }
+
 
     [GameEvent.Tick.Server]
     private void Tick() {

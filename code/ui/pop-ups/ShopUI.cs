@@ -104,8 +104,12 @@ public class ShopUI : Panel {
                     textColor = new Color(0.7f, 0, 0);
                     p.Text = $"{stat.amount}";
                 } else {
+                    // no matter what i did modifying the powerup would lead to the original powerup list changing
+                    float mult = stat.op == Op.Add ? 2 : 1.333f;
+                    mult = stat.good ? mult : 1;
+
                     textColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
-                    p.Text = stat.amount > 0 ? $"+{stat.amount}" : $"{stat.amount}";
+                    p.Text = stat.amount > 0 ? $"+{stat.amount * mult}" : $"{stat.amount * mult}";
                 }
 
                 p.Style.FontColor = textColor;
@@ -134,17 +138,15 @@ public class ShopUI : Panel {
     public class PLabel : Label {}
 
     private void Confirm() {
-        if (selectedPowerup is null) return;
-        if (GGame.Current.Money < 1000) return;
-        Log.Info("eb");
-        ServerConfirm("ee", ent.NetworkIdent, chosen.NetworkIdent, ent.powerups.IndexOf(selectedPowerup));
+        if (selectedPowerup is null || GGame.Current.Money < 1000) {BuyFail(); return;}
+
+        ServerShopConfirm("1582726", ent.NetworkIdent, chosen.NetworkIdent, ent.powerups.IndexOf(selectedPowerup));
         Delete();
     }
     
     [ConCmd.Server]
-    private static void ServerConfirm(string password, int shopNetIdent, int pawnNetIdent, int selectedPowerup) {
-        Log.Info("gottem");
-        if (password != "ee") return;
+    private static void ServerShopConfirm(string password, int shopNetIdent, int pawnNetIdent, int selectedPowerup) {
+        if (password != "1582726") return;
         
         if (GGame.Current.Money < 1000) return;
 
@@ -161,28 +163,30 @@ public class ShopUI : Panel {
         else {
             PowerupStat powerupStat = (PowerupStat)powerup;
 
-            foreach (SelectedStat selected in powerupStat.AffectedStats) {
-                switch (selected.op) {
+            foreach (SelectedStat stat in powerupStat.AffectedStats) {
+                switch (stat.op) {
                     case Op.Add: {
-                        object value = TypeLibrary.GetPropertyValue(pawn, selected.stat.ToString());
+                        float mult = stat.good ? 2 : 1;
+                        object value = TypeLibrary.GetPropertyValue(pawn, stat.stat.ToString());
                         if (value is float flo) {
-                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), flo + selected.amount);
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo + stat.amount * mult);
                         } else {
-                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), (int)value + (int)selected.amount);
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)((float)value + stat.amount * mult));
                         }
                         break;
                     }
                     case Op.Mult: {
-                        object value = TypeLibrary.GetPropertyValue(pawn, selected.stat.ToString());
+                        float mult = stat.good ? 1.333f : 1;
+                        object value = TypeLibrary.GetPropertyValue(pawn, stat.stat.ToString());
                         if (value is float flo) {
-                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), flo * selected.amount);
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo * stat.amount * mult);
                         } else {
-                            TypeLibrary.SetProperty(pawn, selected.stat.ToString(), (int)value * (int)selected.amount);
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)((float)value * stat.amount * mult));
                         }
                         break;
                     }
                     case Op.Set: {
-                        TypeLibrary.SetProperty(pawn, selected.stat.ToString(), selected.amount);
+                        TypeLibrary.SetProperty(pawn, stat.stat.ToString(), stat.amount);
                         break;
                     }
                 }
@@ -205,5 +209,11 @@ public class ShopUI : Panel {
 
         if (ent.powerups.Count == 0) ent.Delete();
         else ent.powerups.RemoveAt(selectedPowerup);
+    }
+
+    private async void BuyFail() {
+        confirmButton.Style.BackgroundColor = new Color32(255, 120, 120);
+        await GameTask.DelayRealtime(400);
+        confirmButton.Style.BackgroundColor = new Color32(195, 202, 207);
     }
 }
