@@ -87,9 +87,9 @@ public partial class Pawn : AnimatedEntity {
             weapon.Fire(this, tr, WeaponDamage, () => {});
             CurrentMag -= 1;
 
-            if (tr.Entity is Pawn a) {
+            if (tr.Entity is Pawn goon) {
                 foreach (Action<Pawn> act in AttackActions) {
-                    act.Invoke(a);
+                    act.Invoke(goon);
                 }
             }
 
@@ -121,9 +121,9 @@ public partial class Pawn : AnimatedEntity {
             weapon.Fire(this, tr, WeaponDamage, () => {});
             CurrentMag -= 1;
 
-            if (tr.Entity is Pawn a && a.Team != Team) {
+            if (tr.Entity is Pawn goon && goon.Team != Team) {
                 foreach (Action<Pawn> act in AttackActions) {
-                    act.Invoke(a);
+                    act.Invoke(goon);
                 }
             }
 
@@ -170,7 +170,7 @@ public partial class Pawn : AnimatedEntity {
         if (Armor == 0) return 1;
         if (Armor > 149) return 0.2f;
 
-        // log, offset horizontally for a flatter low range, and reduce vertical back to 0
+        // log, offset horizontally for goon flatter low range, and reduce vertical back to 0
         float logArmor = (float)Math.Log(Armor + 12) - 2.484f;
         // map so 150 armor reaches 0.8
         logArmor *= .308f;
@@ -192,8 +192,8 @@ public partial class Pawn : AnimatedEntity {
     }
     public void PowerupCriticalHit(Pawn pawn) {
         if (Random.Shared.Float(0, 1) < 0.1f) {
-            DamageInfo a = QuickDamageInfo(WeaponDamage);
-            pawn.TakeDamage(a);
+            DamageInfo goon = QuickDamageInfo(WeaponDamage);
+            pawn.TakeDamage(goon);
         }
     }
 

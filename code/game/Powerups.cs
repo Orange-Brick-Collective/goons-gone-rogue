@@ -24,7 +24,6 @@ public enum Op {
     Set
 }
 
-// this is purely for understanding and visualizing the powerup
 public class SelectedStat {
     private static readonly Stat[] NegativeGoodStats = {Stat.AddFireRate, Stat.AddDegreeSpread, Stat.AddReloadTime};
 
@@ -141,7 +140,7 @@ public class Powerups {
         new PowerupStat(
             "/images/icons/glass.png",
             "Glass Cannon",
-            "Hit strong, get hit strong",
+            "Hit strong, get hit strong (sets health)",
             new SelectedStat[] {
                 new SelectedStat(Stat.AddWeaponDamage, 16),
                 new SelectedStat(Stat.Health, 25, Op.Set),

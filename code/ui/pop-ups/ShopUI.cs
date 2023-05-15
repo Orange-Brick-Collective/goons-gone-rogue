@@ -102,6 +102,7 @@ public class ShopUI : Panel {
                 Color textColor;
                 if (stat.op == Op.Set) {
                     textColor = new Color(0.7f, 0, 0);
+                    p.Text = $"{stat.amount}";
                 } else {
                     textColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
                     p.Text = stat.amount > 0 ? $"+{stat.amount}" : $"{stat.amount}";
@@ -135,21 +136,24 @@ public class ShopUI : Panel {
     private void Confirm() {
         if (selectedPowerup is null) return;
         if (GGame.Current.Money < 1000) return;
-
-        ServerConfirm("12466", ent.NetworkIdent, ent.powerups.IndexOf(selectedPowerup), chosen.NetworkIdent);
+        Log.Info("eb");
+        ServerConfirm("ee", ent.NetworkIdent, chosen.NetworkIdent, ent.powerups.IndexOf(selectedPowerup));
         Delete();
     }
     
     [ConCmd.Server]
-    private static void ServerConfirm(string password, int netIdent, int selectedPowerup, int pawnNetIdent) {
-        if (password != "12466") return;
+    private static void ServerConfirm(string password, int shopNetIdent, int pawnNetIdent, int selectedPowerup) {
+        Log.Info("gottem");
+        if (password != "ee") return;
+        
         if (GGame.Current.Money < 1000) return;
 
         Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
-        ShopEntity ent = Entity.FindByIndex<ShopEntity>(netIdent);
+        ShopEntity ent = Entity.FindByIndex<ShopEntity>(shopNetIdent);
         if (pawn is null || ent is null) return;
 
         GGame.Current.Money -= 1000;
+        
 
         Powerup powerup = ent.powerups[selectedPowerup];
 

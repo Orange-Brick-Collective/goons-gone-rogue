@@ -23,17 +23,17 @@ public class FightEndUI : Panel {
         right = new(ui) {Classes = "right"};
         buttons = new(right) {Classes = "buttonlist"};
 
-        Button healButton = new("Heal everyone 50", "") {Classes = "button"};
-        healButton.AddEventListener("onclick", Heal);
-        buttons.AddChild(healButton);
+        Button moneyButton = new("200 Bucks", "") {Classes = "button"};
+        moneyButton.AddEventListener("onclick", Money);
+        buttons.AddChild(moneyButton);
 
         Button newPawnButton = new("Get a new goon", "") {Classes = "button"};
         newPawnButton.AddEventListener("onclick", NewPawn);
         buttons.AddChild(newPawnButton);
 
-        Button moneyButton = new("200 Bucks", "") {Classes = "button"};
-        moneyButton.AddEventListener("onclick", Money);
-        buttons.AddChild(moneyButton);
+        Button healButton = new("Heal everyone 50", "") {Classes = "button"};
+        healButton.AddEventListener("onclick", Heal);
+        buttons.AddChild(healButton);
     }
     
     private void Heal() {

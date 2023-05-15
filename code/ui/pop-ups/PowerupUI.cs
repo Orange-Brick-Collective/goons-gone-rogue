@@ -86,6 +86,7 @@ public class PowerupUI : Panel {
                 Color textColor;
                 if (stat.op == Op.Set) {
                     textColor = new Color(0.7f, 0, 0);
+                    p.Text = $"{stat.amount}";
                 } else {
                     textColor = stat.good ? new Color(0, 0.7f, 0) : new Color(0.7f, 0, 0);
                     p.Text = stat.amount > 0 ? $"+{stat.amount}" : $"{stat.amount}";
