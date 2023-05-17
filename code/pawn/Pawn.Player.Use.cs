@@ -8,7 +8,7 @@ public partial class Player : Pawn {
     
     public void SimulateUse() {
         // for range
-        TraceResult rangeTrace = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * (Range + 50))
+        TraceResult rangeTrace = Trace.Ray(Camera.Position, Camera.Position + Camera.Rotation.Forward * (Range + 45))
             .Ignore(this)
             .WithoutTags("team0", "trigger")
             .Run();

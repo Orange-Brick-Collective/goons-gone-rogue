@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Sandbox;
 using Sandbox.UI;
 
 namespace GGame;
@@ -12,15 +14,13 @@ public class GoonStats : Panel {
     public Label statNameLabel, statIconsLabel, statNumberLabel, statOtherNumberLabel;
 
     public Panel powerups;
-    public Label powerupsText;
 
     public GoonStats(Pawn pawn) {
         StyleSheet.Load("ui/GoonStats.scss");
         this.pawn = pawn;
+        pawn.stats = this;
 
         powerups = new(this) {Classes = "powerups"};
-        powerupsText = new() {Classes = "powerupstext"};
-        powerups.AddChild(powerupsText);
 
         stat = new(this) {Classes = "stats"};
 
@@ -63,7 +63,7 @@ public class GoonStats : Panel {
             statIconsLabel.SetText("");
             statNumberLabel.SetText(pawn.AmmoString());
             statOtherNumberLabel.SetText("");
-            powerupsText.SetText("");
+            powerups.Style.Opacity = 0;
 
             if (pawn == Player.Current) {
                 pawn.healthPanel.WorldScale = 1;
@@ -76,19 +76,36 @@ public class GoonStats : Panel {
             statIconsLabel.SetText(s[0]);
             statNumberLabel.SetText(s[1]);
             statOtherNumberLabel.SetText(s[2]);
-            powerupsText.SetText(PowerupText());
+            powerups.Style.Opacity = 1;
 
             pawn.healthPanel.WorldScale = 0.8f;
         }
     }
 
-    public string PowerupText() {
-        string str = "";
-        
-        foreach (var thing in pawn.AppliedPowerups) {
-            str += $"{thing.Key}: {thing.Value}\n";
+    public void AddPowerup(AppliedPowerup pow) {
+        foreach (var item in powerups.ChildrenOfType<PowerupDisplay>()) {
+            if (item.title == pow.Title) {
+                item.amountLabel.SetText(pow.Amount.ToString());
+                return;
+            }
         }
 
-        return str;
+        powerups.AddChild(new PowerupDisplay(pow.Title, pow.Image));
+    }
+
+    public class PowerupDisplay : Panel {
+        public string title;
+        public Image image;
+        public Label amountLabel;
+
+        public PowerupDisplay(string title, string img) {
+            this.title = title;
+
+            image = new() {Texture = Texture.Load(FileSystem.Mounted, img)};
+            AddChild(image);
+
+            amountLabel = new();
+            AddChild(amountLabel);
+        }
     }
 }

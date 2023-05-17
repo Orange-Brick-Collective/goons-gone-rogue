@@ -122,13 +122,13 @@ public class Powerups {
             new SelectedStat[] {new SelectedStat(Stat.AddReloadTime, -0.4f)}
         ),
         new PowerupStat(
-            "/images/icons/",
+            "/images/icons/sprint.png",
             "Sprinter",
             "Could be training, could be gamer shoes",
             new SelectedStat[] {new SelectedStat(Stat.AddMoveSpeed, 100)}
         ),
         new PowerupStat(
-            "/images/icons/",
+            "/images/icons/armor.png",
             "Thicker Armor",
             "An extra plate can't hurt",
             new SelectedStat[] {new SelectedStat(Stat.Armor, 6)}
@@ -148,7 +148,7 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "/images/icons/",
+            "/images/icons/cheese.png",
             "Speedy Cheesy",
             "With great speed comes imprecision",
             new SelectedStat[] {
@@ -158,7 +158,7 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "/images/icons/",
+            "/images/icons/tank.png",
             "Tank",
             "Slow and steady",
             new SelectedStat[] {
@@ -168,7 +168,7 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "/images/icons/",
+            "/images/icons/sniper.png",
             "Sniper Rounds",
             "These bigger rounds pack a punch, but you cant use as many",
             new SelectedStat[] {
@@ -179,7 +179,7 @@ public class Powerups {
             }
         ),
         new PowerupStat(
-            "/images/icons/",
+            "/images/icons/shooting.png",
             "Squeeze those triggers",
             "Spray all day",
             new SelectedStat[] {
@@ -192,13 +192,13 @@ public class Powerups {
         // * attack actions
         // *
         new PowerupPawnAct(
-            "/images/icons/",
+            "/images/icons/leech.png",
             "Leech",
             "1/6 chance every attack to regen one health. Every additional 'Leech' is another 1/6 chance for another one health",
             (pawn) => pawn.AttackActions.Add(pawn.PowerupLeech)
         ),
         new PowerupPawnAct(
-            "/images/icons/",
+            "/images/icons/critical.png",
             "Critical Hit",
             "1/10 chance every attack to deal an additional hit. Every additional 'Critical Hit' is another 1/10 chance for another hit",
             (pawn) => pawn.AttackActions.Add(pawn.PowerupCriticalHit)
@@ -208,7 +208,7 @@ public class Powerups {
         // * hurt actions
         // *
         new PowerupPawnAct(
-            "/images/icons/",
+            "/images/icons/thorns.png",
             "Thorns",
             "1/3 chance when hurt to deal damage back to attacker. Every additional 'Thorns' is another 1/3 chance to return damage",
             (pawn) => pawn.HurtActions.Add(pawn.PowerupThorns)
@@ -218,6 +218,29 @@ public class Powerups {
         // * something Actions
         // *
     };
+}
+
+public class AppliedPowerup : BaseNetworkable, INetworkSerializer {
+    public string Image {get; set;}
+    public string Title {get; set;}
+    public int Amount {get; set;}
+
+    public AppliedPowerup() {}
+    public AppliedPowerup(string image, string title) {
+        Image = image;
+        Title = title;
+        Amount = 1;
+    }
+
+	public void Read(ref NetRead read) {
+		read.ReadString();
+        read.ReadString();
+	}
+
+	public void Write(NetWrite write) {
+		write.Write(Image);
+        write.Write(Title);
+	}
 }
 
 public class Powerup {

@@ -152,10 +152,11 @@ public class PowerupUI : Panel {
             pawn.Health = Math.Min(pawn.Health + 50, pawn.MaxHealth);
 
         } else {
-            if (pawn.AppliedPowerups.ContainsKey(ent.powerup.Title)) {
-                pawn.AppliedPowerups[ent.powerup.Title] += 1;
+            List<AppliedPowerup> p = pawn.AppliedPowerups.Where(a => a.Title == ent.powerup.Title).ToList();
+            if (p.Any()) {
+                p.First().Title += 1;
             } else {
-                pawn.AppliedPowerups.Add(ent.powerup.Title, 1);
+                pawn.AppliedPowerups.Add(new AppliedPowerup(ent.powerup.Image, ent.powerup.Title));
             }
 
             GGame.Current.Powerups += 1;

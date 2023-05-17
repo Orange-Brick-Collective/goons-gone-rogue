@@ -113,7 +113,7 @@ public partial class Pawn : AnimatedEntity {
             baseTicket = 60;
             Scale = Random.Shared.Float(2.2f, 2.6f);
             BaseWeaponDamage = 2;
-            BaseFireRate = 0.18f;
+            BaseFireRate = 0.24f;
             MaxHealth += 300;
             Health += 300;
         }

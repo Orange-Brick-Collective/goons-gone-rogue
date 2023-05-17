@@ -45,6 +45,7 @@ public partial class GGame : GameManager {
 	[Net] public int Score {get; set;} = 0;
 	[Net] public int Kills {get; set;} = 0;
 	[Net] public int Powerups {get; set;} = 0;
+	[Net] public int Purchases {get; set;} = 0;
 	[Net] public float DamageDealt {get; set;} = 0;
 	[Net] public float DamageTaken {get; set;} = 0;
 
@@ -89,6 +90,17 @@ public partial class GGame : GameManager {
 	[ConCmd.Server("ggr_kill")]
 	public static void ServerKillCMD() {
 		Player.Current.OnKilled();
+	}
+
+	[ConCmd.Server("ggr_setmoney")]
+	public static void ServerSetMoneyCMD(int money) {
+		GGame.Current.Money = money;
+	}
+
+	[ConCmd.Server("ggr_setdepth")]
+	public static void ServerSetDepthCMD(int depth) {
+		GGame.Current.currentWorld.depth = depth;
+		GGame.Current.CurrentDepth = depth;
 	}
 
 	public void OnIsMusicEnabledChanged() {
@@ -144,7 +156,7 @@ public partial class GGame : GameManager {
 		await Current.AwaitToAndFromBlack();
 		Player.Current.IsPlaying = true;
 
-		await WorldGen.Current.GenerateWorld(8, 6, 0, false);
+		await WorldGen.Current.GenerateWorld(8, 6, 0);
 		Player.Current.InMenu = false;
 		Player.Current.Transform = Current.currentWorld.startPos;
 
@@ -176,7 +188,7 @@ public partial class GGame : GameManager {
 		await ArenaGen.Current.GenerateArena(WallModels.RandomWall());
 		await GameTask.DelayRealtime(300);
 
-		Player.Current.AppliedPowerups = new Dictionary<string, int>();
+		Player.Current.AppliedPowerups = new List<AppliedPowerup>();
 		Player.Current.Transform = ArenaMarker;
 		Player.Current.MaxHealth = 200;
 		Player.Current.Health = 200;
@@ -190,10 +202,12 @@ public partial class GGame : GameManager {
 		Player.Current.AddRange = 0;
 		Player.Current.CurrentMag = 20;
 
+		CurrentDepth = 0;
 		Money = 0;
 		Score = 0;
 		Kills = 0;
 		Powerups = 0;
+		Purchases = 0;
 		DamageDealt = 0;
 		DamageTaken = 0;
 	}

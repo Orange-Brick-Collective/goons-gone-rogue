@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace GGame;
 
-public class ShopUI : Panel {
+public partial class ShopUI : Panel {
     public ShopEntity ent;
     public Pawn player;
 
@@ -156,7 +156,6 @@ public class ShopUI : Panel {
 
         GGame.Current.Money -= 1000;
         
-
         Powerup powerup = ent.powerups[selectedPowerup];
 
         if (powerup is PowerupPawnAct powerupAct) powerupAct.Action.Invoke(pawn);
@@ -171,7 +170,7 @@ public class ShopUI : Panel {
                         if (value is float flo) {
                             TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo + stat.amount * mult);
                         } else {
-                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)((float)value + stat.amount * mult));
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)((int)value + stat.amount * mult));
                         }
                         break;
                     }
@@ -181,7 +180,7 @@ public class ShopUI : Panel {
                         if (value is float flo) {
                             TypeLibrary.SetProperty(pawn, stat.stat.ToString(), flo * stat.amount * mult);
                         } else {
-                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)((float)value * stat.amount * mult));
+                            TypeLibrary.SetProperty(pawn, stat.stat.ToString(), (int)((int)value * stat.amount * mult));
                         }
                         break;
                     }
@@ -195,20 +194,31 @@ public class ShopUI : Panel {
 
         if (powerup.Title == "Heal Up" || powerup.Title == "Big Heal Up") {
             pawn.Health = Math.Min(pawn.Health + 50, pawn.MaxHealth);
-
         } else {
-            if (pawn.AppliedPowerups.ContainsKey(powerup.Title)) {
-                pawn.AppliedPowerups[powerup.Title] += 1;
+            List<AppliedPowerup> p = pawn.AppliedPowerups.Where(a => a.Title == powerup.Title).ToList();
+            if (p.Any()) {
+                p.First().Title += 1;
             } else {
-                pawn.AppliedPowerups.Add(powerup.Title, 1);
+                pawn.AppliedPowerups.Add(new AppliedPowerup(powerup.Image, powerup.Title));
             }
 
             GGame.Current.Powerups += 1;
-            GGame.Current.Score += 20;
+            GGame.Current.Purchases += 1;
+            GGame.Current.Score += 50;
         }
 
-        if (ent.powerups.Count == 0) ent.Delete();
-        else ent.powerups.RemoveAt(selectedPowerup);
+        if (ent.powerups.Count == 1) ent.Delete();
+        else {
+            ent.powerups.RemoveAt(selectedPowerup);
+            ClientServerShopConfirm(shopNetIdent, selectedPowerup);
+        }
+    }
+    [ClientRpc]
+    public static void ClientServerShopConfirm(int shopNetIdent, int selectedPowerup) {
+        ShopEntity ent = Entity.FindByIndex<ShopEntity>(shopNetIdent);
+        if (ent is null) return;
+
+        ent.powerups.RemoveAt(selectedPowerup);
     }
 
     private async void BuyFail() {

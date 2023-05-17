@@ -20,7 +20,7 @@ public class WorldGen {
         Current = this;
     }
 
-    public async System.Threading.Tasks.Task GenerateWorld(int len, int wid, int depth, bool debug, int? wall = null) {
+    public async System.Threading.Tasks.Task GenerateWorld(int len, int wid, int depth, int? wall = null) {
         Game.AssertServer();
         Log.Info("Generating World");
 
@@ -48,13 +48,49 @@ public class WorldGen {
         if (IsBossDepth(depth)) {
             startP = new(0, 2);
             endP = new(8, 2);
-            MarkRoad(gridRoads, startP, endP, len, wid, false, debug);
-            branchP = new List<Vector2>() {new(8, 1), new(8, 3), new(6, 1), new(6, 3)};
+            MarkRoad(gridRoads, startP, endP, len, wid, false);
+
+            GenerateWorldGridBoss(ref lvl, ref gridRoads, startP, endP);
+
+            GenerateRoads(ref lvl, ref gridRoads);
+            await GameTask.DelayRealtime(20);
+
+            GenerateWalls(ref lvl);
+            await GameTask.DelayRealtime(20);
+
+            GenerateEventsBoss(ref lvl, startP, endP);
+            await GameTask.DelayRealtime(20);
+
+            GenerateProps(ref lvl);
+            await GameTask.DelayRealtime(20);
         } else {
-            MarkRoad(gridRoads, startP, endP, len, wid, true, debug);
+            MarkRoad(gridRoads, startP, endP, len, wid, true);
+
+            GenerateWorldGrid(ref lvl, ref gridRoads, startP, endP);
+
+            GenerateRoads(ref lvl, ref gridRoads);
+            await GameTask.DelayRealtime(20);
+
+            GenerateWalls(ref lvl);
+            await GameTask.DelayRealtime(20);
+
+            GenerateEvents(ref lvl, startP, endP);
+            await GameTask.DelayRealtime(20);
+
+            GenerateProps(ref lvl);
+            await GameTask.DelayRealtime(20);
         }
 
-        foreach (Vector2 curP in branchP) {
+
+
+        GGame.Current.currentWorld = lvl;
+        return;
+    }
+
+    public static void GenerateWorldGrid(ref World lvl, ref List<List<bool>> gridRoads, Vector2 startP, Vector2 endP) {
+        int len = lvl.length - 1, wid = lvl.width - 1;
+
+        foreach (Vector2 curP in MakeBranches(lvl, len, wid, startP, endP)) {
             Vector2 nearestP = new(len * 0.5f, wid * 0.5f);
             for (int i = 0; i < 50; i++) {
                 int curX = (int)curP.x;
@@ -64,163 +100,28 @@ public class WorldGen {
                 int negX = (int)Math.Clamp(curP.x - i * 0.8f, 0, len);
                 int negY = (int)Math.Clamp(curP.y - i * 0.8f, 0, wid);
 
-                // YEA ITS BAD, can be improved but idc rn
+                // YEA ITS BAD, can be improved but idc
                 if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // N
-                if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // NE
                 if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // E
-                if (gridRoads[negX][dirY]) nearestP = new(negX, dirY); // SE
                 if (gridRoads[negX][curY]) nearestP = new(negX, curY); // S
-                if (gridRoads[negX][negY]) nearestP = new(negX, negY); // SW
                 if (gridRoads[curX][negY]) nearestP = new(curX, negY); // W
+
+                if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // NE
+                if (gridRoads[negX][dirY]) nearestP = new(negX, dirY); // SE
+                if (gridRoads[negX][negY]) nearestP = new(negX, negY); // SW
                 if (gridRoads[dirX][negY]) nearestP = new(dirX, negY); // NW
 
                 if (nearestP != new Vector2(len * 0.5f, wid * 0.5f)) break;
             }
 
-            MarkRoad(gridRoads, curP, nearestP, len, wid, debug);
-        }
-
-        if (debug) {
-            for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-                DebugOverlay.Sphere(new Vector3(l * 512, w * 512, 0), 60, gridRoads[l][w] ? Color.Green : Color.Red, 16, false);
-            }
-        }
-
-        // * road stage
-        await GenerateRoads(lvl, gridRoads, len, wid);
-
-        if (debug) {
-            DebugOverlay.Sphere(startP * 512, 100, Color.White, 16, false);
-            DebugOverlay.Sphere(endP * 512, 100, Color.White, 16, false);
-        }
-
-        // cleanup empty tiles
-        foreach (Entity ent in Entity.All) {
-            if (ent is TileEmpty) ent.Delete();
-        }
-
-
-        // * walls stage
-        for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            lvl.tiles[l][w].MakeWalls(lvl.wallType);
-        }
-
-        // * events stage
-        new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
-        lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
-        
-        new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
-        lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
-
-        if (IsBossDepth(depth)) new TileEventBoss().Init(lvl.tiles[4][2]);
-
-        for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            Tile tile = lvl.tiles[l][w];
-            if (tile is TileEmpty) continue;
-
-            Vector2 e = new(l, w);
-            if (e == startP || e == endP) continue;
-
-            if (tile is TileEnd || GreaterThan(97.6f)) {
-                new TileEventPowerups().Init(tile);
-                continue;
-            }
-
-            if (IsBossDepth(depth)) continue;
-
-            if (tile is TileStraight) {
-                if (GreaterThan(54)) {
-                    if (GreaterThan(90)) {
-                        new TileEventFight().Init(tile);
-                    } else {
-                        new TileEventSwarm().Init(tile);
-                    }
-                    continue;
-                }
-            } else {
-                if (GreaterThan(82)) {
-                    new TileEventFight().Init(tile);
-                    continue;
-                }
-            }
-
-            if (tile is TileT && GreaterThan(10)) {
-                new TileEventShop().Init(tile);
-                continue;
-            }
-        }
-
-        // * props stage
-        for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            if (GreaterThan(60)) {
-                lvl.tiles[l][w].MakeLamp();
-            }
-        }
-
-        GGame.Current.currentWorld = lvl;
-        return;
-    }
-
-    private static bool IsBossDepth(int depth) {
-        if (depth != 0 && depth % 5 == 0) return true;
-        else return false;
-    }
-
-    private static bool GreaterThan(float percent) {
-        return percent < Random.Shared.Float(0, 100);
-    }
-
-    private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool detour, bool debug = false) {
-        bool making = true;
-        int i = 0, lastDetour = 1;
-        Vector2 curP = startP;
-        Vector3 dir = new((endP - curP).Normal, 0);
-
-        grid[(int)startP.x][(int)startP.y] = true;
-        grid[(int)endP.x][(int)endP.y] = true;
-
-        while (making) {
-            i++; lastDetour++;
-            
-            // detour
-            if (lastDetour > 6 && Random.Shared.Float(0, 1) > 0.5f) {
-                if (Vector2.Distance(curP, endP) < 2) continue;
-                
-                dir *= Rotation.FromYaw(Random.Shared.Float(-80, 80));
-                lastDetour = 0;
-            } else if (lastDetour > 2) {
-                dir = new((endP - curP).Normal, 0);
-            }
-            
-            Vector2 newP = curP + MakeVec2(dir);
-            newP.x = newP.x.Clamp(0, len);
-            newP.y = newP.y.Clamp(0, wid);
-
-            int xOffset = (int)newP.x - (int)curP.x;
-            int yOffset = (int)newP.y - (int)curP.y;
-
-            if (xOffset != 0 && yOffset != 0) {
-                grid[(int)curP.x + xOffset][(int)curP.y] = true;
-            }
-
-            grid[(int)newP.x][(int)newP.y] = true;
-
-            if (debug) {
-                DebugOverlay.Line(curP * 512, newP * 512, Color.White, 16, false);
-                DebugOverlay.Line(FloorVec2(curP) * 512, FloorVec2(newP) * 512, Color.Blue, 16, false);
-            }
-
-            curP = newP;
-            if (i > 100 || FloorVec2(curP) == endP) {
-                making = false;
-            }
+            MarkRoad(gridRoads, curP, nearestP, len, wid, true);
         }
     }
 
-    private static async System.Threading.Tasks.Task GenerateRoads(World lvl, List<List<bool>> gridRoads, int len, int wid) {
+    private static void GenerateRoads(ref World lvl, ref List<List<bool>> gridRoads) {
+        int len = lvl.length - 1, wid = lvl.width - 1;
+
         for (int l = 0; l <= len; l++) for (int w = 0; w <= wid; w++) {
-            await GameTask.DelayRealtime(1); // sanity check to fix missing walls
-            
             if (gridRoads[l][w]) {
                 bool[] dir = {false, false, false, false};
                 int connected = 0;
@@ -269,8 +170,186 @@ public class WorldGen {
                 }
             }
         }
-        return;
+
+        foreach (Entity ent in Entity.All) {
+            if (ent is TileEmpty) ent.Delete();
+        }
     }
+
+    public static void GenerateWalls(ref World lvl) {
+        for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
+            lvl.tiles[l][w].MakeWalls(lvl.wallType);
+        }
+    }
+
+    public static void GenerateEvents(ref World lvl, Vector2 startP, Vector2 endP) {
+        new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
+        lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
+        
+        new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
+        lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
+
+        
+
+        for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
+            Tile tile = lvl.tiles[l][w];
+            if (tile is TileEmpty) continue;
+
+            Vector2 e = new(l, w);
+            if (e == startP || e == endP) continue;
+
+            if (tile is TileEnd || GreaterThan(97.6f)) {
+                new TileEventPowerups().Init(tile);
+                continue;
+            }
+
+            if (tile is TileStraight) {
+                float increase = Math.Min(lvl.depth * 0.6f, 16);
+                if (GreaterThan(74 - increase)) {
+                    if (GreaterThan(92)) {
+                        new TileEventFight().Init(tile);
+                    } else {
+                        new TileEventSwarm().Init(tile);
+                    }
+                    continue;
+                }
+            } else {
+                float increase = Math.Min(lvl.depth * 0.6f, 16);
+                if (GreaterThan(90 - increase)) {
+                    new TileEventFight().Init(tile);
+                    continue;
+                }
+            }
+
+            if (tile is TileT && GreaterThan(10)) {
+                new TileEventShop().Init(tile);
+                continue;
+            }
+        }
+    }
+
+    public static void GenerateProps(ref World lvl) {
+        for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
+            if (GreaterThan(66)) {
+                lvl.tiles[l][w].MakeLamp();
+            }
+        }
+    }
+
+    // ! GEN BOSS FUNCTIONS
+
+    public static void GenerateWorldGridBoss(ref World lvl, ref List<List<bool>> gridRoads, Vector2 startP, Vector2 endP) {
+        int len = lvl.length - 1, wid = lvl.width - 1;
+
+        foreach (Vector2 curP in new List<Vector2>() {new(7, 1), new(7, 3), new(5, 1), new(5, 3)}) {
+            Vector2 nearestP = new(len * 0.5f, wid * 0.5f);
+            for (int i = 0; i < 50; i++) {
+                int curX = (int)curP.x;
+                int curY = (int)curP.y;
+                int dirX = (int)Math.Clamp(curP.x + i * 0.8f, 0, len);
+                int dirY = (int)Math.Clamp(curP.y + i * 0.8f, 0, wid);
+                int negX = (int)Math.Clamp(curP.x - i * 0.8f, 0, len);
+                int negY = (int)Math.Clamp(curP.y - i * 0.8f, 0, wid);
+
+                // YEA ITS BAD, can be improved but idc
+                if (gridRoads[dirX][curY]) nearestP = new(dirX, curY); // N
+                if (gridRoads[curX][dirY]) nearestP = new(curX, dirY); // E
+                if (gridRoads[negX][curY]) nearestP = new(negX, curY); // S
+                if (gridRoads[curX][negY]) nearestP = new(curX, negY); // W
+
+                // if (gridRoads[dirX][dirY]) nearestP = new(dirX, dirY); // NE
+                // if (gridRoads[negX][dirY]) nearestP = new(negX, dirY); // SE
+                // if (gridRoads[negX][negY]) nearestP = new(negX, negY); // SW
+                // if (gridRoads[dirX][negY]) nearestP = new(dirX, negY); // NW
+
+                if (nearestP != new Vector2(len * 0.5f, wid * 0.5f)) break;
+            }
+
+            MarkRoad(gridRoads, curP, nearestP, len, wid, true);
+        }
+    }
+
+    public static void GenerateEventsBoss(ref World lvl, Vector2 startP, Vector2 endP) {
+        new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
+        lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
+        
+        new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
+        lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
+
+        new TileEventBoss().Init(lvl.tiles[3][2]);
+
+        for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
+            Tile tile = lvl.tiles[l][w];
+            if (tile is TileEmpty) continue;
+
+            Vector2 e = new(l, w);
+            if (e == startP || e == endP) continue;
+
+            if (tile is TileEnd || GreaterThan(97.6f)) {
+                new TileEventPowerups().Init(tile);
+                continue;
+            }
+        }
+    }
+
+    // * 
+    // * other
+    // * 
+
+    private static bool IsBossDepth(int depth) {
+        if (depth != 0 && depth % 5 == 0) return true;
+        else return false;
+    }
+
+    private static bool GreaterThan(float percent) {
+        return percent < Random.Shared.Float(0, 100);
+    }
+
+    private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool detour) {
+        bool making = true;
+        int i = 0, lastDetour = 1;
+        Vector2 curP = startP;
+        Vector3 dir = new((endP - curP).Normal, 0);
+
+        grid[(int)startP.x][(int)startP.y] = true;
+        grid[(int)endP.x][(int)endP.y] = true;
+
+        while (making) {
+            i++; lastDetour++;
+            
+            // detour
+            if (detour) {
+                if (lastDetour > 6 && Random.Shared.Float(0, 1) > 0.5f) {
+                    if (Vector2.Distance(curP, endP) < 2) continue;
+                    
+                    dir *= Rotation.FromYaw(Random.Shared.Float(-80, 80));
+                    lastDetour = 0;
+                } else if (lastDetour > 2) {
+                    dir = new((endP - curP).Normal, 0);
+                }
+            }
+            
+            Vector2 newP = curP + MakeVec2(dir);
+            newP.x = newP.x.Clamp(0, len);
+            newP.y = newP.y.Clamp(0, wid);
+
+            int xOffset = (int)newP.x - (int)curP.x;
+            int yOffset = (int)newP.y - (int)curP.y;
+
+            if (xOffset != 0 && yOffset != 0) {
+                grid[(int)curP.x + xOffset][(int)curP.y] = true;
+            }
+
+            grid[(int)newP.x][(int)newP.y] = true;
+
+            curP = newP;
+            if (i > 100 || FloorVec2(curP) == endP) {
+                making = false;
+            }
+        }
+    }
+
+
 
     private static Vector2 MakeVec2(Vector3 vec) {
         return new Vector2(vec.x, vec.y);

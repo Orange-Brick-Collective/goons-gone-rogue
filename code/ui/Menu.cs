@@ -139,7 +139,7 @@ public class Menu : Panel {
                 "Armor: Damage reduction\n" +
                 "Limits: 0 to 150 (0% to 80% reduction)\n\n" +                  
                 "Speed: How fast goon moves\n" +
-                "Limits: 50 to inf\n\n" +
+                "Limits: 60 to 1000\n\n" +
                 "Range: Unit distance goon's bullet reach\n" +
                 "Limits: 100 to inf\n\n" +                 
                 "Damage: Damage goon's bullets do\n" +
@@ -148,10 +148,10 @@ public class Menu : Panel {
                 "Limits: 0.05 to 1.5\n\n" +
                 "Mag: Magazine size\n" +
                 "Limits: 2 to inf\n\n" +
-                "Spread: Degree inaccuracy of goon\n" +
-                "Limits: 25 to inf\n\n" +
+                "Spread: Degree inaccuracy\n" +
+                "Limits: 0 to 8\n\n" +
                 "Reload: Time for goon to reload\n" +
-                "Limits: 0.1 to 4\n",
+                "Limits: 0.1 to 6\n",
                 Classes = "labelb"
             });
 

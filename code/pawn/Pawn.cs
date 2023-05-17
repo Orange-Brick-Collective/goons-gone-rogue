@@ -2,6 +2,7 @@ using Sandbox;
 using Sandbox.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GGame;
 
@@ -9,6 +10,7 @@ public partial class Pawn : AnimatedEntity {
     public Vector3 HeightOffset => new(0, 0,  35 * Scale);
 
     public WorldPanel healthPanel;
+    public GoonStats stats;
 
     public Gun weapon;
     public TimeSince lastFire;
@@ -18,13 +20,7 @@ public partial class Pawn : AnimatedEntity {
     public List<Action<DamageInfo>> HurtActions = new();
     public List<Action<DamageInfo>> DieActions = new();
 
-    public List<Action> FightEndActions = new();
-
-    [Net] public IDictionary<string, int> AppliedPowerups {get; set;} = new Dictionary<string, int>();
-
-    // ! make work
-    // gets added and removed actively (not functional)
-    public List<Action> TickActions = new();
+    [Net, Change] public IList<AppliedPowerup> AppliedPowerups {get; set;} = new List<AppliedPowerup>();
 
     [Net] public bool IsInCombat {get; set;} = false;
     [Net] public int Team {get; set;} = 0;
@@ -37,7 +33,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public int BaseMoveSpeed {get; set;} = 200;
     [Net] public int AddMoveSpeed {get; set;} = 0;
-    public int MoveSpeed => Math.Max(BaseMoveSpeed + AddMoveSpeed, 50);
+    public int MoveSpeed => Math.Clamp(BaseMoveSpeed + AddMoveSpeed, 60, 1000);
 
     [Net] public float BaseWeaponDamage {get; set;} = 3;
     [Net] public float AddWeaponDamage {get; set;} = 0;
@@ -49,7 +45,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public float BaseReloadTime {get; set;} = 2;
     [Net] public float AddReloadTime {get; set;} = 0;
-    public float ReloadTime => Math.Clamp(BaseReloadTime + AddReloadTime, 0.1f, 4);   
+    public float ReloadTime => Math.Clamp(BaseReloadTime + AddReloadTime, 0.1f, 6);   
 
     [Net] public int BaseMagazineSize {get; set;} = 14;
     [Net] public int AddMagazineSize {get; set;} = 0;
@@ -57,7 +53,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public float BaseDegreeSpread {get; set;} = 3;
     [Net] public float AddDegreeSpread {get; set;} = 0;
-    public float DegreeSpread => Math.Clamp(BaseDegreeSpread + AddDegreeSpread, 0, 6);
+    public float DegreeSpread => Math.Clamp(BaseDegreeSpread + AddDegreeSpread, 0, 8);
 
     [Net] public float BaseRange {get; set;} = 400;
     [Net] public float AddRange {get; set;} = 0;
@@ -167,16 +163,22 @@ public partial class Pawn : AnimatedEntity {
 
     public float GetArmorReduction() {
         // ignore math if we have no armor or are hardcapped
-        if (Armor == 0) return 1;
+        if (Armor < 1) return 1;
         if (Armor > 149) return 0.2f;
 
         // log, offset horizontally for goon flatter low range, and reduce vertical back to 0
         float logArmor = (float)Math.Log(Armor + 12) - 2.484f;
         // map so 150 armor reaches 0.8
         logArmor *= .308f;
-        // invert, so 0 armor = 1, 150 armor = 0.1
+        // invert, so 0 armor = 1, 150 armor = 0.2
         return 1 - logArmor;  
 	}
+
+    public void OnAppliedPowerupsChanged(IList<AppliedPowerup> oldValue, IList<AppliedPowerup> newValue) {
+        Log.Info("change");
+        AppliedPowerup newPow = newValue.Except(oldValue).First();
+        stats.AddPowerup(newPow);
+    }
 
     public DamageInfo QuickDamageInfo(float damage) {
         return new DamageInfo() {
@@ -205,52 +207,52 @@ public partial class Pawn : AnimatedEntity {
 
     public string[] PawnStrings() {
         return new string[] {
-        $"favorite_border\n" +
-        $"favorite\n" +
-        $"shield\n" +
-        $"directions_run\n" +
-        $"rss_feed\n" +
-        $"electric_bolt\n" +
-        $"fast_forward\n" +
-        $"expand\n" +
-        $"all_out\n" +
-        $"schedule"
+            $"favorite_border\n" +
+            $"favorite\n" +
+            $"shield\n" +
+            $"directions_run\n" +
+            $"rss_feed\n" +
+            $"electric_bolt\n" +
+            $"fast_forward\n" +
+            $"expand\n" +
+            $"all_out\n" +
+            $"schedule"
         ,
-        $"{MaxHealth:#0}\n" +
-        $"{Health:#0}\n" +
-        $"{Armor}\n" +
-        $"{MoveSpeed}\n" +
-        $"{Range:#0}\n" +
-        $"{WeaponDamage}\n" +
-        $"{FireRate:#0.00}\n" +
-        $"{MagazineSize}\n" +
-        $"{DegreeSpread:#0.0}\n" +
-        $"{ReloadTime:#0.0}"
+            $"{MaxHealth:#0}\n" +
+            $"{Health:#0}\n" +
+            $"{Armor}\n" +
+            $"{MoveSpeed}\n" +
+            $"{Range:#0}\n" +
+            $"{WeaponDamage}\n" +
+            $"{FireRate:#0.00}\n" +
+            $"{MagazineSize}\n" +
+            $"{DegreeSpread:#0.0}\n" +
+            $"{ReloadTime:#0.0}"
         ,
-        $"\n" +
-        $"\n" +
-        $"\n" +
-        $"({BaseMoveSpeed} + {AddMoveSpeed})\n" +
-        $"({BaseRange:#0} + {AddRange:#0})\n" +
-        $"({BaseWeaponDamage} + {AddWeaponDamage})\n" +
-        $"({BaseFireRate:#0.00} + {AddFireRate:#0.00})\n" +
-        $"({BaseMagazineSize} + {AddMagazineSize})\n" +
-        $"({BaseDegreeSpread:#0.0} + {AddDegreeSpread:#0.0})\n" +
-        $"({BaseReloadTime:#0.0} + {AddReloadTime:#0.0})"
+            $"\n" +
+            $"\n" +
+            $"\n" +
+            $"({BaseMoveSpeed} + {AddMoveSpeed})\n" +
+            $"({BaseRange:#0} + {AddRange:#0})\n" +
+            $"({BaseWeaponDamage} + {AddWeaponDamage})\n" +
+            $"({BaseFireRate:#0.00} + {AddFireRate:#0.00})\n" +
+            $"({BaseMagazineSize} + {AddMagazineSize})\n" +
+            $"({BaseDegreeSpread:#0.0} + {AddDegreeSpread:#0.0})\n" +
+            $"({BaseReloadTime:#0.0} + {AddReloadTime:#0.0})"
         };
     }
 
     public string PawnStringSingle() {
         return $"MaxHP: {MaxHealth:#0}\n" +
-        $"HP:    {Health:#0}\n" +
-        $"Armor: {Armor}\n" +
-        $"Speed: {MoveSpeed} ({BaseMoveSpeed} + {AddMoveSpeed})\n" +
-        $"Range: {Range:#0} ({BaseRange:#0} + {AddRange:#0})\n" +
-        $"Damage:{WeaponDamage} ({BaseWeaponDamage} + {AddWeaponDamage})\n" +
-        $"Delay: {FireRate:#0.00} ({BaseFireRate:#0.00} + {AddFireRate:#0.00})\n" +
-        $"Mag:   {MagazineSize} ({BaseMagazineSize} + {AddMagazineSize})\n" +
-        $"Spread:{DegreeSpread:#0.0} ({BaseDegreeSpread:#0.0} + {AddDegreeSpread:#0.0})\n" +
-        $"Reload:{ReloadTime:#0.0} ({BaseReloadTime:#0.0} + {AddReloadTime:#0.0})";
+            $"HP:    {Health:#0}\n" +
+            $"Armor: {Armor}\n" +
+            $"Speed: {MoveSpeed} ({BaseMoveSpeed} + {AddMoveSpeed})\n" +
+            $"Range: {Range:#0} ({BaseRange:#0} + {AddRange:#0})\n" +
+            $"Damage:{WeaponDamage} ({BaseWeaponDamage} + {AddWeaponDamage})\n" +
+            $"Delay: {FireRate:#0.00} ({BaseFireRate:#0.00} + {AddFireRate:#0.00})\n" +
+            $"Mag:   {MagazineSize} ({BaseMagazineSize} + {AddMagazineSize})\n" +
+            $"Spread:{DegreeSpread:#0.0} ({BaseDegreeSpread:#0.0} + {AddDegreeSpread:#0.0})\n" +
+            $"Reload:{ReloadTime:#0.0} ({BaseReloadTime:#0.0} + {AddReloadTime:#0.0})";
     }
 
     public string AmmoString() {
