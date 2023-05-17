@@ -84,12 +84,14 @@ GoonStats {
 
     .powerups {
         position: absolute;
-        left: 1580px;
-        bottom: 80px;
-        top: 20px;
-        
+        right: 2160px;
+        bottom: 79px;
+        top: 37px;
         padding: 2px;
+        //background-color: aqua;
+        align-content: flex-end;
         flex-direction: column;
+        flex-wrap: wrap-reverse;
         color: white;
 
         .powerupstext {
@@ -99,6 +101,23 @@ GoonStats {
             text-shadow: 1px 1px black;
             color: white;
             font-family: AnonymousPro; // https://www.1001fonts.com/anonymous-pro-font.html
+        }
+
+        PowerupDisplay {
+            border: 2px rgba(0, 0, 0, 0.6);
+            border-radius: 4px;
+            background-color: rgba(black, 0.2);
+            .image {
+                width: 44px;
+                aspect-ratio: 1;
+            }
+    
+            .label {
+                width: 44px;
+                font-size: 40px;
+                overflow: visible;
+                text-align: center;
+            }
         }
     }
 

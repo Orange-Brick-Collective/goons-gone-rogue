@@ -154,10 +154,11 @@ public class PowerupUI : Panel {
         } else {
             List<AppliedPowerup> p = pawn.AppliedPowerups.Where(a => a.Title == ent.powerup.Title).ToList();
             if (p.Any()) {
-                p.First().Title += 1;
+                p.First().Amount += 1;
             } else {
                 pawn.AppliedPowerups.Add(new AppliedPowerup(ent.powerup.Image, ent.powerup.Title));
             }
+            GoonStats.UpdatePowerups(pawn.NetworkIdent);
 
             GGame.Current.Powerups += 1;
             GGame.Current.Score += 20;

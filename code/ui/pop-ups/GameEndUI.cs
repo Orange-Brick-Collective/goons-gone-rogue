@@ -12,12 +12,12 @@ public class GameEndUI : Panel {
 
         Panel ui = new(this) {Classes = "content"};
 
-        ui.AddChild(new Label() {Classes = "title", Text = "Game Over"});
+        ui.AddChild(new Label() {Classes = "title", Text = "-- Goons Gone Rogue --\nGame Over"});
         ui.AddChild(new Label() {Classes = "description", Text = 
-            "-- Goons Gone Rogue --\n\n" +
-            $"Depth: {GGame.Current.CurrentDepth}\n" +
             $"Score: {GGame.Current.Score}\n" +
+            $"Depth: {GGame.Current.CurrentDepth}\n" +
             $"Kills: {GGame.Current.Kills}\n" +
+            $"Powerups Bought: {GGame.Current.Purchases}\n" +
             $"Powerups Used: {GGame.Current.Powerups}\n" + 
             $"Damage Dealt: {GGame.Current.DamageDealt:#0}\n" +
             $"Damage Taken: {GGame.Current.DamageTaken:#0}"

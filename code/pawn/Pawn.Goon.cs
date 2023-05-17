@@ -28,7 +28,7 @@ public partial class Goon : Pawn {
     private TimeSince timeSinceHitPath;
     public TimeSince footstep;
     
-    // for offsetting occasional ai loop to improve performance
+    // for offsetting some ai functions to improve performance
     private int tickCycle = 0;
 
 	public override void Spawn() {

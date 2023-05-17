@@ -20,7 +20,7 @@ public partial class Pawn : AnimatedEntity {
     public List<Action<DamageInfo>> HurtActions = new();
     public List<Action<DamageInfo>> DieActions = new();
 
-    [Net, Change] public IList<AppliedPowerup> AppliedPowerups {get; set;} = new List<AppliedPowerup>();
+    [Net] public IList<AppliedPowerup> AppliedPowerups {get; set;} = new List<AppliedPowerup>();
 
     [Net] public bool IsInCombat {get; set;} = false;
     [Net] public int Team {get; set;} = 0;
@@ -173,13 +173,7 @@ public partial class Pawn : AnimatedEntity {
         // invert, so 0 armor = 1, 150 armor = 0.2
         return 1 - logArmor;  
 	}
-
-    public void OnAppliedPowerupsChanged(IList<AppliedPowerup> oldValue, IList<AppliedPowerup> newValue) {
-        Log.Info("change");
-        AppliedPowerup newPow = newValue.Except(oldValue).First();
-        stats.AddPowerup(newPow);
-    }
-
+    
     public DamageInfo QuickDamageInfo(float damage) {
         return new DamageInfo() {
             Damage = damage,

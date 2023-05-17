@@ -208,7 +208,7 @@ public class Powerups {
         // * hurt actions
         // *
         new PowerupPawnAct(
-            "/images/icons/thorns.png",
+            "/images/icons/thorn.png",
             "Thorns",
             "1/3 chance when hurt to deal damage back to attacker. Every additional 'Thorns' is another 1/3 chance to return damage",
             (pawn) => pawn.HurtActions.Add(pawn.PowerupThorns)
@@ -220,10 +220,10 @@ public class Powerups {
     };
 }
 
-public class AppliedPowerup : BaseNetworkable, INetworkSerializer {
-    public string Image {get; set;}
-    public string Title {get; set;}
-    public int Amount {get; set;}
+public partial class AppliedPowerup : BaseNetworkable {
+    [Net] public string Image {get; set;}
+    [Net] public string Title {get; set;}
+    [Net] public int Amount {get; set;}
 
     public AppliedPowerup() {}
     public AppliedPowerup(string image, string title) {
@@ -231,16 +231,6 @@ public class AppliedPowerup : BaseNetworkable, INetworkSerializer {
         Title = title;
         Amount = 1;
     }
-
-	public void Read(ref NetRead read) {
-		read.ReadString();
-        read.ReadString();
-	}
-
-	public void Write(NetWrite write) {
-		write.Write(Image);
-        write.Write(Title);
-	}
 }
 
 public class Powerup {

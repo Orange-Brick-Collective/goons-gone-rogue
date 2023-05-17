@@ -36,8 +36,7 @@ public partial class ShopEntity : ModelEntity, IUse {
 
         return this;
     }
-
-    [ClientRpc] // required
+    [ClientRpc]
     public void ClientInit(int[] ints) {
         foreach (int num in ints) {
             powerups.Add(Powerups.GetByIndex(num));

@@ -4,7 +4,7 @@ using Sandbox.UI;
 
 namespace GGame;
 
-public class GoonStats : Panel {
+public partial class GoonStats : Panel {
     public Pawn pawn;
 
     public Panel healthBar, healthBarFill;
@@ -82,30 +82,25 @@ public class GoonStats : Panel {
         }
     }
 
-    public void AddPowerup(AppliedPowerup pow) {
-        foreach (var item in powerups.ChildrenOfType<PowerupDisplay>()) {
-            if (item.title == pow.Title) {
-                item.amountLabel.SetText(pow.Amount.ToString());
-                return;
-            }
-        }
+    [ClientRpc]
+    public static void UpdatePowerups(int pawnIdent) {
+        Pawn pawn = (Pawn)Entity.FindByIndex(pawnIdent);
+        if (pawn is null) return;
 
-        powerups.AddChild(new PowerupDisplay(pow.Title, pow.Image));
+        pawn.stats.powerups.DeleteChildren();
+
+        foreach (AppliedPowerup pow in pawn.AppliedPowerups) {
+            pawn.stats.powerups.AddChild(new PowerupDisplay(pow.Image, pow.Title, pow.Amount));
+        }
     }
 
     public class PowerupDisplay : Panel {
         public string title;
-        public Image image;
-        public Label amountLabel;
 
-        public PowerupDisplay(string title, string img) {
+        public PowerupDisplay(string img, string title, int amount) {
             this.title = title;
-
-            image = new() {Texture = Texture.Load(FileSystem.Mounted, img)};
-            AddChild(image);
-
-            amountLabel = new();
-            AddChild(amountLabel);
+            AddChild(new Image() {Texture = Texture.Load(FileSystem.Mounted, img), Classes = "image"});
+            AddChild(new Label() {Text = amount.ToString(), Classes = "label"});
         }
     }
 }

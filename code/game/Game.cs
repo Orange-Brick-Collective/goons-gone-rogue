@@ -201,6 +201,7 @@ public partial class GGame : GameManager {
 		Player.Current.AddDegreeSpread = 0;
 		Player.Current.AddRange = 0;
 		Player.Current.CurrentMag = 20;
+		GoonStats.UpdatePowerups(Player.Current.NetworkIdent);
 
 		CurrentDepth = 0;
 		Money = 0;

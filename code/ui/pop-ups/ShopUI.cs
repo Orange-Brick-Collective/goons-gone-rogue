@@ -197,10 +197,11 @@ public partial class ShopUI : Panel {
         } else {
             List<AppliedPowerup> p = pawn.AppliedPowerups.Where(a => a.Title == powerup.Title).ToList();
             if (p.Any()) {
-                p.First().Title += 1;
+                p.First().Amount += 1;
             } else {
                 pawn.AppliedPowerups.Add(new AppliedPowerup(powerup.Image, powerup.Title));
             }
+            GoonStats.UpdatePowerups(pawn.NetworkIdent);
 
             GGame.Current.Powerups += 1;
             GGame.Current.Purchases += 1;

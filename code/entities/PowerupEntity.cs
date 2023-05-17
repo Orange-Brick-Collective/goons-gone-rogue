@@ -27,8 +27,7 @@ public partial class PowerupEntity : ModelEntity, IUse {
 
         return this;
     }
-
-    [ClientRpc] // required
+    [ClientRpc]
     public void ClientInit(int e) {
         powerup = Powerups.GetByIndex(e);
 
