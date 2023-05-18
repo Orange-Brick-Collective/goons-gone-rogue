@@ -30,6 +30,8 @@ namespace GGame;
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;
 
+	[Net] public Leaderboard Leaderboard {get; set;}
+
 	public Transform ArenaMarker {get; set;}
 	public World currentWorld;
 	public Arena currentArena;
@@ -53,7 +55,7 @@ public partial class GGame : GameManager {
 	
 	public GGame() {
 		if (Game.IsServer) {
-			_ = new Leaderboards();
+			Leaderboard = new Leaderboard();
 			_ = new WorldGen();
 			_ = new ArenaGen();
 			_ = new MusicBox();
@@ -183,7 +185,7 @@ public partial class GGame : GameManager {
 		ClientGameEnd();
 		if (IsMusicEnabled) MusicBox.Current.LerpToLooping();
 
-		Leaderboards.Current.AddScore(Score);
+		Leaderboard.Current.AddScore(Score);
 
 		await ArenaGen.Current.GenerateArena(WallModels.RandomWall());
 		await GameTask.DelayRealtime(300);

@@ -22,9 +22,9 @@ public partial class Player : Pawn {
 		base.Spawn();
 		Current = this;
 
+		Name = "Player";
 		Tags.Add("player");
 		Tags.Add("team0");
-		Name = "Player";
 		
 		EnableTouch = true;
 		EnableDrawing = true;
@@ -62,7 +62,7 @@ public partial class Player : Pawn {
 	}
 
 	public override void StartTouch(Entity ent) {
-		if (!Game.IsServer) return;
+		if (Game.IsClient) return;
 
 		if (ent is TileEvent Tevent) {
 			Tevent.Trigger();

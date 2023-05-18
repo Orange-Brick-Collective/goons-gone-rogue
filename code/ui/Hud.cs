@@ -6,6 +6,7 @@ namespace GGame;
 public partial class Hud : HudEntity<RootPanel> {
     public static Hud Current;
     public Panel loadingPanel;
+    public Panel damagePanel;
     public FloatingText floatingText;
     public UsePopupPanel usePopupPanel;
     public Crosshair crosshair;
@@ -16,7 +17,8 @@ public partial class Hud : HudEntity<RootPanel> {
         
         RootPanel.StyleSheet.Load("ui/Hud.scss");
         
-        loadingPanel = new Panel(RootPanel, "loadingPanel");
+        loadingPanel = new Panel(RootPanel, "loadingpanel");
+        damagePanel = new Panel(RootPanel, "damagepanel");
 
         crosshair = new Crosshair();
         RootPanel.AddChild(crosshair);
@@ -37,5 +39,12 @@ public partial class Hud : HudEntity<RootPanel> {
 
     public void FromBlack() {
         loadingPanel.RemoveClass("loading");
+    }
+
+    [ClientRpc]
+    public static async void TakeDamage() {
+        Hud.Current.damagePanel.AddClass("visible");
+        await GameTask.DelayRealtime(100);
+        Hud.Current.damagePanel.RemoveClass("visible");
     }
 }

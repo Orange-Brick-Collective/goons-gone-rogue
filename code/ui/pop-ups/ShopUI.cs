@@ -16,6 +16,8 @@ public partial class ShopUI : Panel {
     public Label title, description;
     public Panel left, right, buttons, powerupButtons;
 
+    public int cost = 1000;
+
     public ShopUI(ShopEntity ent, Pawn player) {
         StyleSheet.Load("ui/pop-ups/ShopUI.scss");
         this.ent = ent;
@@ -130,7 +132,10 @@ public partial class ShopUI : Panel {
         description.SetText(selectedPowerup.Description);
         title.SetText(selectedPowerup.Title);
 
-        confirmButton.SetText($"Buy {selectedPowerup.Title} for $1000");
+        if (powerup is PowerupStat) cost = 1000;
+        else cost = 200;
+
+        confirmButton.SetText($"Buy {selectedPowerup.Title} for ${cost}");
         Select(selectedButton, chosen);
     }
 
@@ -138,23 +143,23 @@ public partial class ShopUI : Panel {
     public class PLabel : Label {}
 
     private void Confirm() {
-        if (selectedPowerup is null || GGame.Current.Money < 1000) {BuyFail(); return;}
+        if (selectedPowerup is null || GGame.Current.Money < cost) {BuyFail(); return;}
 
-        ServerShopConfirm("1582726", ent.NetworkIdent, chosen.NetworkIdent, ent.powerups.IndexOf(selectedPowerup));
+        ServerShopConfirm("1582726", ent.NetworkIdent, chosen.NetworkIdent, ent.powerups.IndexOf(selectedPowerup), cost);
         Delete();
     }
     
     [ConCmd.Server]
-    private static void ServerShopConfirm(string password, int shopNetIdent, int pawnNetIdent, int selectedPowerup) {
+    private static void ServerShopConfirm(string password, int shopNetIdent, int pawnNetIdent, int selectedPowerup, int cost) {
         if (password != "1582726") return;
         
-        if (GGame.Current.Money < 1000) return;
+        if (GGame.Current.Money < cost) return;
 
         Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
         ShopEntity ent = Entity.FindByIndex<ShopEntity>(shopNetIdent);
         if (pawn is null || ent is null) return;
 
-        GGame.Current.Money -= 1000;
+        GGame.Current.Money -= cost;
         
         Powerup powerup = ent.powerups[selectedPowerup];
 

@@ -137,6 +137,7 @@ public partial class Pawn : AnimatedEntity {
             GGame.Current.DamageTaken += newDamage;
 
             if (this == Player.Current) {
+                Hud.TakeDamage();
                 Player.FloatingText(Player.Current.Position + HeightOffset, info.Damage);
             }
         } else {
@@ -152,7 +153,7 @@ public partial class Pawn : AnimatedEntity {
             return;
         }
 
-        if (Random.Shared.Float(0, 1) > 0.8f) {
+        if (Random.Shared.Float(0, 1) > 0.7f) {
             PlaySound("sounds/hurt.sound");       
         }
 

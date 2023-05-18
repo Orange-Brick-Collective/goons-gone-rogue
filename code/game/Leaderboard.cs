@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace GGame;
 
-public partial class Leaderboards : BaseNetworkable {
-    public static Leaderboards Current {get; set;}
+public partial class Leaderboard : BaseNetworkable {
+    public static Leaderboard Current {get; set;}
     public IDictionary<string, int> TopScores {get; set;} = new Dictionary<string, int>();
     int playerScores = 0;
 
-    public Leaderboards() {
+    public Leaderboard() {
         if (Current is not null) return;
         Current = this;
 
