@@ -72,6 +72,8 @@ public class Tile : ModelEntity {
         light.Tags.Add("generated");
     }
 
+    public void MakeCar() {}
+
 	protected override void OnDestroy() {
         northWall?.Delete();
         eastWall?.Delete();

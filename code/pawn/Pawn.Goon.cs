@@ -213,7 +213,7 @@ public partial class Goon : Pawn {
     }
 
     private void AILookat(Vector3 pos) {
-        Rotation = Rotation.LookAt(pos);
+        Rotation = Rotation.Lerp(Rotation, Rotation.LookAt(pos), 0.1f);
     }
 
     // *

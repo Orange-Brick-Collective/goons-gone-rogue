@@ -106,7 +106,7 @@ public class Powerups {
         new PowerupStat(
             "/images/icons/target.png",
             "Accurate",
-            "Who knew holding your hands still helped",
+            "Who knew keeping your hands still helped",
             new SelectedStat[] {new SelectedStat(Stat.AddDegreeSpread, -0.4f)}
         ),
         new PowerupStat(

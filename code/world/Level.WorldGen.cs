@@ -42,7 +42,6 @@ public class WorldGen {
         // * grid stage
         Vector2 startP = new(0, Random.Shared.Int(0, wid));
         Vector2 endP = new(len, Random.Shared.Int(0, wid));
-        List<Vector2> branchP = MakeBranches(lvl, len, wid, startP, endP);
         List<List<bool>> gridRoads = FillGridEmpty(len + 1, wid + 1);
 
         if (IsBossDepth(depth)) {
@@ -183,13 +182,13 @@ public class WorldGen {
     }
 
     public static void GenerateEvents(ref World lvl, Vector2 startP, Vector2 endP) {
+        int shops = 0;
+
         new TileEventStart().Init(lvl.tiles[(int)startP.x][(int)startP.y]);
         lvl.startPos = lvl.tiles[(int)startP.x][(int)startP.y].Transform;
         
         new TileEventEnd().Init(lvl.tiles[(int)endP.x][(int)endP.y]);
         lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
-
-        
 
         for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
             Tile tile = lvl.tiles[l][w];
@@ -198,15 +197,15 @@ public class WorldGen {
             Vector2 e = new(l, w);
             if (e == startP || e == endP) continue;
 
-            if (tile is TileEnd || GreaterThan(97.6f)) {
+            if (tile is TileEnd || GreaterThan(97.5f)) {
                 new TileEventPowerups().Init(tile);
                 continue;
             }
 
             if (tile is TileStraight) {
-                float increase = Math.Min(lvl.depth * 0.6f, 16);
-                if (GreaterThan(74 - increase)) {
-                    if (GreaterThan(92)) {
+                float increase = Math.Min(lvl.depth, 14f);
+                if (GreaterThan(60 - increase)) { // 60 at 0 depth, 40 at 20 depth
+                    if (GreaterThan(8)) {
                         new TileEventFight().Init(tile);
                     } else {
                         new TileEventSwarm().Init(tile);
@@ -214,15 +213,20 @@ public class WorldGen {
                     continue;
                 }
             } else {
-                float increase = Math.Min(lvl.depth * 0.6f, 16);
-                if (GreaterThan(90 - increase)) {
-                    new TileEventFight().Init(tile);
+                float increase = Math.Min(lvl.depth, 14f);
+                if (GreaterThan(72 - increase)) { // 72 at 0 depth, 52 at 20 depth
+                    if (GreaterThan(8)) {
+                        new TileEventFight().Init(tile);
+                    } else {
+                        new TileEventSwarm().Init(tile);
+                    }
                     continue;
                 }
             }
 
-            if (tile is TileT && GreaterThan(10)) {
+            if (tile is TileT && GreaterThan(80f + shops * 4)) {
                 new TileEventShop().Init(tile);
+                shops++;
                 continue;
             }
         }
@@ -230,7 +234,7 @@ public class WorldGen {
 
     public static void GenerateProps(ref World lvl) {
         for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
-            if (GreaterThan(66)) {
+            if (GreaterThan(66) && lvl.tiles[l][w].tileEvent is null) {
                 lvl.tiles[l][w].MakeLamp();
             }
         }
@@ -277,6 +281,7 @@ public class WorldGen {
         lvl.endPos = lvl.tiles[(int)endP.x][(int)endP.y].Transform;
 
         new TileEventBoss().Init(lvl.tiles[3][2]);
+        new TileEventShop().Init(lvl.tiles[5][2]);
 
         for (int l = 0; l <= lvl.length - 1; l++) for (int w = 0; w <= lvl.width - 1; w++) {
             Tile tile = lvl.tiles[l][w];
@@ -285,7 +290,7 @@ public class WorldGen {
             Vector2 e = new(l, w);
             if (e == startP || e == endP) continue;
 
-            if (tile is TileEnd || GreaterThan(97.6f)) {
+            if (tile is TileEnd) {
                 new TileEventPowerups().Init(tile);
                 continue;
             }
@@ -301,8 +306,8 @@ public class WorldGen {
         else return false;
     }
 
-    private static bool GreaterThan(float percent) {
-        return percent < Random.Shared.Float(0, 100);
+    private static bool GreaterThan(float percentComparison) {
+        return Random.Shared.Float(0, 100) > percentComparison;
     }
 
     private static void MarkRoad(List<List<bool>> grid, Vector2 startP, Vector2 endP, int len, int wid, bool detour) {

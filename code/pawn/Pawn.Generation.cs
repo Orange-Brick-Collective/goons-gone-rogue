@@ -96,7 +96,7 @@ public partial class Pawn : AnimatedEntity {
 
         // * tickets
         // 1 ticket per health              4 ticket per armor
-        // 1 ticket per movespeed           6 ticket per weapondamage
+        // 1 ticket per movespeed           10 ticket per weapondamage
         // 5 ticket per -0.02 firerate      5 ticket per -0.1 reloadtime
         // 2 ticket per magazinesize        3 ticket per -0.1 degreespread
         // 1 ticket per 2 range
@@ -139,7 +139,7 @@ public partial class Pawn : AnimatedEntity {
                     break;
                 }
                 case 3: {
-                    AddWeaponDamage += (int)(change * 0.16f);
+                    AddWeaponDamage += (int)(change * 0.1f);
                     break;
                 }
                 case 4: {

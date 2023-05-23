@@ -17,11 +17,11 @@ public class TileEventShop : TileEvent {
 
         Parent = parentTile;
         Position = parentTile.Position;
-        Rotation = parentTile.Rotation;
+        Rotation = parentTile.Rotation.RotateAroundAxis(new Vector3(0, 0, 1), -90);
 
         _ = new ShopEntity() {
             Parent = this,
-            Position = Position + new Vector3(0, 0, 48) * Rotation,
+            Position = Position + new Vector3(-128, 0, 48) * Rotation,
         }.Init();
     }
 }

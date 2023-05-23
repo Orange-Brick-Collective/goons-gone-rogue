@@ -37,7 +37,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public float BaseWeaponDamage {get; set;} = 3;
     [Net] public float AddWeaponDamage {get; set;} = 0;
-    public float WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 1);
+    public float WeaponDamage => Math.Max(BaseWeaponDamage + AddWeaponDamage, 0.2f);
     
     [Net] public float BaseFireRate {get; set;} = 0.3f;
     [Net] public float AddFireRate {get; set;} = 0;
