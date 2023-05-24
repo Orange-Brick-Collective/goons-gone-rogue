@@ -80,8 +80,6 @@ public class WorldGen {
             await GameTask.DelayRealtime(20);
         }
 
-
-
         GGame.Current.currentWorld = lvl;
         return;
     }

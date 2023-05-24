@@ -26,7 +26,7 @@ public class Gun : ModelEntity {
             if (owner == Player.Current && tr.Entity is Goon goon) {
                 owner.PlaySound("sounds/hitsound.sound");
 
-                Player.FloatingText(tr.EndPosition, damage * goon.ArmorReduction);
+                Player.FloatingText(tr.EndPosition, damage * goon.ArmorReduction, new Color(0.6f, 0.2f, 0.2f));
             }
 
             react.Invoke();

@@ -23,8 +23,9 @@ public class TileEventEnd : TileEvent {
         int maxW = Math.Min(gam.currentWorld.width + 1, 10);
 
 		await WorldGen.Current.GenerateWorld(maxL, maxW, gam.currentWorld.depth + 1);
+
 		gam.CurrentDepth = gam.currentWorld.depth;
-		Player.Current.Transform = GGame.Current.currentWorld.startPos;
+		Player.Current.Transform = gam.currentWorld.startPos;
 		Player.SetViewAngles(new Angles(0, 0, 0));
 		Player.Current.InMenu = false;
     }

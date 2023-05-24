@@ -69,10 +69,11 @@ public class Menu : Panel {
 
             Panel paragraphP = new(this, "container");
             
-            paragraphP.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" +
+            paragraphP.AddChild(new Label() {Text = "Goons Gone Rogue is a sort of party-builder roguelike.\n" + 
                 "You and your team are goons, all of which have their own set of stats to upgrade and progress.\n" + 
                 "You simply go as far as you can, while earning the highest score at the same time.\n" + 
-                "The controls are WASD to move, LMB to fire, E to interact.",
+                "The controls are WASD to move, LMB to fire, Use (default E) to interact.\n\n" + 
+                "You begin in the overworld, where the enemies you find are triggers that touching their tile will start the fight.",
                 Classes = "labelb"
             });
 
@@ -115,7 +116,7 @@ public class Menu : Panel {
             endPanel.AddChild(new Label() {Text = "" +
                 "This is the end platform for a level.\n" +
                 "Stepping on it transitions to the next level.\n" + 
-                "Every next level gets slightly more difficult."
+                "Every next level gets slightly more difficult in multiple ways."
             });
 
             ///////////
@@ -128,7 +129,7 @@ public class Menu : Panel {
 
             powerupPanel.AddChild(new Label() {Text = "" +
                 "These are powerups. They are most commonly found in dead ends.\n" + 
-                "Pressing e on them will let you give it's power to yourself or a teammate goon."
+                "Pressing use on them will let you give it's power to yourself or a teammate goon."
             });
 
             ///////////
@@ -140,9 +141,8 @@ public class Menu : Panel {
             shopPanel.AddChild(shopImage);
 
             shopPanel.AddChild(new Label() {Text = "" +
-                "This is the end platform for a level.\n" +
-                "Stepping on it transitions to the next level.\n" + 
-                "Every next level gets slightly more difficult."
+                "This is the store.\n" +
+                "It sells extra powerups, any costing $1000 are double strength."
             });
 
             ///////////
@@ -174,8 +174,8 @@ public class Menu : Panel {
             Panel tipsPanel = new(this, "containerstatic");
 
             tipsPanel.AddChild(new Label() {Text = "  Tips\n\n" +
-                " - Battles in open spaces can be avoided if your careful\n" + 
-                " - Having high damage/range goons is useful\n" +
+                " - Overworld battles in open streets can be avoided if your careful\n" + 
+                " - Having high damage/range goons may be valuable\n" +
                 " - You start stronger than your goon team\n",
                 Classes = "labelb"
             });

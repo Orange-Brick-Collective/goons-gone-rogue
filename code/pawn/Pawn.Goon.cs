@@ -192,7 +192,7 @@ public partial class Goon : Pawn {
             .Run();
         AILookat(tre.Direction.WithZ(0));
 
-        FireGun(target);
+        FireGun(tre.Direction);
         timeSinceHitPath = 0;
     }
 

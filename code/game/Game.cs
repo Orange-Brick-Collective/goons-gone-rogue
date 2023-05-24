@@ -39,7 +39,6 @@ public partial class GGame : GameManager {
 	public Transform currentPosition;
 	public Angles currentViewAngles;
 
-	// music actually almost gave me a migraine, it wouldnt compile, then it wouldnt work, then it wouldnt .Stop()
 	public bool IsMusicEnabled {get; set;} = true;
 
 	[Net] public int Money {get; set;} = 0;
@@ -174,6 +173,7 @@ public partial class GGame : GameManager {
 		if (!Player.Current.IsPlaying) return;
 
 		Player.Current.IsPlaying = false;
+		Player.Current.IsInCombat = false;
 
 		await AwaitToBlack();
 

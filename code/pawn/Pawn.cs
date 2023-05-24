@@ -43,15 +43,15 @@ public partial class Pawn : AnimatedEntity {
     [Net] public float AddFireRate {get; set;} = 0;
     public float FireRate => Math.Clamp(BaseFireRate + AddFireRate, 0.05f, 1.5f);
 
-    [Net] public float BaseReloadTime {get; set;} = 2;
+    [Net] public float BaseReloadTime {get; set;} = 2.5f;
     [Net] public float AddReloadTime {get; set;} = 0;
     public float ReloadTime => Math.Clamp(BaseReloadTime + AddReloadTime, 0.1f, 6);   
 
-    [Net] public int BaseMagazineSize {get; set;} = 14;
+    [Net] public int BaseMagazineSize {get; set;} = 8;
     [Net] public int AddMagazineSize {get; set;} = 0;
     public int MagazineSize => Math.Max(BaseMagazineSize + AddMagazineSize, 2);
 
-    [Net] public float BaseDegreeSpread {get; set;} = 3;
+    [Net] public float BaseDegreeSpread {get; set;} = 3.2f;
     [Net] public float AddDegreeSpread {get; set;} = 0;
     public float DegreeSpread => Math.Clamp(BaseDegreeSpread + AddDegreeSpread, 0, 8);
 
@@ -61,7 +61,7 @@ public partial class Pawn : AnimatedEntity {
 
     [Net] public int CurrentMag {get; set;} = 20;
 
-    public void FireGun(Pawn target) {
+    public void FireGun(Vector3 direction) {
         if (weapon is null) return;
 
         if (CurrentMag < 1) {
@@ -74,43 +74,12 @@ public partial class Pawn : AnimatedEntity {
 
             float spreadVert = Random.Shared.Float(-DegreeSpread, DegreeSpread);
             float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
-            Vector3 spreadOffset = new Vector3(spreadHoriz, spreadHoriz, spreadVert) * 5;
+            float spreadHoriz2 = Random.Shared.Float(-DegreeSpread, DegreeSpread);
 
-            TraceResult tr = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset * 1.6f + spreadOffset)
-                .WithoutTags($"team{Team}", "trigger")
-                .Run();
+            direction += new Vector3(spreadHoriz, spreadHoriz2, spreadVert) * 0.015f;
 
-            weapon.Fire(this, tr, WeaponDamage, () => {});
-            CurrentMag -= 1;
-
-            if (tr.Entity is Pawn goon) {
-                foreach (Action<Pawn> act in AttackActions) {
-                    act.Invoke(goon);
-                }
-            }
-
-            if (CurrentMag < 1) {
-                reload = 0;
-            }
-        } 
-    }
-
-    public void FireGun() {
-        if (weapon is null) return;
-
-        if (CurrentMag < 1) {
-            if (reload < ReloadTime) return;
-            CurrentMag = MagazineSize;
-        }
-
-        if (lastFire > FireRate) {
-            lastFire = 0;
-
-            float spreadVert = Random.Shared.Float(-DegreeSpread, DegreeSpread);
-            float spreadHoriz = Random.Shared.Float(-DegreeSpread, DegreeSpread);
-
-            Vector3 dir = Camera.Rotation.Forward + (new Vector3(0, spreadHoriz, spreadVert) * Camera.Rotation) * 0.015f;
-            TraceResult tr = Trace.Ray(Camera.Position, Camera.Position + dir * (Range + 50))
+            Vector3 position = this == Player.Current ? Camera.Position : Position + HeightOffset * 1.5f;
+            TraceResult tr = Trace.Ray(position, position + direction * (Range + 30))
                 .WithoutTags($"team{Team}", "trigger")
                 .Run();
 
@@ -138,7 +107,7 @@ public partial class Pawn : AnimatedEntity {
 
             if (this == Player.Current) {
                 Hud.TakeDamage();
-                Player.FloatingText(Player.Current.Position + HeightOffset, info.Damage);
+                Player.FloatingText(Player.Current.Position + HeightOffset, info.Damage, Color.Red);
             }
         } else {
             GGame.Current.DamageDealt += newDamage;

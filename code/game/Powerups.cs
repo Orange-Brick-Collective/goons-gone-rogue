@@ -174,8 +174,8 @@ public class Powerups {
             new SelectedStat[] {
                 new SelectedStat(Stat.AddWeaponDamage, 10),
                 new SelectedStat(Stat.AddRange, 100),
-                new SelectedStat(Stat.AddFireRate, 0.14f),
-                new SelectedStat(Stat.AddMagazineSize, -8),
+                new SelectedStat(Stat.AddFireRate, 0.1f),
+                new SelectedStat(Stat.AddMagazineSize, -6),
             }
         ),
         new PowerupStat(

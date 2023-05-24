@@ -54,6 +54,7 @@ public partial class Player : Pawn {
 		Health = 200;
 		BaseWeaponDamage = 8;
 		BaseDegreeSpread = 2.2f;
+		BaseReloadTime = 2;
 	}
 	public override void ClientSpawn() {
 		Current = this;
@@ -103,7 +104,7 @@ public partial class Player : Pawn {
 		SimulateUse();
 
 		if (Input.Down("attack1") && Game.IsServer) {
-			FireGun();
+			FireGun(Camera.Rotation.Forward);
 		}
 	}
 
@@ -168,10 +169,11 @@ public partial class Player : Pawn {
 	}
 
 	[ClientRpc]
-	public static void FloatingText(Vector3 position, float damage) {
+	public static void FloatingText(Vector3 position, float damage, Color color) {
 		Hud.Current.floatingText.Create(position)
-			.WithText($"{damage:#0.00}")
+			.WithText($"{damage:#0.0}")
 			.WithLifespan(1)
-			.WithMotion(Vector2.Up, 100, 0, 0);
+			.WithMotion(Vector2.Up, 100, 0, 0)
+			.Style.FontColor = color;
 	}
 }
