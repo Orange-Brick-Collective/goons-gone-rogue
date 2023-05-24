@@ -17,6 +17,7 @@ public class TileEventEnd : TileEvent {
         GGame gam = GGame.Current;
 		await gam.AwaitToAndFromBlack();
 
+        Player.Current.Position = Vector3.Zero;
 		gam.Score += 500;
 
         int maxL = Math.Min(gam.currentWorld.length + 1, 12);
