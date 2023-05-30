@@ -74,7 +74,11 @@ public partial class ShopUI : Panel {
         }
     }
 
+    bool defaultSelect = true;
     private void Select(Button selectedButton, Pawn chosen) {
+        if (defaultSelect) defaultSelect = false;
+        else Sound.FromWorld("sounds/button.sound", ent.Position);
+
         if (this.selectedButton is not null) {
             foreach(Label lb in this.selectedButton.ChildrenOfType<PLabel>()) {
                 lb.Delete();
@@ -160,7 +164,8 @@ public partial class ShopUI : Panel {
         if (pawn is null || ent is null) return;
 
         GGame.Current.Money -= cost;
-        
+        Sound.FromWorld("sounds/purchase.sound", ent.Position);
+
         Powerup powerup = ent.powerups[selectedPowerup];
 
         if (powerup is PowerupPawnAct powerupAct) powerupAct.Action.Invoke(pawn);

@@ -51,12 +51,16 @@ public class PowerupUI : Panel {
             if (pawn.Team != 0) return;
 
             Button b = new(pawn.Name, "") {Classes = "button"};
-            b.AddEventListener("onclick", () => {Select(b, pawn);});
+            b.AddEventListener("onclick", () => {Select(b, pawn); });
             buttons.AddChild(b);
         }
     }
 
+    bool defaultSelect = true;
     private void Select(Button chosenButton, Pawn chosen) {
+        if (defaultSelect) defaultSelect = false;
+        else Sound.FromWorld("sounds/button.sound", ent.Position);
+
         if (this.chosenButton is not null) {
             foreach(Label lb in this.chosenButton.ChildrenOfType<PLabel>()) {
                 lb.Delete();
@@ -115,6 +119,8 @@ public class PowerupUI : Panel {
         Pawn pawn = Entity.FindByIndex<Pawn>(pawnNetIdent);
         PowerupEntity ent = Entity.FindByIndex<PowerupEntity>(netIdent);
         if (pawn is null || ent is null) return;
+
+        Sound.FromWorld("sounds/purchase.sound", ent.Position);
 
         if (ent.powerup is PowerupPawnAct powerupAct) powerupAct.Action.Invoke(pawn);
         else {
