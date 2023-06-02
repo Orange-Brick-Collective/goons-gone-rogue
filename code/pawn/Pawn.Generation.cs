@@ -118,7 +118,7 @@ public partial class Pawn : AnimatedEntity {
             Health += 300;
         }
 
-        float maxTicket = baseTicket * (1 + (depth * 0.2f));
+        float maxTicket = baseTicket * (1 + (depth * 0.1f));
 
         for (int i = 0; i < 9; i++) {
             float weighted = GenerateWeighted();

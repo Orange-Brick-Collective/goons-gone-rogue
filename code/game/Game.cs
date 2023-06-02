@@ -15,17 +15,14 @@ namespace GGame;
 
 //////////////
 
-// to maybe do
-// fix spread
+// to do maybe
 // edit worldgen
 // ai control of some sort
 // balance boss fight
 // balance swarm fight
-// money and shop
 // fight start action
 // tick action
 // fix spread to be circular
-// rewrite ai shooting to copy players fire code
 
 public partial class GGame : GameManager {
 	public static new GGame Current => (GGame)GameManager.Current;

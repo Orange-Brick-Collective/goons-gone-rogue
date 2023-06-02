@@ -1,8 +1,8 @@
 {
-  "Title": "Goon Gone Rogue",
+  "Title": "Goons Gone Rogue",
   "Type": "game",
   "Org": "obc",
-  "Ident": "goon_gone_rogue",
+  "Ident": "goons_gone_rogue",
   "Tags": "roguelike gang gamejam",
   "Schema": 1,
   "HasAssets": true,

@@ -47,7 +47,7 @@ public partial class Pawn : AnimatedEntity {
     [Net] public float AddReloadTime {get; set;} = 0;
     public float ReloadTime => Math.Clamp(BaseReloadTime + AddReloadTime, 0.1f, 6);   
 
-    [Net] public int BaseMagazineSize {get; set;} = 8;
+    [Net] public int BaseMagazineSize {get; set;} = 10;
     [Net] public int AddMagazineSize {get; set;} = 0;
     public int MagazineSize => Math.Max(BaseMagazineSize + AddMagazineSize, 2);
 
