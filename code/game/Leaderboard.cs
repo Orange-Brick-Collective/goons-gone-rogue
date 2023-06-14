@@ -33,4 +33,16 @@ public partial class Leaderboard : BaseNetworkable {
             TopScores.Remove(TopScores.Last().Key);
         }
     }
+    [ClientRpc]
+    public static void ClientAddScore(int points) {
+        Log.Info("Client Adding Score");
+        Current.playerScores += 1;
+
+        Current.TopScores.Add("PLR" + Current.playerScores.ToString().PadLeft(3, '0'), points);
+        Current.TopScores = Current.TopScores.OrderByDescending(p => p.Value).ToDictionary(p => p.Key, p => p.Value);
+
+        if (Current.TopScores.Count > 12) {
+            Current.TopScores.Remove(Current.TopScores.Last().Key);
+        }
+    }
 }

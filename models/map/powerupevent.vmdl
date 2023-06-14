@@ -17,7 +17,7 @@
 						origin = [ -128.0, 0.0, 10.0 ]
 						angles = [ 0.0, 0.0, 0.0 ]
 						max_u = 1.0
-						max_v = 1.0
+						max_v = 0.25
 						dimensions = [ 24.0, 160.0, 42.0 ]
 						segments_x = 1
 						segments_y = 1
@@ -38,6 +38,24 @@
 						origin = [ -128.0, 0.0, 10.0 ]
 						angles = [ 0.0, 0.0, 0.0 ]
 						dimensions = [ 24.0, 160.0, 42.0 ]
+					},
+				]
+			},
+			{
+				_class = "MaterialGroupList"
+				children = 
+				[
+					{
+						_class = "DefaultMaterialGroup"
+						remaps = 
+						[
+							{
+								from = "materials/generic/floor_gravel_asphalt.vmat"
+								to = "materials/hotspots/metal_painted_black_b_hs.vmat"
+							},
+						]
+						use_global_default = false
+						global_default_material = ""
 					},
 				]
 			},
