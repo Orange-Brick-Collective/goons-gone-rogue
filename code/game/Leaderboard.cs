@@ -32,6 +32,8 @@ public partial class Leaderboard : BaseNetworkable {
         if (TopScores.Count > 12) {
             TopScores.Remove(TopScores.Last().Key);
         }
+
+        ClientAddScore(points);
     }
     [ClientRpc]
     public static void ClientAddScore(int points) {
