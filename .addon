@@ -65,8 +65,7 @@
     "Public": true,
     "ReplaceTags": "roguelike gamejam partybuilder gang",
     "ControlModes": {
-      "Keyboard": true,
-      "Gamepad": true
+      "Keyboard": true
     },
     "InputSettings": {
       "Actions": [
@@ -107,6 +106,16 @@
           "KeyboardCode": "e",
           "GamepadCode": "Y",
           "GroupName": "Actions"
+        },
+        {
+          "Name": "voice",
+          "KeyboardCode": "l",
+          "GroupName": "Other"
+        },
+        {
+          "Name": "jump",
+          "KeyboardCode": "space",
+          "GroupName": "Other"
         }
       ]
     },

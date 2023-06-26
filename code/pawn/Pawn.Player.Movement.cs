@@ -22,6 +22,10 @@ public partial class Player : Pawn {
 			Trace = Trace.Box(new Vector3(32, 32, 70), Position, Position).WithoutTags("player", "goon", "trigger"),
 		};
 
+		if (Input.Down("jump")) {
+			helper.Velocity += new Vector3(0, 0, 200);
+		}
+
 		if (IsGrounded) {
 			helper.ApplyFriction(20, Time.Delta);
 			Velocity = helper.Velocity;
