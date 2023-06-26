@@ -3,6 +3,10 @@ using Sandbox;
 namespace GGame;
 
 public static class WallModels {
+    public static int WallCount() {
+        return 4;
+    }
+
     public static int RandomWall() {
         return System.Random.Shared.Int(0, 3);
     }

@@ -92,17 +92,6 @@ public partial class GGame : GameManager {
 		Player.Current.OnKilled();
 	}
 
-	// [ConCmd.Server("ggr_setmoney")]
-	// public static void ServerSetMoneyCMD(int money) {
-	// 	GGame.Current.Money = money;
-	// }
-
-	// [ConCmd.Server("ggr_setdepth")]
-	// public static void ServerSetDepthCMD(int depth) {
-	// 	GGame.Current.currentWorld.depth = depth;
-	// 	GGame.Current.CurrentDepth = depth;
-	// }
-
 	public void OnIsMusicEnabledChanged() {
 		if (Game.IsClient) return;
 
