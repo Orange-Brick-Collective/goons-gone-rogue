@@ -28,6 +28,24 @@
 					},
 				]
 			},
+			{
+				_class = "MaterialGroupList"
+				children = 
+				[
+					{
+						_class = "DefaultMaterialGroup"
+						remaps = 
+						[
+							{
+								from = "models/rust_structures/fences_walls/brick_wall_b_plasterblend.vmat"
+								to = "models/rust_structures/fences_walls/brick_wall_b_plasterblend.vmat"
+							},
+						]
+						use_global_default = false
+						global_default_material = ""
+					},
+				]
+			},
 		]
 		model_archetype = ""
 		primary_associated_entity = ""

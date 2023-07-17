@@ -13,7 +13,7 @@
 						_class = "RenderMeshFile"
 						name = "player1"
 						filename = "models/player/player1.fbx"
-						import_translation = [ 140.0, -80.0, -18.0 ]
+						import_translation = [ 140.0, -80.0, -2.0 ]
 						import_rotation = [ 0.0, -90.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -33,7 +33,7 @@
 						_class = "RenderMeshFile"
 						name = "player2"
 						filename = "models/player/player1.fbx"
-						import_translation = [ -60.0, 148.0, -18.0 ]
+						import_translation = [ -60.0, 148.0, -2.0 ]
 						import_rotation = [ 0.0, 90.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -53,7 +53,7 @@
 						_class = "RenderMeshFile"
 						name = "player3"
 						filename = "models/player/player1.fbx"
-						import_translation = [ -150.0, 0.0, -18.0 ]
+						import_translation = [ -150.0, 0.0, -2.0 ]
 						import_rotation = [ 0.0, 180.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -73,7 +73,7 @@
 						_class = "RenderMeshFile"
 						name = "player4"
 						filename = "models/player/player1.fbx"
-						import_translation = [ 25.0, -150.0, -18.0 ]
+						import_translation = [ 25.0, -150.0, -2.0 ]
 						import_rotation = [ 0.0, 270.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -93,7 +93,7 @@
 						_class = "RenderMeshFile"
 						name = "player5"
 						filename = "models/player/player1.fbx"
-						import_translation = [ 50.0, 110.0, -18.0 ]
+						import_translation = [ 50.0, 110.0, -2.0 ]
 						import_rotation = [ 0.0, 180.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -113,7 +113,7 @@
 						_class = "RenderMeshFile"
 						name = "player6"
 						filename = "models/player/player1.fbx"
-						import_translation = [ -30.0, 14.0, -18.0 ]
+						import_translation = [ -30.0, 14.0, -2.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -133,7 +133,7 @@
 						_class = "RenderMeshFile"
 						name = "player7"
 						filename = "models/player/player1.fbx"
-						import_translation = [ -150.0, -140.0, -18.0 ]
+						import_translation = [ -150.0, -140.0, -2.0 ]
 						import_rotation = [ 0.0, 90.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -153,7 +153,7 @@
 						_class = "RenderMeshFile"
 						name = "player8"
 						filename = "models/player/player1.fbx"
-						import_translation = [ 175.0, -20.0, -18.0 ]
+						import_translation = [ 175.0, -20.0, -2.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -173,7 +173,7 @@
 						_class = "RenderMeshFile"
 						name = "player9"
 						filename = "models/player/player1.fbx"
-						import_translation = [ -180.0, 100.0, -18.0 ]
+						import_translation = [ -180.0, 100.0, -2.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"
@@ -193,7 +193,7 @@
 						_class = "RenderMeshFile"
 						name = "player10"
 						filename = "models/player/player1.fbx"
-						import_translation = [ 150.0, 100.0, -18.0 ]
+						import_translation = [ 150.0, 100.0, -2.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 0.7
 						align_origin_x_type = "None"

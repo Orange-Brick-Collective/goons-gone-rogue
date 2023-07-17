@@ -32,7 +32,14 @@
     "facepunch.old_iron_a_hs",
     "facepunch.wall_brick_old",
     "facepunch.trim_concrete_a",
-    "facepunch.corrugated_wall_a_doublesided"
+    "facepunch.corrugated_wall_a_doublesided",
+    "facepunch.floor_gravel_asphalt",
+    "facepunch.floor_rough_asphalt",
+    "facepunch.floor_pavement_tile_a",
+    "rust.portacabin_glass",
+    "rust.brick_wall_b_plasterblend",
+    "rust.chainlink",
+    "facepunch.trim_concrete_a"
   ],
   "EditorReferences": null,
   "Metadata": {
@@ -110,6 +117,7 @@
         }
       ]
     },
-    "HttpAllowList": null
+    "HttpAllowList": null,
+    "TickRate": 50
   }
 }

@@ -15,7 +15,7 @@ public enum GoonState {
 }
 
 public partial class Goon : Pawn {
-    public GoonState State {get; set;}
+    public GoonState State { get; set; }
 
     public Player leader;
     public Pawn target;
@@ -27,18 +27,18 @@ public partial class Goon : Pawn {
     private int currentPath;
     private TimeSince timeSinceHitPath;
     public TimeSince footstep;
-    
+
     // for offsetting some ai functions to improve performance
     private int tickCycle = 0;
 
-	public override void Spawn() {
-		base.Spawn();
+    public override void Spawn() {
+        base.Spawn();
         Tags.Add("goon");
 
         EnableDrawing = true;
 
-		SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 70));
-		SetModel("models/player2.vmdl");
+        SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, new Vector3(-16, -16, 0), new Vector3(16, 16, 70));
+        SetModel("models/player2.vmdl");
 
         weapon = new();
         weapon.Init("models/gun.vmdl");
@@ -49,15 +49,15 @@ public partial class Goon : Pawn {
         weapon.Parent = this;
 
         RegisterSelf();
-	}
-	public override void ClientSpawn() {
-		base.ClientSpawn();
+    }
+    public override void ClientSpawn() {
+        base.ClientSpawn();
         if (Team == 0) TeamUI.Current.Add(this);
 
         RegisterSelf();
-	}
+    }
 
-	public override void OnKilled() {
+    public override void OnKilled() {
         base.OnKilled();
         ClientOnKilled();
         UnregisterSelf();
@@ -72,7 +72,7 @@ public partial class Goon : Pawn {
         }
 
         Delete();
-	}
+    }
 
     [ClientRpc]
     public void ClientOnKilled() {
@@ -98,7 +98,7 @@ public partial class Goon : Pawn {
         GGame.Current.goons.Add(this);
         tickCycle = Random.Shared.Int(0, 50);
     }
-    
+
     public void UnregisterSelf() {
         GGame.Current.goons.Remove(this);
     }
@@ -160,7 +160,7 @@ public partial class Goon : Pawn {
         State = GoonState.Engaging;
 
         TraceResult tre = Trace.Ray(Position + HeightOffset, target.Position + target.HeightOffset)
-            .EntitiesOnly()
+            .DynamicOnly()
             .WithoutTags($"team{Team}", "trigger")
             .Run();
         AILookat(tre.Direction.WithZ(0));
@@ -187,7 +187,7 @@ public partial class Goon : Pawn {
         }
 
         TraceResult tre = Trace.Ray(Position + HeightOffset * 1.6f, target.Position + target.HeightOffset * 1.6f)
-            .EntitiesOnly()
+            .DynamicOnly()
             .WithoutTags($"team{Team}", "trigger")
             .Run();
         AILookat(tre.Direction.WithZ(0));
@@ -200,7 +200,7 @@ public partial class Goon : Pawn {
         State = GoonState.Following;
 
         TraceResult tr = Trace.Ray(Position, leader.Position + posInGroup)
-            .EntitiesOnly()
+            .DynamicOnly()
             .WithoutTags("goon", "trigger")
             .Run();
 
@@ -264,7 +264,7 @@ public partial class Goon : Pawn {
             currentPath = 0;
 
             if (!renderPath) return;
-            for(int i = 0; i < path.Length - 1; i++) {
+            for (int i = 0; i < path.Length - 1; i++) {
                 Color color = Team == 0 ? Color.Green : Color.Red;
                 color = color.WithAlpha(0.4f);
                 if (i % 2 == 0) color = color.Darken(0.3f);
