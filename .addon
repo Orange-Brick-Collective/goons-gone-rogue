@@ -8,7 +8,7 @@
   "HasAssets": true,
   "AssetsPath": "",
   "Resources": "/images/*\n/fonts/*\n/materials/texture/*\n/sounds/*",
-  "MenuResources": null,
+  "MenuResources": "",
   "HasCode": true,
   "CodePath": "/code/",
   "PackageReferences": [
